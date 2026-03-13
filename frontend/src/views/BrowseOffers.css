@@ -1,0 +1,30 @@
+/* Browse Offers */
+.page-title { font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+.page-subtitle { font-size: 14px; color: var(--color-text-secondary); }
+.browse-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; }
+.browse-filters { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.search-wrapper { position: relative; flex: 1; min-width: 220px; }
+.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--color-text-secondary); pointer-events: none; }
+.search-input { padding-left: 36px !important; }
+.filter-group { display: flex; align-items: center; gap: 8px; }
+.filter-select { min-width: 130px; }
+.listings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+.listing-card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  transition: var(--transition);
+}
+.listing-card:hover { border-color: rgba(59,130,246,0.25); transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+.listing-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
+.listing-bank { font-size: 17px; font-weight: 700; }
+.listing-meta { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+.listing-rating { display: flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; color: var(--color-warning); }
+.listing-masked { font-family: 'Space Grotesk', monospace; font-size: 16px; letter-spacing: 2px; color: var(--color-text-secondary); margin-bottom: 18px; }
+.listing-card-footer { display: flex; justify-content: space-between; align-items: center; }
+.request-listing-summary { background: var(--color-bg); border-radius: var(--radius-md); padding: 14px; margin-bottom: 4px; }
+.rlsum-bank { font-size: 16px; font-weight: 700; }
+.rlsum-meta { font-size: 13px; color: var(--color-text-secondary); margin-top: 2px; }
+.spin { animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }

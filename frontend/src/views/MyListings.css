@@ -1,0 +1,5 @@
+.my-listings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+.my-listing-card { background: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 22px; transition: var(--transition); }
+.my-listing-card:hover { border-color: rgba(255,255,255,0.1); }
+.my-listing-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.my-listing-actions { display: flex; gap: 8px; }
