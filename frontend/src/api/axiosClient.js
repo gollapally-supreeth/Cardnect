@@ -6,14 +6,15 @@ const api = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
-// Attach Clerk JWT to every request
-let getTokenFn = null
-export const setClerkTokenGetter = (fn) => { getTokenFn = fn }
+let authToken = null
 
-api.interceptors.request.use(async (config) => {
-  if (getTokenFn) {
-    const token = await getTokenFn()
-    if (token) config.headers.Authorization = `Bearer ${token}`
+export const setAuthToken = (token) => {
+  authToken = token || null
+}
+
+api.interceptors.request.use((config) => {
+  if (authToken) {
+    config.headers.Authorization = `Bearer ${authToken}`
   }
   return config
 })

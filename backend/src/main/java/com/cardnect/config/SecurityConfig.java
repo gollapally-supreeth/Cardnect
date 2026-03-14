@@ -1,6 +1,6 @@
 package com.cardnect.config;
 
-import com.cardnect.security.ClerkJwtFilter;
+import com.cardnect.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -23,7 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final ClerkJwtFilter clerkJwtFilter;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Value("${cors.allowed-origins:http://localhost:5173}")
     private String allowedOrigins;
@@ -37,12 +37,14 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Public endpoints
                 .requestMatchers(HttpMethod.GET, "/api/v1/listings").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/v1/auth/send-otp").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/v1/auth/verify-otp").permitAll()
                 .requestMatchers("/ws/**").permitAll()
                 .requestMatchers("/actuator/health").permitAll()
                 // All other endpoints require authentication
                 .anyRequest().authenticated()
             )
-            .addFilterBefore(clerkJwtFilter, UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

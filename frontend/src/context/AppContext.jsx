@@ -1,34 +1,20 @@
 import { createContext, useContext, useEffect, useState, useRef, useCallback } from 'react'
-import { useAuth, useUser } from '@clerk/react'
 import { Client } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
-import { setClerkTokenGetter } from '../api/axiosClient'
-import { syncUser, fetchMyNotifications } from '../api/services'
+import { fetchMyNotifications } from '../api/services'
+import { useAuthContext } from './AuthContext'
 
 const AppContext = createContext(null)
 
 export function AppProvider({ children }) {
-  const { getToken, isSignedIn } = useAuth()
-  const { user: clerkUser } = useUser()
+  const { token, isAuthenticated, user } = useAuthContext()
   const [notifications, setNotifications] = useState([])
   const [unreadCount, setUnreadCount] = useState(0)
   const stompClientRef = useRef(null)
 
-  // Wire up Clerk token getter into Axios
-  useEffect(() => {
-    setClerkTokenGetter(() => getToken())
-  }, [getToken])
-
-  // Sync user with backend when logged in
-  useEffect(() => {
-    if (isSignedIn && clerkUser) {
-      syncUser().catch(err => console.warn('User sync failed:', err))
-    }
-  }, [isSignedIn, clerkUser])
-
   // Fetch initial notifications
   const refreshNotifications = useCallback(async () => {
-    if (!isSignedIn) return
+    if (!isAuthenticated) return
     try {
       const data = await fetchMyNotifications()
       setNotifications(data)
@@ -36,7 +22,7 @@ export function AppProvider({ children }) {
     } catch {
       // silent
     }
-  }, [isSignedIn])
+  }, [isAuthenticated])
 
   useEffect(() => {
     refreshNotifications()
@@ -44,11 +30,10 @@ export function AppProvider({ children }) {
 
   // WebSocket connection
   useEffect(() => {
-    if (!isSignedIn) return
+    if (!isAuthenticated || !token) return
     let client
 
     const connect = async () => {
-      const token = await getToken()
       client = new Client({
         webSocketFactory: () => new SockJS(import.meta.env.VITE_WS_URL || 'http://localhost:8080/ws'),
         connectHeaders: { Authorization: `Bearer ${token}` },
@@ -73,7 +58,7 @@ export function AppProvider({ children }) {
         stompClientRef.current.deactivate()
       }
     }
-  }, [isSignedIn, getToken])
+  }, [isAuthenticated, token])
 
   const markNotificationRead = useCallback((id) => {
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n))
@@ -91,7 +76,7 @@ export function AppProvider({ children }) {
     markNotificationRead,
     markAllRead,
     refreshNotifications,
-    clerkUser,
+    user,
   }
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>

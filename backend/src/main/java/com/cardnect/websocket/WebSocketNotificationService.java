@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 /**
  * Sends real-time WebSocket notifications to specific users.
- * Uses SimpMessagingTemplate to push to /user/{clerkId}/queue/notifications.
  */
 @Service
 @RequiredArgsConstructor
@@ -18,7 +17,7 @@ public class WebSocketNotificationService {
 
     private final SimpMessagingTemplate messagingTemplate;
 
-    public void sendNotification(String clerkId, Notification notification) {
+    public void sendNotification(String userChannelKey, Notification notification) {
         NotificationResponse response = NotificationResponse.builder()
                 .id(notification.getId())
                 .message(notification.getMessage())
@@ -27,10 +26,10 @@ public class WebSocketNotificationService {
                 .build();
 
         try {
-            messagingTemplate.convertAndSendToUser(clerkId, "/queue/notifications", response);
-            log.debug("Sent WebSocket notification to user: {}", clerkId);
+            messagingTemplate.convertAndSendToUser(userChannelKey, "/queue/notifications", response);
+            log.debug("Sent WebSocket notification to user: {}", userChannelKey);
         } catch (Exception e) {
-            log.warn("Failed to send WebSocket notification to {}: {}", clerkId, e.getMessage());
+            log.warn("Failed to send WebSocket notification to {}: {}", userChannelKey, e.getMessage());
         }
     }
 }

@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "users", indexes = {
-    @Index(name = "idx_users_clerk_id", columnList = "clerk_id")
+    @Index(name = "idx_users_email", columnList = "email")
 })
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class User {
@@ -19,26 +19,26 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "clerk_id", unique = true, nullable = false)
-    private String clerkId;
+    @Column(name = "email", unique = true, nullable = false, length = 255)
+    private String email;
 
     @Column(name = "name")
     private String name;
 
-    @Column(name = "phone_number", unique = true)
-    private String phoneNumber;
+    @Column(name = "phone", length = 20)
+    private String phone;
 
-    @Column(name = "is_phone_verified", nullable = false)
+    @Column(name = "phone_verified", nullable = false)
     @Builder.Default
     private boolean phoneVerified = false;
 
-    @Column(name = "is_email_verified", nullable = false)
+    @Column(name = "email_verified", nullable = false)
     @Builder.Default
     private boolean emailVerified = false;
 
-    @Column(name = "is_blocked", nullable = false)
+    @Column(name = "verified_user", nullable = false)
     @Builder.Default
-    private boolean blocked = false;
+    private boolean verifiedUser = false;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -48,7 +48,14 @@ public class User {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @PrePersist
+    @PreUpdate
+    public void updateVerificationFlag() {
+        // Keep the aggregate flag in sync for fast access checks across services.
+        this.verifiedUser = this.emailVerified;
+    }
+
     public boolean isFullyVerified() {
-        return phoneVerified && emailVerified;
+        return verifiedUser;
     }
 }

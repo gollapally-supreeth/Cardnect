@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '@clerk/react'
+import { useAuthContext } from '../context/AuthContext'
 import { CreditCard, Shield, Zap, Users, ArrowRight, Star, CheckCircle, Bell, ChevronRight } from 'lucide-react'
 import './LandingPage.css'
 
@@ -46,9 +46,9 @@ function CardDemo({ card }) {
 
 export default function LandingPage() {
   const navigate = useNavigate()
-  const { isSignedIn } = useAuth()
+  const { isAuthenticated } = useAuthContext()
 
-  const handleCTA = () => navigate(isSignedIn ? '/dashboard' : '/auth')
+  const handleCTA = () => navigate(isAuthenticated ? '/dashboard' : '/auth')
 
   return (
     <div className="landing">
@@ -65,7 +65,7 @@ export default function LandingPage() {
             <a href="#offers" className="nav-link">Browse Offers</a>
           </div>
           <div className="landing-nav-actions">
-            {isSignedIn ? (
+            {isAuthenticated ? (
               <button className="btn btn-primary btn-sm" onClick={() => navigate('/dashboard')}>
                 Dashboard <ArrowRight size={14} />
               </button>

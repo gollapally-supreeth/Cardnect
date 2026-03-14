@@ -1,12 +1,47 @@
-import { SignIn, SignUp } from '@clerk/react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CreditCard, ArrowLeft } from 'lucide-react'
+import { CreditCard, ArrowLeft, Loader } from 'lucide-react'
+import { useAuthContext } from '../context/AuthContext'
 import './AuthPage.css'
 
 export default function AuthPage() {
-  const [mode, setMode] = useState('signin')
+  const [email, setEmail] = useState('')
+  const [otpCode, setOtpCode] = useState('')
+  const [otpSent, setOtpSent] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [message, setMessage] = useState('')
+  const [error, setError] = useState('')
   const navigate = useNavigate()
+  const { sendOtp, verifyOtp } = useAuthContext()
+
+  const handleSendOtp = async () => {
+    setError('')
+    setMessage('')
+    setSubmitting(true)
+    try {
+      await sendOtp(email.trim())
+      setOtpSent(true)
+      setMessage('Verification code sent. Please check your inbox.')
+    } catch (e) {
+      setError(e.message)
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const handleVerifyOtp = async () => {
+    setError('')
+    setMessage('')
+    setSubmitting(true)
+    try {
+      await verifyOtp(email.trim(), otpCode.trim())
+      navigate('/dashboard', { replace: true })
+    } catch (e) {
+      setError(e.message)
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   return (
     <div className="auth-page">
@@ -25,68 +60,58 @@ export default function AuthPage() {
           <span>Cardnect</span>
         </div>
 
-        {/* Tab toggle */}
         <div className="auth-tabs">
-          <button
-            className={`auth-tab ${mode === 'signin' ? 'active' : ''}`}
-            onClick={() => setMode('signin')}
-          >Sign In</button>
-          <button
-            className={`auth-tab ${mode === 'signup' ? 'active' : ''}`}
-            onClick={() => setMode('signup')}
-          >Sign Up</button>
+          <button className="auth-tab active">Email OTP Login</button>
         </div>
 
-        {/* Clerk component */}
         <div className="auth-clerk-wrapper">
-          {mode === 'signin' ? (
-            <SignIn
-              routing="hash"
-              afterSignInUrl="/dashboard"
-              appearance={{
-                variables: {
-                  colorPrimary: '#3b82f6',
-                  colorBackground: '#111c30',
-                  colorInputBackground: '#060b14',
-                  colorText: '#f1f5f9',
-                  colorTextSecondary: '#94a3b8',
-                  colorInputText: '#f1f5f9',
-                  borderRadius: '12px',
-                  fontFamily: 'Inter, system-ui, sans-serif',
-                },
-                elements: {
-                  card: { boxShadow: 'none', background: 'transparent', border: 'none' },
-                  headerTitle: { display: 'none' },
-                  headerSubtitle: { display: 'none' },
-                  socialButtonsBlockButton: { border: '1px solid rgba(255,255,255,0.06)', background: '#0d1526' },
-                  formFieldInput: { borderColor: 'rgba(255,255,255,0.06)' },
-                },
-              }}
-            />
-          ) : (
-            <SignUp
-              routing="hash"
-              afterSignUpUrl="/dashboard"
-              appearance={{
-                variables: {
-                  colorPrimary: '#3b82f6',
-                  colorBackground: '#111c30',
-                  colorInputBackground: '#060b14',
-                  colorText: '#f1f5f9',
-                  colorTextSecondary: '#94a3b8',
-                  colorInputText: '#f1f5f9',
-                  borderRadius: '12px',
-                  fontFamily: 'Inter, system-ui, sans-serif',
-                },
-                elements: {
-                  card: { boxShadow: 'none', background: 'transparent', border: 'none' },
-                  headerTitle: { display: 'none' },
-                  headerSubtitle: { display: 'none' },
-                  formFieldInput: { borderColor: 'rgba(255,255,255,0.06)' },
-                },
-              }}
-            />
-          )}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div className="form-group">
+              <label className="form-label">Email Address</label>
+              <input
+                className="form-input"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={submitting || otpSent}
+              />
+            </div>
+
+            {otpSent && (
+              <div className="form-group">
+                <label className="form-label">OTP Code</label>
+                <input
+                  className="form-input"
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={6}
+                  placeholder="Enter 6-digit OTP"
+                  value={otpCode}
+                  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, ''))}
+                  disabled={submitting}
+                />
+              </div>
+            )}
+
+            {error && <div className="alert alert-danger">{error}</div>}
+            {message && <div className="alert alert-info">{message}</div>}
+
+            {!otpSent ? (
+              <button className="btn btn-primary" onClick={handleSendOtp} disabled={submitting || !email.trim()}>
+                {submitting ? <><Loader size={16} className="spin" /> Sending OTP...</> : 'Send OTP'}
+              </button>
+            ) : (
+              <>
+                <button className="btn btn-primary" onClick={handleVerifyOtp} disabled={submitting || otpCode.length !== 6}>
+                  {submitting ? <><Loader size={16} className="spin" /> Verifying...</> : 'Verify OTP'}
+                </button>
+                <button className="btn btn-ghost" onClick={() => { setOtpSent(false); setOtpCode(''); setMessage('') }} disabled={submitting}>
+                  Use another email
+                </button>
+              </>
+            )}
+          </div>
         </div>
 
         <p className="auth-disclaimer">

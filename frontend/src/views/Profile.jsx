@@ -1,14 +1,12 @@
-import { useUser } from '@clerk/react'
 import { CheckCircle, AlertCircle, Phone, Mail, Shield, User } from 'lucide-react'
+import { useAuthContext } from '../context/AuthContext'
 import './Profile.css'
 
 export default function Profile() {
-  const { user } = useUser()
+  const { user } = useAuthContext()
 
-  const phone = user?.phoneNumbers?.[0]
-  const email = user?.emailAddresses?.[0]
-  const phoneVerified = phone?.verification?.status === 'verified'
-  const emailVerified = email?.verification?.status === 'verified'
+  const phoneVerified = !!user?.phoneVerified
+  const emailVerified = !!user?.emailVerified
   const isFullyVerified = phoneVerified && emailVerified
 
   return (
@@ -38,11 +36,11 @@ export default function Profile() {
           <div className="card-title"><User size={16} />Personal Info</div>
           <div className="divider" />
           <div className="profile-info-row">
-            <span className="profile-info-label">Full Name</span>
-            <span className="profile-info-value">{user?.fullName || '—'}</span>
+            <span className="profile-info-label">Display Name</span>
+            <span className="profile-info-value">{user?.name || '—'}</span>
           </div>
           <div className="profile-info-row">
-            <span className="profile-info-label">Clerk User ID</span>
+            <span className="profile-info-label">User ID</span>
             <span className="profile-info-value monospace" style={{ fontSize: 11 }}>{user?.id}</span>
           </div>
           <div className="profile-info-row">
@@ -63,7 +61,7 @@ export default function Profile() {
               </div>
               <div>
                 <p className="verif-item-label">Phone Number</p>
-                <p className="verif-item-value">{phone?.phoneNumber || 'Not added'}</p>
+                <p className="verif-item-value">{user?.phone || 'Not added'}</p>
               </div>
             </div>
             {phoneVerified
@@ -80,7 +78,7 @@ export default function Profile() {
               </div>
               <div>
                 <p className="verif-item-label">Email Address</p>
-                <p className="verif-item-value">{email?.emailAddress || 'Not added'}</p>
+                <p className="verif-item-value">{user?.email || 'Not added'}</p>
               </div>
             </div>
             {emailVerified
@@ -91,7 +89,7 @@ export default function Profile() {
 
           {!isFullyVerified && (
             <div className="alert alert-info" style={{ marginTop: 16 }}>
-              Verification is managed through Clerk. If you need to add or verify your phone or email, your profile settings are accessible via the Clerk user button (top bar avatar area).
+              Complete phone verification to unlock all platform features.
             </div>
           )}
         </div>

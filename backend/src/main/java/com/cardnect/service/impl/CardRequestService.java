@@ -33,7 +33,7 @@ public class CardRequestService {
     @Transactional
     public CardRequestResponse createRequest(User requester, CreateRequestDto dto) {
         if (!requester.isFullyVerified()) {
-            throw new AccessDeniedException("You must verify your phone and email before sending card requests.");
+            throw new AccessDeniedException("You must verify your email before sending card requests.");
         }
 
         CardListing listing = listingRepository.findById(dto.getListingId())
@@ -53,10 +53,12 @@ public class CardRequestService {
 
         request = requestRepository.save(request);
 
-        // Notify the card holder
         String message = String.format(
                 "New card request from %s for '%s' on your %s %s.",
-                requester.getName(), dto.getOfferDetails(), listing.getBankName(), listing.getCardType()
+                requester.getName() != null ? requester.getName() : requester.getEmail(),
+                dto.getOfferDetails(),
+                listing.getBankName(),
+                listing.getCardType()
         );
 
         Notification notification = Notification.builder()
@@ -66,8 +68,7 @@ public class CardRequestService {
                 .build();
         notificationRepository.save(notification);
 
-        // Push via WebSocket to card holder
-        wsNotificationService.sendNotification(listing.getUser().getClerkId(), notification);
+        wsNotificationService.sendNotification(listing.getUser().getId().toString(), notification);
 
         log.info("Card request created: {} -> listing {}", requester.getId(), listing.getId());
         return toResponse(request, false);
@@ -107,7 +108,7 @@ public class CardRequestService {
                 .listingCardType(r.getListing().getCardType())
                 .listingCardNetwork(r.getListing().getCardNetwork())
                 .requesterName(r.getRequester().getName())
-                .requesterPhone(includePhone ? r.getRequester().getPhoneNumber() : null)
+                .requesterPhone(includePhone ? r.getRequester().getPhone() : null)
                 .status(r.getStatus())
                 .offerDetails(r.getOfferDetails())
                 .createdAt(r.getCreatedAt())

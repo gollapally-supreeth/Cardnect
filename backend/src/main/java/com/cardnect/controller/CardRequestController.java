@@ -8,7 +8,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -23,8 +22,7 @@ public class CardRequestController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<?> createRequest(@Valid @RequestBody CreateRequestDto dto,
-                                            Authentication auth) {
+    public ResponseEntity<?> createRequest(@Valid @RequestBody CreateRequestDto dto) {
         User user = userService.getCurrentUser();
         return ResponseEntity.status(HttpStatus.CREATED).body(requestService.createRequest(user, dto));
     }

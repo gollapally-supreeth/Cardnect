@@ -1,4 +1,3 @@
-import { useUser, useClerk } from '@clerk/react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import {
   CreditCard, Bell, LayoutDashboard, ListPlus, Inbox,
@@ -6,6 +5,7 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { useApp } from '../context/AppContext'
+import { useAuthContext } from '../context/AuthContext'
 import NotificationPanel from './NotificationPanel'
 import './DashboardLayout.css'
 
@@ -17,23 +17,21 @@ const NAV_ITEMS = [
 ]
 
 export default function DashboardLayout({ children }) {
-  const { user } = useUser()
-  const { signOut } = useClerk()
+  const { user, signOut } = useAuthContext()
   const navigate = useNavigate()
   const location = useLocation()
   const { unreadCount } = useApp()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [notifOpen, setNotifOpen] = useState(false)
 
-  const isVerified = user?.phoneNumbers?.[0]?.verification?.status === 'verified' &&
-                     user?.emailAddresses?.[0]?.verification?.status === 'verified'
+  const isVerified = !!(user?.phoneVerified && user?.emailVerified)
 
   const isActive = (path, exact) => exact
     ? location.pathname === path
     : location.pathname.startsWith(path)
 
   const handleSignOut = async () => {
-    await signOut()
+    signOut()
     navigate('/')
   }
 
@@ -76,14 +74,11 @@ export default function DashboardLayout({ children }) {
         <div className="dash-sidebar-footer">
           <div className="dash-user">
             <div className="dash-user-avatar">
-              {user?.imageUrl
-                ? <img src={user.imageUrl} alt="avatar" />
-                : <span>{user?.firstName?.[0] || 'U'}</span>
-              }
+              <span>{(user?.name || user?.email || 'U')?.[0]?.toUpperCase() || 'U'}</span>
             </div>
             <div className="dash-user-info">
-              <p className="dash-user-name">{user?.fullName || 'User'}</p>
-              <p className="dash-user-email">{user?.primaryEmailAddress?.emailAddress || ''}</p>
+              <p className="dash-user-name">{user?.name || 'User'}</p>
+              <p className="dash-user-email">{user?.email || ''}</p>
             </div>
           </div>
           <button className="btn btn-ghost btn-sm dash-signout" onClick={handleSignOut}>
@@ -117,10 +112,7 @@ export default function DashboardLayout({ children }) {
               {notifOpen && <NotificationPanel onClose={() => setNotifOpen(false)} />}
             </div>
             <div className="dash-topbar-avatar">
-              {user?.imageUrl
-                ? <img src={user.imageUrl} alt="avatar" />
-                : <span>{user?.firstName?.[0] || 'U'}</span>
-              }
+              <span>{(user?.name || user?.email || 'U')?.[0]?.toUpperCase() || 'U'}</span>
             </div>
           </div>
         </header>

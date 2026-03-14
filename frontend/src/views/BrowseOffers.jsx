@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useUser } from '@clerk/react'
 import { Search, Filter, CreditCard, Star, MessageCircle, Loader, X } from 'lucide-react'
 import { fetchListings, createRequest } from '../api/services'
+import { useAuthContext } from '../context/AuthContext'
 import './BrowseOffers.css'
 
 const NETWORKS = ['All', 'Visa', 'Mastercard', 'RuPay', 'Amex']
@@ -102,14 +102,13 @@ function ListingCard({ listing, onRequest }) {
 }
 
 export default function BrowseOffers() {
-  const { user } = useUser()
+  const { user } = useAuthContext()
   const [search, setSearch] = useState('')
   const [network, setNetwork] = useState('All')
   const [type, setType] = useState('All')
   const [selectedListing, setSelectedListing] = useState(null)
 
-  const isVerified = user?.phoneNumbers?.[0]?.verification?.status === 'verified' &&
-                     user?.emailAddresses?.[0]?.verification?.status === 'verified'
+  const isVerified = !!(user?.phoneVerified && user?.emailVerified)
 
   const { data: listings = [], isLoading, error } = useQuery({
     queryKey: ['listings'],
