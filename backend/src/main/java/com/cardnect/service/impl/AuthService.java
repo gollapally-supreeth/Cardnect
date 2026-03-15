@@ -1,5 +1,6 @@
 package com.cardnect.service.impl;
 
+import com.cardnect.model.dto.request.VerifyOtpRequest;
 import com.cardnect.model.dto.response.AuthResponse;
 import com.cardnect.model.dto.response.UserMeResponse;
 import com.cardnect.model.entity.User;
@@ -29,19 +30,24 @@ public class AuthService {
     }
 
     @Transactional
-    public AuthResponse verifyOtp(String email, String otpCode) {
-        String normalized = normalizeEmail(email);
+    public AuthResponse verifyOtp(VerifyOtpRequest request) {
+        String normalized = normalizeEmail(request.getEmail());
+        String otpCode = request.getOtpCode() == null ? "" : request.getOtpCode().trim();
         otpService.validateOtp(normalized, otpCode);
 
         User user = userRepository.findByEmail(normalized)
                 .orElseGet(() -> userRepository.save(
                         User.builder()
                                 .email(normalized)
+                                .name(request.getName().trim())
+                                .phone(request.getPhone().trim())
                                 .emailVerified(true)
                                 .verifiedUser(true)
                                 .build()
                 ));
 
+        user.setName(request.getName().trim());
+        user.setPhone(request.getPhone().trim());
         user.setEmailVerified(true);
         user = userRepository.save(user);
 
@@ -78,4 +84,5 @@ public class AuthService {
         return email.trim().toLowerCase();
     }
 }
+
 

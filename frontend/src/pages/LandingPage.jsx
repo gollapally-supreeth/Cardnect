@@ -60,9 +60,9 @@ export default function LandingPage() {
             <span>Cardnect</span>
           </div>
           <div className="landing-nav-links">
-            <a href="#how-it-works" className="nav-link">How it Works</a>
             <a href="#features" className="nav-link">Features</a>
-            <a href="#offers" className="nav-link">Browse Offers</a>
+            <a href="#how-it-works" className="nav-link">Docs</a>
+            <a href="#offers" className="nav-link">Pricing</a>
           </div>
           <div className="landing-nav-actions">
             {isAuthenticated ? (
@@ -71,7 +71,7 @@ export default function LandingPage() {
               </button>
             ) : (
               <>
-                <button className="btn btn-ghost btn-sm" onClick={() => navigate('/auth')}>Sign In</button>
+                <button className="btn btn-ghost btn-sm" onClick={() => navigate('/auth')}>Log in</button>
                 <button className="btn btn-primary btn-sm" onClick={() => navigate('/auth')}>Get Started <ArrowRight size={14} /></button>
               </>
             )}
@@ -81,35 +81,51 @@ export default function LandingPage() {
 
       {/* HERO */}
       <section className="hero">
-        <div className="hero-bg-blob hero-bg-blob-1" />
-        <div className="hero-bg-blob hero-bg-blob-2" />
+        <div className="hero-glow hero-glow-1" />
+        <div className="hero-glow hero-glow-2" />
         <div className="container hero-content">
-          <div className="hero-badge">
-            <span className="notification-dot" />
-            Real-time card sharing platform
+          <div className="hero-text">
+            <div className="hero-label label-mono">// email for developers</div>
+            <h1 className="hero-title">
+              Unlock <em>any</em><br />
+              discount without friction
+            </h1>
+            <p className="hero-sub">
+              The best way to reach humans instead of spam folders. Deliver transactional offers at scale with verified users and zero card exposure.
+            </p>
+            <div className="hero-actions">
+              <button className="btn btn-primary btn-lg" onClick={handleCTA}>
+                Get started →
+              </button>
+              <a href="#how-it-works" className="btn btn-secondary btn-lg">Documentation</a>
+            </div>
+            <div className="hero-stats">
+              <div className="hero-stat"><span className="hero-stat-num">500+</span><span className="hero-stat-label">Active Card Listings</span></div>
+              <div className="hero-stat-divider" />
+              <div className="hero-stat"><span className="hero-stat-num">2,000+</span><span className="hero-stat-label">Verified Users</span></div>
+              <div className="hero-stat-divider" />
+              <div className="hero-stat"><span className="hero-stat-num">₹50L+</span><span className="hero-stat-label">Discounts Shared</span></div>
+            </div>
           </div>
-          <h1 className="hero-title">
-            Unlock Any Card<br />
-            <span className="hero-title-gradient">Discount Today</span>
-          </h1>
-          <p className="hero-desc">
-            Connect with verified card holders to access exclusive bank card discounts.
-            Share savings, earn commissions — all without exchanging sensitive data.
-          </p>
-          <div className="hero-actions">
-            <button className="btn btn-primary btn-lg" onClick={handleCTA}>
-              Start Saving Now <ArrowRight size={18} />
-            </button>
-            <a href="#how-it-works" className="btn btn-secondary btn-lg">
-              See How It Works
-            </a>
-          </div>
-          <div className="hero-stats">
-            <div className="hero-stat"><span className="hero-stat-num">500+</span><span className="hero-stat-label">Active Card Listings</span></div>
-            <div className="hero-stat-divider" />
-            <div className="hero-stat"><span className="hero-stat-num">2,000+</span><span className="hero-stat-label">Verified Users</span></div>
-            <div className="hero-stat-divider" />
-            <div className="hero-stat"><span className="hero-stat-num">₹50L+</span><span className="hero-stat-label">Discounts Shared</span></div>
+
+          <div className="hero-visual">
+            <div className="cube-wrapper">
+              <div className="cube">
+                <span className="cube-face cube-front" />
+                <span className="cube-face cube-back" />
+                <span className="cube-face cube-right" />
+                <span className="cube-face cube-left" />
+                <span className="cube-face cube-top" />
+                <span className="cube-face cube-bottom" />
+              </div>
+              <div className="cube-glow" />
+            </div>
+            <div className="code-block">
+              <div className="label-mono" style={{ color: 'var(--color-accent)' }}>// integrate</div>
+              <div><span className="code-muted">import</span> {'{'} <span className="code-purple">Resend</span> {'}'} <span className="code-muted">from</span> <span className="code-accent">'resend'</span></div>
+              <div><span className="code-muted">const</span> resend = <span className="code-purple">new</span> Resend(process.env.RESEND_KEY)</div>
+              <div>await resend.emails.send({'{'} to: user.email, subject: 'OTP', html: code {'}'})</div>
+            </div>
           </div>
         </div>
       </section>
@@ -118,6 +134,7 @@ export default function LandingPage() {
       <section id="offers" className="section-offers">
         <div className="container">
           <div className="section-header">
+            <div className="badge-ghost" style={{ marginBottom: 12 }}>● LIVE <span style={{ opacity: 0.8 }}>v2.0.0</span></div>
             <h2>Live Card Offers</h2>
             <p>Browse real card listings from verified holders</p>
           </div>
@@ -136,6 +153,7 @@ export default function LandingPage() {
       <section id="how-it-works" className="section-steps">
         <div className="container">
           <div className="section-header">
+            <div className="label-mono" style={{ color: 'var(--color-accent)', marginBottom: 10 }}>// integrate</div>
             <h2>How Cardnect Works</h2>
             <p>Four simple steps to unlock any card discount</p>
           </div>
@@ -156,7 +174,7 @@ export default function LandingPage() {
       <section id="features" className="section-features">
         <div className="container section-features-inner">
           <div className="section-features-text">
-            <div className="badge badge-primary" style={{ marginBottom: '16px' }}>Built for Trust</div>
+            <div className="badge-ghost" style={{ marginBottom: '16px' }}>NEW</div>
             <h2>Security First,<br />Always</h2>
             <p>Cardnect is designed to connect people without ever compromising security. No card numbers, no CVVs — ever.</p>
             <ul className="features-list">

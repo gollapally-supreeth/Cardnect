@@ -2,7 +2,7 @@ import api from './axiosClient'
 
 // ---- Auth ----
 export const sendOtp = (email) => api.post('/auth/send-otp', { email }).then(r => r.data)
-export const verifyOtp = (email, otpCode) => api.post('/auth/verify-otp', { email, otpCode }).then(r => r.data)
+export const verifyOtp = (payload) => api.post('/auth/verify-otp', payload).then(r => r.data)
 export const fetchAuthMe = () => api.get('/auth/me').then(r => r.data)
 
 // ---- Card Listings ----

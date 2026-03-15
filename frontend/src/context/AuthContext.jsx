@@ -49,8 +49,8 @@ export function AuthProvider({ children }) {
     await sendOtpApi(email)
   }, [])
 
-  const verifyOtp = useCallback(async (email, otpCode) => {
-    const auth = await verifyOtpApi(email, otpCode)
+  const verifyOtp = useCallback(async (payload) => {
+    const auth = await verifyOtpApi(payload)
     applyToken(auth.token)
     await refreshMe()
     return auth
@@ -80,4 +80,3 @@ export function useAuthContext() {
   if (!ctx) throw new Error('useAuthContext must be used within AuthProvider')
   return ctx
 }
-

@@ -27,7 +27,7 @@ public class AuthController {
 
     @PostMapping("/verify-otp")
     public ResponseEntity<AuthResponse> verifyOtp(@Valid @RequestBody VerifyOtpRequest request) {
-        return ResponseEntity.ok(authService.verifyOtp(request.getEmail(), request.getOtpCode()));
+        return ResponseEntity.ok(authService.verifyOtp(request));
     }
 
     @GetMapping("/me")
@@ -35,4 +35,3 @@ public class AuthController {
         return ResponseEntity.ok(authService.me());
     }
 }
-

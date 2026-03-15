@@ -3,6 +3,7 @@ package com.cardnect.service.impl;
 import com.cardnect.model.entity.OtpCode;
 import com.cardnect.repository.OtpCodeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,8 +17,16 @@ public class OtpService {
     private final OtpCodeRepository otpCodeRepository;
     private final SecureRandom secureRandom = new SecureRandom();
 
+    @Value("${auth.otp.bypass:false}")
+    private boolean otpBypass;
+
     @Transactional
     public String generateAndStoreOtp(String email) {
+        if (otpBypass) {
+            otpCodeRepository.deleteByEmail(email);
+            return "000000";
+        }
+
         String otp = String.format("%06d", secureRandom.nextInt(1_000_000));
         LocalDateTime now = LocalDateTime.now();
 
@@ -35,6 +44,11 @@ public class OtpService {
 
     @Transactional
     public void validateOtp(String email, String code) {
+        if (otpBypass) {
+            otpCodeRepository.deleteByEmail(email);
+            return;
+        }
+
         OtpCode latest = otpCodeRepository.findTopByEmailOrderByCreatedAtDesc(email)
                 .orElseThrow(() -> new IllegalArgumentException("OTP not found. Please request a new code."));
 
@@ -48,5 +62,8 @@ public class OtpService {
 
         otpCodeRepository.deleteByEmail(email);
     }
-}
 
+    public boolean isOtpBypassEnabled() {
+        return otpBypass;
+    }
+}
