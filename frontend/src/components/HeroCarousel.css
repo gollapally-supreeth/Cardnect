@@ -1,0 +1,280 @@
+/* ════════════════════════════════════════════════════════════════════
+   HeroCarousel — Vertical Ferris-Wheel Ring
+   JS-driven transforms (RAF):  no preserve-3d  no overflow issues
+════════════════════════════════════════════════════════════════════ */
+
+/* ── Root: flex centering, clipping ────────────────────────────── */
+.hco-root {
+  width: 100%;
+  height: 580px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── Scene: the fixed anchor point cards orbit around ───────────── */
+.hco-scene {
+  position: relative;
+  width: 380px;
+  height: 240px;
+}
+
+/* ── Slot: card placeholder, JS sets transform/opacity each frame ── */
+.hco-slot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 380px;
+  height: 240px;
+  margin-left: -190px;
+  margin-top:  -120px;
+  will-change: transform, opacity;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   CARD — 380 × 240 — ultra-real metallic surface
+══════════════════════════════════════════════════════════════════ */
+.hco-card {
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  padding: 22px 26px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  /* Physical card depth — 6-layer shadow stack */
+  box-shadow:
+    0  0   0  1px  rgba(255,255,255,0.13),   /* top rim  */
+    0  1px 0  1px  rgba(255,255,255,0.08),   /* bright top edge */
+    0 -1px 0  0px  rgba(0,0,0,0.95),          /* thick bottom edge */
+    0  6px 20px    rgba(0,0,0,0.60),
+    0 22px 55px    rgba(0,0,0,0.75),
+    0 48px 90px    rgba(0,0,0,0.50);
+}
+
+/* ── Grain noise texture (matte brushed metal) ─────────────────── */
+.hco-grain {
+  position: absolute;
+  inset: -50%;
+  width: 200%; height: 200%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.055;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+/* ── Top-half gloss (upper specular reflection) ─────────────────── */
+.hco-gloss {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 52%;
+  background: linear-gradient(175deg,
+    rgba(255,255,255,0.11) 0%,
+    rgba(255,255,255,0.04) 35%,
+    transparent 100%
+  );
+  border-radius: 20px 20px 0 0;
+  pointer-events: none;
+}
+
+/* ── Angled metallic streak — per-card tinted ───────────────────── */
+.hco-sheen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(112deg,
+    transparent 28%,
+    var(--sheen, rgba(255,255,255,0.12)) 44%,
+    rgba(255,255,255,0.30) 50%,
+    var(--sheen, rgba(255,255,255,0.12)) 57%,
+    transparent 70%
+  );
+  pointer-events: none;
+  border-radius: inherit;
+  mix-blend-mode: screen;
+}
+
+/* ── Top bright edge line ───────────────────────────────────────── */
+.hco-edge-t {
+  position: absolute;
+  top: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent, rgba(255,255,255,0.22), transparent
+  );
+}
+
+/* ── Bottom dark edge line ──────────────────────────────────────── */
+.hco-edge-b {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent,
+    var(--sheen, rgba(255,255,255,0.15)),
+    transparent
+  );
+  border-radius: 0 0 20px 20px;
+  opacity: 0.7;
+}
+
+/* ── Top row ────────────────────────────────────────────────────── */
+.hco-top-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  position: relative;
+  z-index: 1;
+}
+
+.hco-bank {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  color: rgba(255,255,255,0.88);
+  text-transform: uppercase;
+  text-shadow: 0 1px 5px rgba(0,0,0,0.7);
+  font-family: 'DM Sans', sans-serif;
+}
+
+.hco-badge {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: rgba(255,255,255,0.50);
+  border: 1px solid rgba(255,255,255,0.18);
+  padding: 3px 8px;
+  border-radius: 100px;
+  font-family: 'DM Mono', monospace;
+}
+
+/* ── Chip + NFC ─────────────────────────────────────────────────── */
+.hco-chip-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.hco-chip {
+  flex-shrink: 0;
+}
+
+.hco-chip-body {
+  width: 50px;
+  height: 38px;
+  border-radius: 6px;
+  background: linear-gradient(135deg,
+    #7a5500 0%, #c8a020 22%, #edd860 50%, #c8a020 78%, #7a5500 100%
+  );
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: 3px;
+  padding: 4px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.55), inset 0 1px rgba(255,255,255,0.38);
+  position: relative;
+  overflow: hidden;
+}
+
+.hco-chip-body::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(148deg, rgba(255,255,255,0.28) 0%, transparent 50%);
+  border-radius: inherit;
+}
+
+.hco-cp {
+  border-radius: 2px;
+  background: rgba(0,0,0,0.28);
+  border: 0.5px solid rgba(0,0,0,0.18);
+  box-shadow: inset 0 1px rgba(255,255,255,0.06);
+}
+
+/* NFC contactless arcs */
+.hco-nfc {
+  position: relative;
+  width: 28px;
+  height: 24px;
+}
+
+.hco-nfc span {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.38);
+  clip-path: polygon(50% 0%,100% 50%,50% 100%,50% 50%);
+}
+
+.hco-nfc span:nth-child(1) { width:  9px; height:  9px; left:15px; top: 7px; }
+.hco-nfc span:nth-child(2) { width: 16px; height: 16px; left:12px; top: 4px; }
+.hco-nfc span:nth-child(3) { width: 23px; height: 23px; left: 5px; top: 1px; }
+
+/* ── Embossed card number ───────────────────────────────────────── */
+.hco-num {
+  display: flex;
+  gap: 14px;
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  position: relative;
+  z-index: 1;
+  text-shadow:
+    0  1px 0 rgba(255,255,255,0.14),
+    0 -1px 0 rgba(0,0,0,0.70),
+    0  2px 8px rgba(0,0,0,0.55);
+  color: rgba(255,255,255,0.82);
+}
+
+.hco-last4 {
+  text-shadow:
+    0  1px 0 rgba(255,255,255,0.20),
+    0 -1px 0 rgba(0,0,0,0.80),
+    0  2px 10px rgba(0,0,0,0.60);
+}
+
+/* ── Bottom row ─────────────────────────────────────────────────── */
+.hco-bot-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  position: relative;
+  z-index: 1;
+}
+
+.hco-fields {
+  display: flex;
+  gap: 22px;
+}
+
+.hco-lbl {
+  font-size: 7px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.28);
+  margin-bottom: 3px;
+  font-family: 'DM Mono', monospace;
+}
+
+.hco-val {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.82);
+  text-shadow: 0 1px 4px rgba(0,0,0,0.55);
+  white-space: nowrap;
+}
+
+.hco-mono {
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.06em;
+}
+
+/* ── Mastercard logo ────────────────────────────────────────────── */
+.hco-mc { display:flex; align-items:center; }
+.hco-mc-r { width:28px; height:28px; border-radius:50%; background:rgba(210,22,28,0.90); box-shadow:0 2px 8px rgba(0,0,0,0.45); }
+.hco-mc-y { width:28px; height:28px; border-radius:50%; background:rgba(240,152,20,0.88); margin-left:-10px; box-shadow:0 2px 6px rgba(0,0,0,0.35); }

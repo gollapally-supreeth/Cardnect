@@ -1,0 +1,355 @@
+/* ═══════════════════════════════════════════════════════
+   HeroCards — Premium Metal Cards (no glow, no colour)
+═══════════════════════════════════════════════════════ */
+
+/* ── Root ──────────────────────────────────────────── */
+.hc-root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1400px;
+  user-select: none;
+  cursor: default;
+}
+
+/* ── Scene ─────────────────────────────────────────── */
+.hc-scene {
+  position: relative;
+  width: 440px;
+  height: 278px;
+  transform-style: preserve-3d;
+}
+
+/* ═══════════════════════════════════════════════════
+   CARD
+═══════════════════════════════════════════════════ */
+.hc-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 440px;
+  height: 278px;
+  border-radius: 20px;
+  padding: 24px 26px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transform-origin: center center;
+  transition:
+    transform 0.58s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity   0.46s ease,
+    box-shadow 0.3s ease;
+  overflow: hidden;
+  will-change: transform, opacity;
+  /* Physical card edges — pure shadow, no colour halo */
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.09),
+    0 1px 0 1px rgba(255,255,255,0.06),  /* top bright edge */
+    0 -1px 0 0px rgba(0,0,0,0.95),       /* bottom thick edge */
+    0 6px 18px rgba(0,0,0,0.55),
+    0 22px 55px rgba(0,0,0,0.70),
+    0 48px 90px rgba(0,0,0,0.50);
+}
+
+.hc-card--active {
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.13),
+    0 1px 0 1px rgba(255,255,255,0.09),
+    0 -1px 0 0px rgba(0,0,0,0.95),
+    0 8px 24px rgba(0,0,0,0.60),
+    0 28px 70px rgba(0,0,0,0.80),
+    0 56px 110px rgba(0,0,0,0.60);
+}
+
+.hc-card--exit {
+  transition:
+    transform 0.42s cubic-bezier(0.4, 0, 0.8, 0.6),
+    opacity   0.34s ease;
+  pointer-events: none;
+}
+
+/* ── Grain noise texture (printed metal grain) ────── */
+.hc-grain {
+  position: absolute;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.045;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* ── Top gloss (upper-half specular) ───────────────── */
+.hc-gloss {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 52%;
+  background: linear-gradient(
+    175deg,
+    rgba(255,255,255,0.09) 0%,
+    rgba(255,255,255,0.035) 35%,
+    transparent 100%
+  );
+  pointer-events: none;
+  border-radius: 20px 20px 0 0;
+}
+
+/* ── Brushed-metal streak (animates left↔right) ─────── */
+.hc-metal {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  mix-blend-mode: screen;
+  animation: metalDrift 3.8s ease-in-out infinite alternate;
+}
+
+@keyframes metalDrift {
+  0%   { opacity: 0.55; transform: translateX(-10%) scaleX(1.0); }
+  100% { opacity: 1.00; transform: translateX(10%)  scaleX(1.0); }
+}
+
+/* ── Card type watermark ────────────────────────────── */
+.hc-card-type {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  font-family: 'DM Mono', monospace;
+  pointer-events: none;
+}
+
+/* ── Bottom edge stripe ─────────────────────────────── */
+.hc-edge {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  border-radius: 0 0 20px 20px;
+  opacity: 0.5;
+}
+
+/* ═══════════════════════════════════════════════════
+   ROWS
+═══════════════════════════════════════════════════ */
+.hc-top-row  { display:flex; align-items:flex-start; justify-content:space-between; position:relative; z-index:1; }
+.hc-chip-row { display:flex; align-items:center; gap:18px; position:relative; z-index:1; }
+.hc-bot-row  { display:flex; align-items:flex-end; justify-content:space-between; position:relative; z-index:1; }
+
+/* ── Bank name ────────────────────────────────────── */
+.hc-bank-name {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  font-family: 'DM Sans', sans-serif;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+}
+
+.hc-badge {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  padding: 3px 9px;
+  border-radius: 100px;
+  border: 1px solid;
+  font-family: 'DM Mono', monospace;
+}
+
+/* ═══════════════════════════════════════════════════
+   EMV CHIP
+═══════════════════════════════════════════════════ */
+.hc-chip {
+  flex-shrink: 0;
+  width: 54px;
+  height: 42px;
+  border-radius: 6px;
+  background: linear-gradient(
+    135deg,
+    var(--cd) 0%,
+    var(--cb) 20%,
+    var(--cm) 42%,
+    var(--cb) 66%,
+    var(--cd) 100%
+  );
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 2px 10px rgba(0,0,0,0.60),
+    inset 0 1px 1px rgba(255,255,255,0.36),
+    inset 0 -1px 1px rgba(0,0,0,0.28);
+}
+
+.hc-chip::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(150deg, rgba(255,255,255,0.24) 0%, transparent 52%);
+  border-radius: inherit;
+}
+
+.hc-chip-grid {
+  position: absolute;
+  inset: 4px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: 3px;
+  z-index: 2;
+}
+
+.cp {
+  border-radius: 2px;
+  background: linear-gradient(135deg, rgba(0,0,0,0.38) 0%, rgba(0,0,0,0.18) 100%);
+  border: 0.5px solid rgba(0,0,0,0.22);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.08);
+}
+
+.hc-chip-notch {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 3px;
+  height: 68%;
+  background: linear-gradient(180deg, var(--cd), var(--cm));
+  border-radius: 2px;
+  z-index: 3;
+}
+
+/* ── NFC arcs ──────────────────────────────────────── */
+.hc-nfc {
+  position: relative;
+  width: 32px;
+  height: 26px;
+}
+
+.hc-nfc-a {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.8px solid rgba(255,255,255,0.38);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 50% 50%);
+}
+.hc-nfc-a:nth-child(1) { width: 10px; height: 10px; left: 15px; top: 8px; }
+.hc-nfc-a:nth-child(2) { width: 17px; height: 17px; left: 11px; top: 5px; }
+.hc-nfc-a:nth-child(3) { width: 24px; height: 24px; left: 7px;  top: 1px; }
+
+/* ═══════════════════════════════════════════════════
+   CARD NUMBER — embossed effect
+═══════════════════════════════════════════════════ */
+.hc-number {
+  display: flex;
+  gap: 16px;
+  font-family: 'DM Mono', 'Courier New', monospace;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  position: relative;
+  z-index: 1;
+  text-shadow:
+    0  1px 0 rgba(255,255,255,0.12),
+    0 -1px 0 rgba(0,0,0,0.65),
+    0  2px 6px rgba(0,0,0,0.55);
+}
+
+.hc-last4 {
+  text-shadow:
+    0  1px 0 rgba(255,255,255,0.18),
+    0 -1px 0 rgba(0,0,0,0.75),
+    0  2px 8px rgba(0,0,0,0.60);
+}
+
+/* ═══════════════════════════════════════════════════
+   BOTTOM SECTION
+═══════════════════════════════════════════════════ */
+.hc-fields {
+  display: flex;
+  gap: 24px;
+  align-items: flex-end;
+}
+
+.hc-lbl {
+  font-size: 7px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.30);
+  margin-bottom: 3px;
+  font-family: 'DM Mono', monospace;
+}
+
+.hc-val {
+  font-size: 13px;
+  font-weight: 600;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  white-space: nowrap;
+}
+
+.hc-mono { font-family: 'DM Mono', monospace; letter-spacing: 0.07em; }
+
+/* ── Network logos ─────────────────────────────────── */
+.hc-mc { display: flex; align-items: center; }
+.hc-mc-r { width: 30px; height: 30px; border-radius: 50%; background: rgba(200, 30, 30, 0.82); box-shadow: 0 2px 8px rgba(0,0,0,0.45); }
+.hc-mc-y { width: 30px; height: 30px; border-radius: 50%; background: rgba(220,148, 20, 0.82); margin-left: -11px; box-shadow: 0 2px 8px rgba(0,0,0,0.35); }
+
+.hc-visa {
+  font-family: 'Times New Roman', 'Georgia', serif;
+  font-size: 26px;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -1px;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+}
+
+.hc-rupay {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+}
+
+/* ═══════════════════════════════════════════════════
+   FLOATING BUBBLES
+═══════════════════════════════════════════════════ */
+.hc-bub {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(6, 6, 8, 0.88);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 14px;
+  padding: 10px 16px;
+  backdrop-filter: blur(22px);
+  pointer-events: none;
+  animation: floatBub 4.6s ease-in-out infinite;
+}
+
+.hc-bub--tl { top: 5%;  left: 0%;  animation-delay: 0s; }
+.hc-bub--br { bottom: 8%; right: 1%; animation-delay: 2.3s; }
+
+.hc-bub-ico { font-size: 17px; line-height: 1; }
+.hc-bub-v   { font-size: 15px; font-weight: 700; color: #fff; line-height: 1; }
+.hc-bub-l   { font-size: 10px; color: rgba(255,255,255,0.36); margin-top: 2px; }
+
+@keyframes floatBub {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+
+/* ── Responsive ─────────────────────────────────────── */
+@media (max-width: 600px) {
+  .hc-scene  { width: 300px; height: 190px; }
+  .hc-card   { width: 300px; height: 190px; border-radius: 16px; padding: 16px 18px 14px; }
+  .hc-number { font-size: 14px; gap: 10px; }
+  .hc-bank-name { font-size: 9px; }
+  .hc-bub    { display: none; }
+}

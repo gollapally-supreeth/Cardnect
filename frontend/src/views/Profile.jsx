@@ -1,107 +1,131 @@
-import { CheckCircle, AlertCircle, Phone, Mail, Shield, User } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 import { useAuthContext } from '../context/AuthContext'
+import { CheckCircle, AlertCircle, Phone, Mail, Shield, CreditCard, Clock, Award } from 'lucide-react'
+import { fetchMyListings } from '../api/services'
 import './Profile.css'
 
 export default function Profile() {
   const { user } = useAuthContext()
-
-  const phoneVerified = !!user?.phoneVerified
-  const emailVerified = !!user?.emailVerified
+  const phoneVerified   = !!user?.phoneVerified
+  const emailVerified   = !!user?.emailVerified
   const isFullyVerified = phoneVerified && emailVerified
 
+  const { data: listings = [] } = useQuery({ queryKey: ['my-listings'], queryFn: fetchMyListings })
+
+  const initials = (user?.name || user?.email || 'U')?.[0]?.toUpperCase() || 'U'
+  const memberSince = user?.createdAt
+    ? new Date(user.createdAt).toLocaleDateString('en-IN', { month:'long', year:'numeric' })
+    : '—'
+
   return (
-    <div className="profile-page">
-      <div>
-        <h1 className="page-title">My Profile</h1>
-        <p className="page-subtitle">Manage your account and verification status</p>
+    <div className="prof-page">
+      {/* Hero section */}
+      <div className="prof-hero">
+        <div className="prof-avatar-wrap">
+          <div className="prof-avatar">{initials}</div>
+          <div className={`prof-avatar-ring ${isFullyVerified ? 'ok' : 'warn'}`} />
+        </div>
+
+        <div className="prof-hero-info">
+          <h1 className="prof-name">{user?.name || 'User'}</h1>
+          <p className="prof-email">{user?.email}</p>
+          <div className={`prof-verif-badge ${isFullyVerified ? 'ok' : 'warn'}`}>
+            {isFullyVerified
+              ? <><CheckCircle size={13} /> Fully Verified</>
+              : <><AlertCircle size={13} /> Verification Incomplete</>}
+          </div>
+        </div>
+
+        {/* Quick stats */}
+        <div className="prof-quick-stats">
+          <div className="prof-qs-item">
+            <CreditCard size={16} />
+            <span className="prof-qs-num">{listings.length}</span>
+            <span className="prof-qs-lbl">Listings</span>
+          </div>
+          <div className="prof-qs-sep" />
+          <div className="prof-qs-item">
+            <Award size={16} />
+            <span className="prof-qs-num">{listings.filter(l=>l.active).length}</span>
+            <span className="prof-qs-lbl">Active</span>
+          </div>
+          <div className="prof-qs-sep" />
+          <div className="prof-qs-item">
+            <Clock size={16} />
+            <span className="prof-qs-num">—</span>
+            <span className="prof-qs-lbl">Requests</span>
+          </div>
+        </div>
       </div>
 
-      {/* Verification Summary Card */}
-      <div className={`verif-banner ${isFullyVerified ? 'verified' : 'unverified'}`}>
-        <div className="verif-banner-icon">
-          {isFullyVerified ? <Shield size={28} /> : <AlertCircle size={28} />}
-        </div>
-        <div>
-          <h3>{isFullyVerified ? 'Account Fully Verified' : 'Verification Incomplete'}</h3>
-          <p>{isFullyVerified
-            ? 'You have full access to all Cardnect features, including sending card requests.'
-            : 'Complete phone and email verification to unlock all features.'
-          }</p>
-        </div>
-      </div>
-
-      {/* Profile Info */}
-      <div className="profile-grid">
-        <div className="card">
-          <div className="card-title"><User size={16} />Personal Info</div>
-          <div className="divider" />
-          <div className="profile-info-row">
-            <span className="profile-info-label">Display Name</span>
-            <span className="profile-info-value">{user?.name || '—'}</span>
-          </div>
-          <div className="profile-info-row">
-            <span className="profile-info-label">User ID</span>
-            <span className="profile-info-value monospace" style={{ fontSize: 11 }}>{user?.id}</span>
-          </div>
-          <div className="profile-info-row">
-            <span className="profile-info-label">Member Since</span>
-            <span className="profile-info-value">{user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : '—'}</span>
-          </div>
-        </div>
-
-        <div className="card">
-          <div className="card-title"><Shield size={16} />Verification Status</div>
-          <div className="divider" />
-
-          {/* Phone */}
-          <div className="verif-item">
-            <div className="verif-item-left">
-              <div className={`verif-icon ${phoneVerified ? 'ok' : 'warn'}`}>
-                <Phone size={16} />
-              </div>
-              <div>
-                <p className="verif-item-label">Phone Number</p>
-                <p className="verif-item-value">{user?.phone || 'Not added'}</p>
-              </div>
+      <div className="prof-grid">
+        {/* Personal info */}
+        <div className="prof-section">
+          <div className="prof-section-title"><Shield size={15} /> Personal Info</div>
+          <div className="prof-rows">
+            <div className="prof-row">
+              <span className="prof-row-lbl">Display Name</span>
+              <span className="prof-row-val">{user?.name || '—'}</span>
             </div>
-            {phoneVerified
-              ? <span className="badge badge-success"><CheckCircle size={12} /> Verified</span>
-              : <span className="badge badge-warning"><AlertCircle size={12} /> Not verified</span>
-            }
-          </div>
-
-          {/* Email */}
-          <div className="verif-item">
-            <div className="verif-item-left">
-              <div className={`verif-icon ${emailVerified ? 'ok' : 'warn'}`}>
-                <Mail size={16} />
-              </div>
-              <div>
-                <p className="verif-item-label">Email Address</p>
-                <p className="verif-item-value">{user?.email || 'Not added'}</p>
-              </div>
+            <div className="prof-row">
+              <span className="prof-row-lbl">User ID</span>
+              <span className="prof-row-val prof-mono" style={{ fontSize:11 }}>{user?.id || '—'}</span>
             </div>
-            {emailVerified
-              ? <span className="badge badge-success"><CheckCircle size={12} /> Verified</span>
-              : <span className="badge badge-warning"><AlertCircle size={12} /> Not verified</span>
-            }
+            <div className="prof-row">
+              <span className="prof-row-lbl">Member Since</span>
+              <span className="prof-row-val">{memberSince}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Verification */}
+        <div className="prof-section">
+          <div className="prof-section-title"><Shield size={15} /> Verification Status</div>
+          <div className="prof-rows">
+            {/* Phone */}
+            <div className="prof-verif-row">
+              <div className={`prof-verif-icon ${phoneVerified ? 'ok' : 'warn'}`}>
+                <Phone size={15} />
+              </div>
+              <div className="prof-verif-body">
+                <p className="prof-verif-label">Phone Number</p>
+                <p className="prof-verif-val">{user?.phone || 'Not added'}</p>
+              </div>
+              <span className={`prof-badge ${phoneVerified ? 'ok' : 'warn'}`}>
+                {phoneVerified ? <><CheckCircle size={11} /> Verified</> : <><AlertCircle size={11} /> Unverified</>}
+              </span>
+            </div>
+
+            {/* Email */}
+            <div className="prof-verif-row">
+              <div className={`prof-verif-icon ${emailVerified ? 'ok' : 'warn'}`}>
+                <Mail size={15} />
+              </div>
+              <div className="prof-verif-body">
+                <p className="prof-verif-label">Email Address</p>
+                <p className="prof-verif-val">{user?.email || 'Not added'}</p>
+              </div>
+              <span className={`prof-badge ${emailVerified ? 'ok' : 'warn'}`}>
+                {emailVerified ? <><CheckCircle size={11} /> Verified</> : <><AlertCircle size={11} /> Unverified</>}
+              </span>
+            </div>
           </div>
 
           {!isFullyVerified && (
-            <div className="alert alert-info" style={{ marginTop: 16 }}>
-              Complete phone verification to unlock all platform features.
+            <div className="alert alert-warning" style={{ marginTop:14, fontSize:12 }}>
+              Complete phone and email verification to send and receive card requests.
             </div>
           )}
         </div>
       </div>
 
-      {/* Disclaimer */}
-      <div className="alert alert-warning" style={{ marginTop: 16 }}>
-        <Shield size={18} />
-        <div>
-          <strong>Security Notice:</strong> Cardnect never stores or processes full card numbers, CVV codes, expiry dates, or OTP codes.
-          All card information on this platform is masked. Transactions occur outside the platform and Cardnect is not liable for them.
-        </div>
+      {/* Security notice */}
+      <div className="prof-security-note">
+        <Shield size={15} />
+        <p>
+          <strong>Security:</strong> Cardnect never stores full card numbers, CVV codes, expiry dates, or OTP codes.
+          All card data on this platform is masked. Transactions occur outside the platform.
+        </p>
       </div>
     </div>
   )

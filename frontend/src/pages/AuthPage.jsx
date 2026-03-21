@@ -85,7 +85,10 @@ export default function AuthPage() {
         </button>
 
         <div className="auth-logo">
-          <div className="auth-logo-icon"><CreditCard size={20} /></div>
+          <div className="auth-logo-icon">
+            <span className="notification-dot" style={{ position: 'absolute', top: -3, right: -3 }}></span>
+            <CreditCard size={20} />
+          </div>
           <span>Cardnect</span>
         </div>
 

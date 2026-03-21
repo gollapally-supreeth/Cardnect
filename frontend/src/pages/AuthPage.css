@@ -23,7 +23,7 @@
   height: 420px;
   top: -120px;
   left: -170px;
-  background: var(--color-accent-2);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
 }
 
 .auth-bg-blob-2 {
@@ -31,7 +31,7 @@
   height: 360px;
   bottom: -140px;
   right: -140px;
-  background: var(--color-accent);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
 }
 
 .auth-container {
@@ -61,20 +61,21 @@
   width: 42px;
   height: 42px;
   border-radius: 10px;
-  background: #111113;
-  border: 1px solid var(--color-border);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--color-text);
+  position: relative;
 }
 
 .auth-tabs {
   display: flex;
-  border: 1px solid var(--color-border);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 10px;
   padding: 4px;
-  background: #111113;
+  background: rgba(10, 10, 10, 0.4);
 }
 
 .auth-tab {
@@ -87,16 +88,17 @@
 
 .auth-tab.active {
   background: var(--color-primary);
-  color: #0a0a0b;
+  color: #000;
 }
 
 .auth-clerk-wrapper {
   width: 100%;
-  background: #18181c;
-  border: 1px solid var(--color-border);
+  background: rgba(10, 10, 10, 0.3);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
   padding: 34px;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
 .auth-disclaimer {

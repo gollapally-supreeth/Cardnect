@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useAuthContext } from '../context/AuthContext'
 import { CreditCard, Shield, Zap, Users, ArrowRight, Star, CheckCircle, Bell, ChevronRight } from 'lucide-react'
+import HeroCarousel from '../components/HeroCarousel'
 import './LandingPage.css'
 
 const DEMO_CARDS = [
@@ -56,7 +57,10 @@ export default function LandingPage() {
       <nav className="landing-nav">
         <div className="container landing-nav-inner">
           <div className="landing-logo">
-            <div className="landing-logo-icon"><CreditCard size={18} /></div>
+            <div className="landing-logo-icon">
+              <span className="notification-dot" style={{ position: 'absolute', top: -2, right: -2 }}></span>
+              <CreditCard size={18} />
+            </div>
             <span>Cardnect</span>
           </div>
           <div className="landing-nav-links">
@@ -81,51 +85,63 @@ export default function LandingPage() {
 
       {/* HERO */}
       <section className="hero">
-        <div className="hero-glow hero-glow-1" />
-        <div className="hero-glow hero-glow-2" />
+        {/* Background grid */}
+        <div className="hero-grid-bg" />
+        {/* Radial glow */}
+        <div className="hero-radial" />
+
         <div className="container hero-content">
+          {/* ── LEFT: Copy ── */}
           <div className="hero-text">
-            <div className="hero-label label-mono">// email for developers</div>
-            <h1 className="hero-title">
-              Unlock <em>any</em><br />
-              discount without friction
-            </h1>
-            <p className="hero-sub">
-              The best way to reach humans instead of spam folders. Deliver transactional offers at scale with verified users and zero card exposure.
-            </p>
-            <div className="hero-actions">
-              <button className="btn btn-primary btn-lg" onClick={handleCTA}>
-                Get started →
-              </button>
-              <a href="#how-it-works" className="btn btn-secondary btn-lg">Documentation</a>
+            {/* Trust badge */}
+            <div className="hero-trust-badge">
+              <span className="hero-trust-dot" />
+              <span>Trusted by 2,000+ verified users</span>
             </div>
+
+            <h1 className="hero-title">
+              Connect <em>Card</em><br />
+              Rewards without<br />
+              <span className="hero-title-line3">friction</span>
+            </h1>
+
+            <p className="hero-sub">
+              The most direct way to deliver transactional rewards that users want. Tap 
+              into curated card perks with verified users and zero card exposure at scale.
+            </p>
+
+            {/* CTA row */}
+            <div className="hero-actions">
+              <button className="btn-hero-primary" onClick={handleCTA}>
+                Get started <ArrowRight size={16} />
+              </button>
+              <a href="#how-it-works" className="btn-hero-ghost">
+                Documentation →
+              </a>
+            </div>
+
+            {/* Stats strip */}
             <div className="hero-stats">
-              <div className="hero-stat"><span className="hero-stat-num">500+</span><span className="hero-stat-label">Active Card Listings</span></div>
+              <div className="hero-stat">
+                <span className="hero-stat-num">500+</span>
+                <span className="hero-stat-label">Active Card Listings</span>
+              </div>
               <div className="hero-stat-divider" />
-              <div className="hero-stat"><span className="hero-stat-num">2,000+</span><span className="hero-stat-label">Verified Users</span></div>
+              <div className="hero-stat">
+                <span className="hero-stat-num">2,000+</span>
+                <span className="hero-stat-label">Verified Users</span>
+              </div>
               <div className="hero-stat-divider" />
-              <div className="hero-stat"><span className="hero-stat-num">₹50L+</span><span className="hero-stat-label">Discounts Shared</span></div>
+              <div className="hero-stat">
+                <span className="hero-stat-num">₹50L+</span>
+                <span className="hero-stat-label">Discounts Shared</span>
+              </div>
             </div>
           </div>
 
-          <div className="hero-visual">
-            <div className="cube-wrapper">
-              <div className="cube">
-                <span className="cube-face cube-front" />
-                <span className="cube-face cube-back" />
-                <span className="cube-face cube-right" />
-                <span className="cube-face cube-left" />
-                <span className="cube-face cube-top" />
-                <span className="cube-face cube-bottom" />
-              </div>
-              <div className="cube-glow" />
-            </div>
-            <div className="code-block">
-              <div className="label-mono" style={{ color: 'var(--color-accent)' }}>// integrate</div>
-              <div><span className="code-muted">import</span> {'{'} <span className="code-purple">Resend</span> {'}'} <span className="code-muted">from</span> <span className="code-accent">'resend'</span></div>
-              <div><span className="code-muted">const</span> resend = <span className="code-purple">new</span> Resend(process.env.RESEND_KEY)</div>
-              <div>await resend.emails.send({'{'} to: user.email, subject: 'OTP', html: code {'}'})</div>
-            </div>
+          {/* ── RIGHT: 3-D Rotating Card Ring ── */}
+          <div className="hero-visual hero-visual--carousel">
+            <HeroCarousel />
           </div>
         </div>
       </section>
@@ -149,21 +165,28 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
+      {/* ADVANCED PROJECT FLOW */}
       <section id="how-it-works" className="section-steps">
         <div className="container">
           <div className="section-header">
-            <div className="label-mono" style={{ color: 'var(--color-accent)', marginBottom: 10 }}>// integrate</div>
-            <h2>How Cardnect Works</h2>
-            <p>Four simple steps to unlock any card discount</p>
+            <div className="label-mono" style={{ color: 'var(--color-accent)', marginBottom: 10 }}>// flow</div>
+            <h2>Frictionless Connection Flow</h2>
+            <p>A completely restructured approach to sharing bank discounts securely and instantly.</p>
           </div>
-          <div className="steps-grid">
+          
+          <div className="project-flow-container">
+            <div className="flow-line" />
             {STEPS.map((step, i) => (
-              <div key={i} className="step-card">
-                <div className="step-number">{String(i + 1).padStart(2, '0')}</div>
-                <div className="step-icon">{step.icon}</div>
-                <h3>{step.title}</h3>
-                <p>{step.desc}</p>
+              <div key={i} className={`flow-node ${i % 2 === 0 ? 'flow-left' : 'flow-right'}`}>
+                <div className="flow-content card-glass animate-fade-in" style={{ animationDelay: `${i * 0.15}s` }}>
+                  <div className="flow-number">0{i + 1}</div>
+                  <div className="flow-icon-wrapper">{step.icon}</div>
+                  <h3>{step.title}</h3>
+                  <p>{step.desc}</p>
+                </div>
+                <div className="flow-point">
+                  <div className="flow-point-inner" />
+                </div>
               </div>
             ))}
           </div>
@@ -227,7 +250,9 @@ export default function LandingPage() {
       <footer className="landing-footer">
         <div className="container landing-footer-inner">
           <div className="landing-logo">
-            <div className="landing-logo-icon"><CreditCard size={16} /></div>
+            <div className="landing-logo-icon" style={{ position: 'relative' }}>
+              <CreditCard size={16} />
+            </div>
             <span>Cardnect</span>
           </div>
           <p className="footer-text">© 2026 Cardnect. Connecting card holders and deal seekers.</p>
