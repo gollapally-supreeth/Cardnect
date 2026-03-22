@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Search, SlidersHorizontal, CreditCard, Star, ArrowRight, Loader, X, Wifi, Shield } from 'lucide-react'
+import { Search, SlidersHorizontal, CreditCard, Star, ArrowRight, Loader, X, Wifi, Shield, MessageCircle } from 'lucide-react'
 import { fetchListings, createRequest } from '../api/services'
 import { useAuthContext } from '../context/AuthContext'
+import VerifyPhoneModal from '../components/VerifyPhoneModal'
+import PremiumCard from '../components/PremiumCard'
 import './BrowseOffers.css'
 
 const NETWORKS = ['All', 'Visa', 'Mastercard', 'RuPay', 'Amex']
@@ -26,13 +28,21 @@ function NetworkBadge({ name }) {
 }
 
 /* ── Request Modal ── */
-function RequestModal({ listing, onClose, isVerified }) {
+function RequestModal({ listing, onClose, isVerified, user, onVerifyClick }) {
   const qc = useQueryClient()
   const [offerDetails, setOfferDetails] = useState('')
+  const [isSuccess, setIsSuccess] = useState(false)
   const mutation = useMutation({
     mutationFn: () => createRequest({ listingId: listing.id, offerDetails }),
-    onSuccess: () => { qc.invalidateQueries(['my-requests']); onClose() },
+    onSuccess: () => { 
+      qc.invalidateQueries(['my-requests']); 
+      setIsSuccess(true);
+    },
   })
+
+  // Check which verification is missing
+  const needsPhone = !user?.phoneVerified;
+  const needsEmail = !user?.emailVerified;
 
   if (!isVerified) return (
     <div className="modal-overlay" onClick={onClose}>
@@ -41,31 +51,59 @@ function RequestModal({ listing, onClose, isVerified }) {
           <h3 className="modal-title">Verification Required</h3>
           <button className="modal-close btn" onClick={onClose}><X size={16} /></button>
         </div>
-        <div className="alert alert-warning">
-          Verify your phone and email before sending card requests. Go to <strong>Profile → Verification</strong>.
+        <div className="alert alert-warning" style={{ margin: '16px 0' }}>
+          {needsEmail && !needsPhone ? 'Please verify your email address to request cards.' : ''}
+          {needsPhone && !needsEmail ? 'Please verify your phone number via WhatsApp to request cards.' : ''}
+          {needsEmail && needsPhone ? 'Please verify your email and phone number to request cards.' : ''}
         </div>
-        <button className="btn btn-primary" style={{ marginTop: 16, width: '100%' }} onClick={onClose}>Got it</button>
+        
+        {needsPhone ? (
+          <button className="vpm-btn-gold" style={{ width: '100%', marginBottom: 12 }} onClick={onVerifyClick}>
+            Verify Phone via WhatsApp
+          </button>
+        ) : null}
+
+        <button className="btn btn-secondary" style={{ width: '100%' }} onClick={onClose}>Close</button>
       </div>
     </div>
   )
+
+  if (isSuccess) return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal bo-modal vpm-success animate-fade-in" onClick={e => e.stopPropagation()} style={{ textAlign: 'center', padding: '40px 24px' }}>
+        <div className="vpm-success-icon" style={{ marginBottom: 24, display: 'flex', justifyContent: 'center' }}>
+          <CheckCircle size={56} color="#c9a84c" />
+        </div>
+        <h3 className="modal-title" style={{ fontSize: 24, marginBottom: 12 }}>Request sent!</h3>
+        <p className="vpm-subtitle" style={{ fontSize: 16 }}>The card holder will contact you on WhatsApp if they accept.</p>
+        
+        <button className="vpm-btn-gold mt-6" style={{ width: '100%', marginTop: 24 }} onClick={onClose}>
+          Got it
+        </button>
+      </div>
+    </div>
+  )
+
+  const requesterName = user?.name || 'A verified user';
+  const commissionStr = listing.commissionPercentage + '%';
 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal bo-modal" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
-          <h3 className="modal-title">Request Card Access</h3>
+          <h3 className="modal-title">Send card request?</h3>
           <button className="modal-close btn" onClick={onClose}><X size={16} /></button>
         </div>
 
         {/* Mini card preview */}
-        <div className="req-card-preview">
+        <div className="req-card-preview" style={{ marginBottom: 16 }}>
           <div className="req-card-bank">{listing.bankName}</div>
           <div className="req-card-meta">{listing.cardType} · {listing.cardNetwork}</div>
           <div className="req-card-masked">XXXX XXXX XXXX {listing.maskedNumber?.slice(-4)}</div>
           <div className="req-card-commission">{listing.commissionPercentage}% commission</div>
         </div>
 
-        <div className="form-group" style={{ marginTop: 16 }}>
+        <div className="form-group" style={{ marginTop: 16, marginBottom: 20 }}>
           <label className="form-label">What offer do you want to use? *</label>
           <textarea
             className="form-textarea"
@@ -76,21 +114,37 @@ function RequestModal({ listing, onClose, isVerified }) {
           />
         </div>
 
-        <div className="alert alert-info" style={{ marginTop: 12, fontSize: 12 }}>
-          The card holder will contact you via WhatsApp using your verified phone number.
+        <div className="vpm-wa-preview" style={{ marginBottom: 24, padding: 12 }}>
+          <label className="form-label" style={{ fontSize: 12, marginBottom: 8, color: '#8a8a9a' }}>Message Preview:</label>
+          <div className="vpm-wa-bubble" style={{ fontSize: 13, lineHeight: '1.4' }}>
+            <p>🪪 *New Card Request — Cardnect*</p>
+            <br/>
+            <p>Hi {listing.holderName || 'Card Holder'}! Someone wants to use your card.</p>
+            <br/>
+            <p>💳 *Card:* {listing.cardType} {listing.cardNetwork} (••••{listing.maskedNumber?.slice(-4)})</p>
+            <p>🏦 *Bank:* {listing.bankName}</p>
+            <p>💰 *Commission:* {commissionStr}</p>
+            <br/>
+            <p>👤 *Requester:* {requesterName}</p>
+            <br/>
+            <p>Reply *ACCEPT_...* to accept</p>
+            <p>Reply *DECLINE_...* to decline</p>
+            <br/>
+            <p>You have 24 hours to respond.<br/>— Team Cardnect</p>
+          </div>
         </div>
 
-        {mutation.error && <div className="alert alert-danger" style={{ marginTop: 10 }}>{mutation.error.message}</div>}
+        {mutation.error && <div className="alert alert-danger" style={{ marginTop: 10, marginBottom: 16 }}>{mutation.error.message}</div>}
 
         <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
-          <button className="btn btn-secondary" style={{ flex: 1 }} onClick={onClose}>Cancel</button>
+          <button className="btn btn-secondary" style={{ flex: 1, border: 'none', background: 'rgba(255,255,255,0.05)' }} onClick={onClose}>Cancel</button>
           <button
-            className="btn btn-primary"
-            style={{ flex: 2 }}
+            className="vpm-btn-gold"
+            style={{ flex: 2, padding: '12px' }}
             disabled={!offerDetails.trim() || mutation.isPending}
             onClick={() => mutation.mutate()}
           >
-            {mutation.isPending ? <><Loader size={15} className="spin" /> Sending...</> : 'Send Request →'}
+            {mutation.isPending ? <><Loader size={15} className="spin" /> Sending...</> : 'Send Request on WhatsApp →'}
           </button>
         </div>
       </div>
@@ -98,55 +152,24 @@ function RequestModal({ listing, onClose, isVerified }) {
   )
 }
 
-/* ── Premium listing card ── */
+/* ── Premium listing card wrapper ── */
 function ListingCard({ listing, onRequest, index }) {
   return (
     <div
       className="lc-wrap"
-      style={{ animationDelay: `${index * 60}ms` }}
+      style={{ animationDelay: `${index * 60}ms`, padding: 16, display: 'flex', flexDirection: 'column' }}
     >
-      {/* Visual credit card */}
-      <div className="lc-card">
-        {/* Shine overlay */}
-        <div className="lc-shine" />
-
-        {/* Top row */}
-        <div className="lc-top">
-          <div className="lc-bank">{listing.bankName}</div>
-          <div className="lc-rating">
-            <Star size={12} fill="currentColor" />
-            <span>{listing.holderRating?.toFixed(1) || 'New'}</span>
-          </div>
-        </div>
-
-        {/* Chip + NFC */}
-        <div className="lc-chip-row">
-          <div className="lc-chip">
-            <div className="lc-chip-grid">
-              {[...Array(6)].map((_, i) => <span key={i} />)}
-            </div>
-          </div>
-          <Wifi size={18} className="lc-nfc" />
-        </div>
-
-        {/* Masked number */}
-        <div className="lc-number">
-          <span>••••</span><span>••••</span><span>••••</span>
-          <span className="lc-last4">{listing.maskedNumber?.slice(-4) || '••••'}</span>
-        </div>
-
-        {/* Bottom row */}
-        <div className="lc-bottom">
-          <div>
-            <div className="lc-meta-label">CARD TYPE</div>
-            <div className="lc-meta-val">{listing.cardType}</div>
-          </div>
-          <NetworkBadge name={listing.cardNetwork} />
-        </div>
-      </div>
+      <PremiumCard 
+        bankName={listing.bankName}
+        cardName={listing.cardName}
+        cardNetwork={listing.cardNetwork}
+        cardType={listing.cardType}
+        maskedNumber={`•••• •••• •••• ${listing.maskedNumber?.slice(-4) || 'XXXX'}`}
+        holderName={listing.holderName}
+      />
 
       {/* Info + CTA below card */}
-      <div className="lc-info">
+      <div className="lc-info" style={{ marginTop: 16 }}>
         <div className="lc-commission">
           <span className="lc-commission-pct">{listing.commissionPercentage}%</span>
           <span className="lc-commission-label">commission</span>
@@ -170,6 +193,7 @@ export default function BrowseOffers() {
   const [network, setNetwork] = useState('All')
   const [type,    setType]    = useState('All')
   const [selectedListing, setSelectedListing] = useState(null)
+  const [showVerifyModal, setShowVerifyModal] = useState(false)
 
   const isVerified = !!(user?.phoneVerified && user?.emailVerified)
 
@@ -256,9 +280,25 @@ export default function BrowseOffers() {
         <RequestModal
           listing={selectedListing}
           isVerified={isVerified}
+          user={user}
           onClose={() => setSelectedListing(null)}
+          onVerifyClick={() => {
+            setSelectedListing(null);
+            setShowVerifyModal(true);
+          }}
         />
       )}
+
+      {/* WhatsApp verification modal */}
+      <VerifyPhoneModal 
+        isOpen={showVerifyModal} 
+        onClose={() => setShowVerifyModal(false)}
+        userPhone={user?.phone || ''}
+        onVerified={() => {
+          // You could optionally refetch the user context here
+          // For now, rely on standard AuthContext re-fetching or optimistic UI
+        }}
+      />
     </div>
   )
 }

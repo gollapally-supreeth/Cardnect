@@ -1,9 +1,15 @@
 import api from './axiosClient'
 
-// ---- Auth ----
-export const sendOtp = (email) => api.post('/auth/send-otp', { email }).then(r => r.data)
-export const verifyOtp = (payload) => api.post('/auth/verify-otp', payload).then(r => r.data)
-export const fetchAuthMe = () => api.get('/auth/me').then(r => r.data)
+// ---- Auth & Verification ----
+export const sendOtp           = (email)   => api.post('/auth/send-otp',  { email }).then(r => r.data)
+export const verifyOtp         = (payload) => api.post('/auth/verify-otp', payload).then(r => r.data)
+export const registerUser      = (payload) => api.post('/auth/register',   payload).then(r => r.data)
+export const loginWithPassword = (payload) => api.post('/auth/login',      payload).then(r => r.data)
+export const fetchAuthMe       = ()        => api.get('/auth/me').then(r => r.data)
+
+export const sendWhatsAppOtp   = (phone)   => api.post('/user/whatsapp/send-otp', { phone }).then(r => r.data)
+export const verifyWhatsAppOtp = (payload) => api.post('/user/whatsapp/verify-otp', payload).then(r => r.data)
+
 
 // ---- Card Listings ----
 export const fetchListings = (params) => api.get('/listings', { params }).then(r => r.data)

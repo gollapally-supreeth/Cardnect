@@ -12,6 +12,9 @@ public class CreateListingRequest {
     @Size(max = 100, message = "Bank name must be under 100 characters")
     private String bankName;
 
+    @Size(max = 100, message = "Card name must be under 100 characters")
+    private String cardName;
+
     @NotBlank(message = "Card network is required")
     private String cardNetwork;
 

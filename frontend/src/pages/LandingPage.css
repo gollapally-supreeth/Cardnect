@@ -283,67 +283,28 @@
   height: 100%;
 }
 
-/* Carousel variant — Canvas must fill the container */
-.hero-visual--carousel {
-  height: 700px;
-  min-height: 700px;
-  overflow: hidden;
+/* Video variant */
+.hero-visual--video {
+  width: 100%;
+  max-width: 600px;
   border-radius: 20px;
-  padding: 0;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 40px rgba(255, 255, 255, 0.05);
+  background: rgba(10, 10, 10, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
 }
 
-.hero-visual--carousel > div {
-  width: 100% !important;
-  height: 700px !important;
-}
-
-.cube-wrapper {
-  width: 280px;
-  height: 280px;
-  position: relative;
-  perspective: 1000px;
-}
-
-.cube {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 160px;
-  height: 160px;
-  transform-style: preserve-3d;
-  transform: translate(-50%, -50%) rotateX(-22deg) rotateY(24deg);
-  animation: cube-spin 12s linear infinite;
-}
-
-.cube-face {
-  position: absolute;
-  width: 160px;
-  height: 160px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  background: rgba(20, 20, 20, 0.4);
-  backdrop-filter: blur(8px);
-  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05);
-}
-
-.cube-front { transform: translateZ(80px); }
-.cube-back { transform: rotateY(180deg) translateZ(80px); }
-.cube-right { transform: rotateY(90deg) translateZ(80px); }
-.cube-left { transform: rotateY(-90deg) translateZ(80px); }
-.cube-top { transform: rotateX(90deg) translateZ(80px); }
-.cube-bottom { transform: rotateX(-90deg) translateZ(80px); }
-
-.cube-glow {
-  position: absolute;
-  inset: 20%;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.15), transparent 66%);
-  filter: blur(40px);
-}
-
-@keyframes cube-spin {
-  0% { transform: translate(-50%, -50%) rotateX(-22deg) rotateY(24deg); }
-  50% { transform: translate(-50%, -50%) rotateX(-22deg) rotateY(204deg); }
-  100% { transform: translate(-50%, -50%) rotateX(-22deg) rotateY(384deg); }
+.hero-video-element {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  opacity: 0.95;
+  border-radius: 18px; /* Slightly less than container to fit nicely */
 }
 
 .section-offers,

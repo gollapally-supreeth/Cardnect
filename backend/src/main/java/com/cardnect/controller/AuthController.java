@@ -1,5 +1,7 @@
 package com.cardnect.controller;
 
+import com.cardnect.model.dto.request.LoginRequest;
+import com.cardnect.model.dto.request.RegisterRequest;
 import com.cardnect.model.dto.request.SendOtpRequest;
 import com.cardnect.model.dto.request.VerifyOtpRequest;
 import com.cardnect.model.dto.response.AuthResponse;
@@ -28,6 +30,18 @@ public class AuthController {
     @PostMapping("/verify-otp")
     public ResponseEntity<AuthResponse> verifyOtp(@Valid @RequestBody VerifyOtpRequest request) {
         return ResponseEntity.ok(authService.verifyOtp(request));
+    }
+
+    /** Sign-up: called after email OTP verify — stores phone + hashed password */
+    @PostMapping("/register")
+    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
+        return ResponseEntity.ok(authService.register(request));
+    }
+
+    /** Password login */
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+        return ResponseEntity.ok(authService.login(request));
     }
 
     @GetMapping("/me")

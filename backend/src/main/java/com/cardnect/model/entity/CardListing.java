@@ -23,10 +23,14 @@ public class CardListing {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
     private User user;
 
     @Column(name = "bank_name", nullable = false, length = 100)
     private String bankName;
+
+    @Column(name = "card_name", length = 100)
+    private String cardName;
 
     @Column(name = "card_network", nullable = false, length = 50)
     private String cardNetwork;

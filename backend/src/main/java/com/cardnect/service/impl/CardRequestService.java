@@ -29,11 +29,12 @@ public class CardRequestService {
     private final CardListingRepository listingRepository;
     private final NotificationRepository notificationRepository;
     private final WebSocketNotificationService wsNotificationService;
+    private final WhatsAppService whatsAppService;
 
     @Transactional
     public CardRequestResponse createRequest(User requester, CreateRequestDto dto) {
         if (!requester.isFullyVerified()) {
-            throw new AccessDeniedException("You must verify your email before sending card requests.");
+            throw new AccessDeniedException("You must verify your phone and email before sending card requests.");
         }
 
         CardListing listing = listingRepository.findById(dto.getListingId())
@@ -52,6 +53,41 @@ public class CardRequestService {
                 .build();
 
         request = requestRepository.save(request);
+
+        String holderName = listing.getUser().getName() != null ? listing.getUser().getName() : "Card Holder";
+        String requesterName = requester.getName() != null ? requester.getName() : "A verified user";
+        String commissionStr = listing.getCommissionPercentage() + "%";
+        String reqId = request.getId().toString();
+
+        String waMessage = String.format("""
+                🪪 *New Card Request — Cardnect*
+                
+                Hi %s! Someone wants to use your card.
+                
+                💳 *Card:* %s (••••%s)
+                🏦 *Bank:* %s
+                💰 *Commission:* %s
+                
+                👤 *Requester:* %s
+                
+                Reply *ACCEPT_%s* to accept
+                Reply *DECLINE_%s* to decline
+                
+                You have 24 hours to respond.
+                — Team Cardnect
+                """, 
+                holderName, 
+                listing.getCardType() + " " + listing.getCardNetwork(), 
+                listing.getMaskedNumber(), 
+                listing.getBankName(), 
+                commissionStr, 
+                requesterName, 
+                reqId, 
+                reqId);
+                
+        if (listing.getUser().getPhone() != null && !listing.getUser().getPhone().isBlank()) {
+            whatsAppService.sendTextMessage(listing.getUser().getPhone(), waMessage);
+        }
 
         String message = String.format(
                 "New card request from %s for '%s' on your %s %s.",
@@ -113,5 +149,67 @@ public class CardRequestService {
                 .offerDetails(r.getOfferDetails())
                 .createdAt(r.getCreatedAt())
                 .build();
+    }
+
+    @Transactional
+    public void handleWebhookResponse(String requestIdStr, String action, String fromPhone) {
+        try {
+            UUID requestId = UUID.fromString(requestIdStr.trim());
+            CardRequest request = requestRepository.findById(requestId).orElse(null);
+            
+            if (request == null || request.getStatus() != RequestStatus.PENDING) {
+                return; // Already processed or invalid
+            }
+            
+            // Verify phone number belongs to the card holder
+            User holder = request.getListing().getUser();
+            String holderPhone = holder.getPhone();
+            if (holderPhone == null || !holderPhone.replaceAll("[^0-9]", "").equals(fromPhone.replaceAll("[^0-9]", ""))) {
+                log.warn("Unauthorized webhook reply from {} for request {}", fromPhone, requestId);
+                return;
+            }
+
+            if ("ACCEPT".equalsIgnoreCase(action)) {
+                request.setStatus(RequestStatus.ACCEPTED);
+                
+                String reqName = request.getRequester().getName() != null ? request.getRequester().getName() : "Requester";
+                String reqPhone = request.getRequester().getPhone() != null ? request.getRequester().getPhone() : "Not provided";
+                String reqEmail = request.getRequester().getEmail();
+                
+                String msg = String.format("""
+                        ✅ *Request Accepted!*
+                        
+                        Here are the requester's details:
+                        
+                        👤 Name: %s
+                        📱 Phone: %s
+                        📧 Email: %s
+                        
+                        Contact them now to complete the deal!
+                        — Team Cardnect
+                        """, reqName, reqPhone, reqEmail);
+                        
+                whatsAppService.sendTextMessage(holderPhone, msg);
+                
+            } else if ("DECLINE".equalsIgnoreCase(action)) {
+                request.setStatus(RequestStatus.REJECTED);
+                
+                String reqMsg = String.format("❌ Your request for %s was declined. Browse other available cards on Cardnect.", 
+                        request.getListing().getBankName());
+                        
+                Notification n = Notification.builder()
+                        .user(request.getRequester())
+                        .request(request)
+                        .message(reqMsg)
+                        .build();
+                notificationRepository.save(n);
+                wsNotificationService.sendNotification(request.getRequester().getId().toString(), n);
+            }
+            
+            requestRepository.save(request);
+            log.info("Request {} marked as {}", requestId, action);
+        } catch (Exception e) {
+            log.error("Failed to process webhook response: {}", e.getMessage());
+        }
     }
 }

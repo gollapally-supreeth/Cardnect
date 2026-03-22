@@ -2,12 +2,14 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Plus, Pencil, Trash2, X, Loader, CreditCard, Wifi, TrendingUp } from 'lucide-react'
 import { fetchMyListings, createListing, updateListing, deleteListing } from '../api/services'
+import { useAuthContext } from '../context/AuthContext'
+import PremiumCard from '../components/PremiumCard'
 import './MyListings.css'
 
-const BANKS    = ['HDFC Bank','ICICI Bank','SBI','Axis Bank','Kotak Bank','Yes Bank','IndusInd Bank','BOB','PNB','Canara Bank','IDFC First','Other']
+const BANKS    = ['HDFC Bank','ICICI Bank','SBI','Axis Bank','Kotak Bank','Yes Bank','IndusInd Bank','BOB','PNB','Canara Bank','IDFC First','Virtual Bank','Other']
 const NETWORKS = ['Visa','Mastercard','RuPay','Amex','Diners']
 const TYPES    = ['Credit','Debit']
-const EMPTY    = { bankName:'', cardNetwork:'Visa', cardType:'Credit', maskedNumber:'', commissionPercentage:'' }
+const EMPTY    = { bankName:'', customBankName:'', cardName:'', cardNetwork:'Visa', cardType:'Credit', maskedNumber:'', commissionPercentage:'' }
 
 /* ── Add / Edit modal ── */
 function ListingModal({ listing, onClose }) {
@@ -25,13 +27,26 @@ function ListingModal({ listing, onClose }) {
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
 
   const handleSubmit = () => {
-    if (!form.bankName) { setError('Bank name is required'); return }
+    const finalBankName = (form.bankName === 'Other' || form.bankName === 'Virtual Bank') 
+      ? form.customBankName 
+      : form.bankName
+
+    if (!finalBankName) { setError('Bank name is required'); return }
     if (!form.maskedNumber) { setError('Last 4 digits required'); return }
     const n = parseFloat(form.commissionPercentage)
     if (isNaN(n) || n < 0 || n > 100) { setError('Commission must be 0–100'); return }
     setError('')
-    mutation.mutate()
+
+    const payload = { ...form, bankName: finalBankName }
+    mutation.mutate(payload)
   }
+
+  const { user } = useAuthContext();
+  const displayBankName = (form.bankName === 'Other' || form.bankName === 'Virtual Bank')
+    ? form.customBankName || form.bankName
+    : form.bankName;
+
+  const showCustomBank = form.bankName === 'Other' || form.bankName === 'Virtual Bank';
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -45,13 +60,39 @@ function ListingModal({ listing, onClose }) {
           Only enter the <strong>last 4 digits</strong> of your card. Never enter full number, CVV, or expiry.
         </div>
 
-        <div className="ml-form-grid">
-          <div className="form-group" style={{ gridColumn: '1/-1' }}>
+        {/* LIVE 3D PREVIEW */}
+        <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'center' }}>
+          <PremiumCard 
+            bankName={displayBankName}
+            cardName={form.cardName}
+            cardNetwork={form.cardNetwork}
+            cardType={form.cardType}
+            maskedNumber={form.maskedNumber}
+            holderName={user?.name}
+          />
+        </div>
+
+        <div className="ml-form-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+          <div className="form-group" style={{ gridColumn: showCustomBank ? '1' : '1/-1' }}>
             <label className="form-label">Bank Name *</label>
             <select className="form-select" value={form.bankName} onChange={e => set('bankName', e.target.value)}>
               <option value="">Select bank…</option>
               {BANKS.map(b => <option key={b}>{b}</option>)}
             </select>
+          </div>
+          {showCustomBank && (
+            <div className="form-group" style={{ gridColumn: '2' }}>
+              <label className="form-label">Custom Bank Name *</label>
+              <input className="form-input" placeholder="e.g. NeoBank"
+                value={form.customBankName}
+                onChange={e => set('customBankName', e.target.value)} />
+            </div>
+          )}
+          <div className="form-group" style={{ gridColumn: '1/-1' }}>
+            <label className="form-label">Card Name (Tier)</label>
+            <input className="form-input" placeholder="e.g. Platinum, Infinia, Regalia Gold"
+              value={form.cardName}
+              onChange={e => set('cardName', e.target.value)} />
           </div>
           <div className="form-group">
             <label className="form-label">Network *</label>
@@ -99,33 +140,28 @@ function ListingModal({ listing, onClose }) {
 /* ── Card tile ── */
 function MyCard({ l, onEdit, onDelete, deleting }) {
   return (
-    <div className="ml-card" style={{ animationDelay: `${Math.random() * 120}ms` }}>
-      {/* Status badge */}
-      <span className={`ml-status ${l.active ? 'active' : 'inactive'}`}>
-        {l.active ? '● Active' : '○ Inactive'}
-      </span>
-
-      {/* Card face */}
-      <div className="ml-card-face">
-        <div className="ml-card-face-shine" />
-        <div className="ml-face-top">
-          <span className="ml-face-bank">{l.bankName}</span>
-          <Wifi size={14} className="ml-face-nfc" />
-        </div>
-        <div className="ml-face-chip">
-          <div className="ml-face-chip-body">
-            {[...Array(6)].map((_,i) => <span key={i} />)}
-          </div>
-        </div>
-        <div className="ml-face-number">XXXX XXXX XXXX {l.maskedNumber}</div>
-        <div className="ml-face-bottom">
-          <div className="ml-face-type">{l.cardType} · {l.cardNetwork}</div>
-          <div className="ml-face-comm">{l.commissionPercentage}%</div>
+    <div className="ml-card" style={{ animationDelay: `${Math.random() * 120}ms`, padding: 16 }}>
+      
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <span className={`ml-status ${l.active ? 'active' : 'inactive'}`}>
+          {l.active ? '● Active' : '○ Inactive'}
+        </span>
+        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>
+          <strong>{l.commissionPercentage}%</strong> Comm.
         </div>
       </div>
 
+      <PremiumCard 
+        bankName={l.bankName}
+        cardName={l.cardName}
+        cardNetwork={l.cardNetwork}
+        cardType={l.cardType}
+        maskedNumber={`•••• •••• •••• ${l.maskedNumber?.slice(-4) || 'XXXX'}`}
+        holderName={l.holderName}
+      />
+
       {/* Actions */}
-      <div className="ml-actions">
+      <div className="ml-actions" style={{ marginTop: 16 }}>
         <button className="ml-action-btn edit" onClick={() => onEdit(l)}>
           <Pencil size={14} /> Edit
         </button>

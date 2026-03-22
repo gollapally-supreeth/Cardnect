@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useAuthContext } from '../context/AuthContext'
 import { CreditCard, Shield, Zap, Users, ArrowRight, Star, CheckCircle, Bell, ChevronRight } from 'lucide-react'
-import HeroCarousel from '../components/HeroCarousel'
+import HeroVideo from '../assets/Hero.mp4'
 import './LandingPage.css'
 
 const DEMO_CARDS = [
@@ -139,9 +139,16 @@ export default function LandingPage() {
             </div>
           </div>
 
-          {/* ── RIGHT: 3-D Rotating Card Ring ── */}
-          <div className="hero-visual hero-visual--carousel">
-            <HeroCarousel />
+          {/* ── RIGHT: Hero Video ── */}
+          <div className="hero-visual hero-visual--video">
+            <video 
+              className="hero-video-element" 
+              src={HeroVideo} 
+              autoPlay 
+              loop 
+              muted 
+              playsInline
+            />
           </div>
         </div>
       </section>

@@ -38,6 +38,7 @@ public class CardListingService {
         CardListing listing = CardListing.builder()
                 .user(user)
                 .bankName(req.getBankName())
+                .cardName(req.getCardName())
                 .cardNetwork(req.getCardNetwork())
                 .cardType(req.getCardType())
                 .maskedNumber(req.getMaskedNumber()) // 4 digits, enforced by DTO validation
@@ -53,6 +54,7 @@ public class CardListingService {
                 .orElseThrow(() -> new AccessDeniedException("Listing not found or not owned by you"));
 
         listing.setBankName(req.getBankName());
+        listing.setCardName(req.getCardName());
         listing.setCardNetwork(req.getCardNetwork());
         listing.setCardType(req.getCardType());
         listing.setMaskedNumber(req.getMaskedNumber());
@@ -74,6 +76,7 @@ public class CardListingService {
         return CardListingResponse.builder()
                 .id(l.getId())
                 .bankName(l.getBankName())
+                .cardName(l.getCardName())
                 .cardNetwork(l.getCardNetwork())
                 .cardType(l.getCardType())
                 .maskedNumber(formatted)

@@ -28,6 +28,10 @@ public class User {
     @Column(name = "phone", length = 20)
     private String phone;
 
+    /** BCrypt hash — null for OTP-only users */
+    @Column(name = "password_hash", length = 72)
+    private String passwordHash;
+
     @Column(name = "phone_verified", nullable = false)
     @Builder.Default
     private boolean phoneVerified = false;
@@ -52,7 +56,7 @@ public class User {
     @PreUpdate
     public void updateVerificationFlag() {
         // Keep the aggregate flag in sync for fast access checks across services.
-        this.verifiedUser = this.emailVerified;
+        this.verifiedUser = this.emailVerified && this.phoneVerified;
     }
 
     public boolean isFullyVerified() {

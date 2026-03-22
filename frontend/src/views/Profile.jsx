@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useAuthContext } from '../context/AuthContext'
-import { CheckCircle, AlertCircle, Phone, Mail, Shield, CreditCard, Clock, Award } from 'lucide-react'
+import { CheckCircle, AlertCircle, Phone, Mail, Shield, CreditCard, Clock, Award, MessageCircle } from 'lucide-react'
 import { fetchMyListings } from '../api/services'
+import VerifyPhoneModal from '../components/VerifyPhoneModal'
 import './Profile.css'
 
 export default function Profile() {
@@ -9,6 +11,8 @@ export default function Profile() {
   const phoneVerified   = !!user?.phoneVerified
   const emailVerified   = !!user?.emailVerified
   const isFullyVerified = phoneVerified && emailVerified
+
+  const [showVerifyModal, setShowVerifyModal] = useState(false)
 
   const { data: listings = [] } = useQuery({ queryKey: ['my-listings'], queryFn: fetchMyListings })
 
@@ -91,9 +95,30 @@ export default function Profile() {
                 <p className="prof-verif-label">Phone Number</p>
                 <p className="prof-verif-val">{user?.phone || 'Not added'}</p>
               </div>
-              <span className={`prof-badge ${phoneVerified ? 'ok' : 'warn'}`}>
-                {phoneVerified ? <><CheckCircle size={11} /> Verified</> : <><AlertCircle size={11} /> Unverified</>}
-              </span>
+              <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                <span className={`prof-badge ${phoneVerified ? 'ok' : 'warn'}`}>
+                  {phoneVerified ? <><CheckCircle size={11} /> Verified</> : <><AlertCircle size={11} /> Unverified</>}
+                </span>
+                {!phoneVerified && (
+                  <button 
+                    className="btn prof-wa-btn" 
+                    onClick={() => setShowVerifyModal(true)}
+                    style={{ 
+                      background: 'rgba(37, 211, 102, 0.1)', 
+                      color: '#25D366', 
+                      border: '1px solid rgba(37, 211, 102, 0.3)', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: 6, 
+                      padding: '4px 12px',
+                      fontSize: 12,
+                      borderRadius: 20
+                    }}
+                  >
+                    <MessageCircle size={12} /> Verify
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* Email */}
@@ -127,6 +152,13 @@ export default function Profile() {
           All card data on this platform is masked. Transactions occur outside the platform.
         </p>
       </div>
+
+      <VerifyPhoneModal
+        isOpen={showVerifyModal}
+        onClose={() => setShowVerifyModal(false)}
+        userPhone={user?.phone || ''}
+        onVerified={() => setShowVerifyModal(false)}
+      />
     </div>
   )
 }

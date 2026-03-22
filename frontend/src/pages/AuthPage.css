@@ -1,109 +1,325 @@
-/* Auth Page - pure black theme */
-.auth-page {
+/* ═══ Auth Page — Black & Silver Card-Flip ═══════════════════ */
+
+/* Page wrapper */
+.ap-page {
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 32px 20px;
-  position: relative;
-  overflow: hidden;
-  background: var(--color-bg);
-}
-
-.auth-bg-blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(110px);
-  opacity: 0.2;
-  pointer-events: none;
-}
-
-.auth-bg-blob-1 {
-  width: 420px;
-  height: 420px;
-  top: -120px;
-  left: -170px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
-}
-
-.auth-bg-blob-2 {
-  width: 360px;
-  height: 360px;
-  bottom: -140px;
-  right: -140px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 70%);
-}
-
-.auth-container {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  max-width: 500px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
-}
-
-.auth-back {
-  align-self: flex-start;
-}
-
-.auth-logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 24px;
-  font-weight: 700;
-}
-
-.auth-logo-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 10px;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  align-items: center;
   justify-content: center;
-  color: var(--color-text);
+  padding: 32px 20px;
+  background: #000;
   position: relative;
+  gap: 20px;
+  overflow: hidden;
 }
 
-.auth-tabs {
-  display: flex;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  padding: 4px;
-  background: rgba(10, 10, 10, 0.4);
+/* Subtle radial glows */
+.ap-page::before, .ap-page::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(120px);
+}
+.ap-page::before {
+  width: 500px; height: 500px;
+  top: -120px; left: -180px;
+  background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%);
+}
+.ap-page::after {
+  width: 400px; height: 400px;
+  bottom: -100px; right: -130px;
+  background: radial-gradient(circle, rgba(255,255,255,0.025) 0%, transparent 70%);
 }
 
-.auth-tab {
-  padding: 10px 20px;
+/* Back button */
+.ap-back-btn {
+  position: absolute;
+  top: 22px; left: 22px;
+  display: flex; align-items: center; gap: 7px;
+  font-size: 13px; font-weight: 500;
+  color: rgba(255,255,255,0.36);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.18s;
+  padding: 6px 10px;
   border-radius: 8px;
-  color: var(--color-text-muted);
-  font-size: 13px;
-  font-weight: 600;
 }
+.ap-back-btn:hover { color: rgba(255,255,255,0.75); background: rgba(255,255,255,0.05); }
 
-.auth-tab.active {
-  background: var(--color-primary);
-  color: #000;
+/* Logo */
+.ap-logo {
+  display: flex; align-items: center; gap: 9px;
+  font-size: 20px; font-weight: 700; color: #fff;
+  margin-bottom: 4px;
 }
+.ap-logo svg { color: rgba(255,255,255,0.70); }
 
-.auth-clerk-wrapper {
+/* ── 3D card flip ────────────────────────────────────────────── */
+.ap-card-scene {
   width: 100%;
-  background: rgba(10, 10, 10, 0.3);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  padding: 34px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  max-width: 440px;
+  perspective: 1200px;
 }
 
-.auth-disclaimer {
-  font-size: 12px;
-  color: var(--color-text-muted);
-  text-align: center;
-  line-height: 1.6;
+.ap-card-inner {
+  position: relative;
+  width: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.65s cubic-bezier(0.45, 0.05, 0.55, 0.95);
 }
+
+.ap-card-scene.flipped .ap-card-inner {
+  transform: rotateY(180deg);
+}
+
+/* Shared face styles */
+.ap-face {
+  background: rgba(11, 11, 11, 0.95);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 22px;
+  padding: 32px 30px 26px;
+  box-shadow:
+    0 24px 70px rgba(0,0,0,0.80),
+    0 4px 16px rgba(0,0,0,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.ap-front { }
+
+/* Back face — rotated 180°, sits behind the front */
+.ap-back {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  transform: rotateY(180deg);
+}
+
+/* ── Form header ─────────────────────────────────────────────── */
+.ap-form-header { text-align: center; }
+.ap-form-title { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 4px; letter-spacing: -0.3px; }
+.ap-form-sub   { font-size: 13px; color: rgba(255,255,255,0.36); }
+
+/* ── Mode toggle tabs ────────────────────────────────────────── */
+.ap-mode-tabs {
+  display: flex;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px;
+  padding: 3px;
+  gap: 3px;
+}
+
+.ap-mode-tab {
+  flex: 1;
+  padding: 8px;
+  border-radius: 9px;
+  font-size: 12.5px; font-weight: 600;
+  color: rgba(255,255,255,0.38);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.ap-mode-tab:hover { color: rgba(255,255,255,0.70); }
+.ap-mode-tab.active {
+  color: #fff;
+  background: rgba(255,255,255,0.09);
+  border-color: rgba(255,255,255,0.14);
+}
+
+/* ── Fields ──────────────────────────────────────────────────── */
+.ap-fields { display: flex; flex-direction: column; gap: 12px; }
+
+.ap-field { display: flex; flex-direction: column; gap: 6px; }
+
+.ap-label {
+  font-size: 11.5px; font-weight: 600;
+  color: rgba(255,255,255,0.38);
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+
+.ap-input-wrap {
+  position: relative;
+  display: flex; align-items: center;
+}
+
+.ap-input-icon {
+  position: absolute; left: 13px;
+  color: rgba(255,255,255,0.28); pointer-events: none;
+}
+
+.ap-input {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 12px;
+  padding: 10px 14px 10px 36px;
+  font-size: 14px; color: #fff;
+  outline: none;
+  transition: border-color 0.18s, background 0.18s;
+}
+.ap-input::placeholder { color: rgba(255,255,255,0.22); }
+.ap-input:focus { border-color: rgba(255,255,255,0.22); background: rgba(255,255,255,0.06); }
+.ap-input:disabled { opacity: 0.45; }
+
+.ap-eye {
+  position: absolute; right: 12px;
+  color: rgba(255,255,255,0.30);
+  background: none; border: none; cursor: pointer;
+  display: flex; align-items: center;
+  padding: 4px;
+}
+.ap-eye:hover { color: rgba(255,255,255,0.65); }
+
+/* Two-column row for first/last name */
+.ap-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* Inline email verify button */
+.ap-verify-btn {
+  position: absolute; right: 10px;
+  padding: 5px 12px;
+  font-size: 11.5px; font-weight: 700;
+  color: rgba(255,255,255,0.78);
+  background: rgba(255,255,255,0.09);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.18s;
+  display: flex; align-items: center; gap: 4px;
+}
+.ap-verify-btn:hover { background: rgba(255,255,255,0.15); }
+.ap-verify-btn:disabled { opacity: 0.45; cursor: default; }
+
+.ap-email-verified {
+  position: absolute; right: 10px;
+  display: flex; align-items: center; gap: 5px;
+  font-size: 12px; font-weight: 600;
+  color: #22c55e;
+}
+
+/* ── 6-box OTP input ─────────────────────────────────────────── */
+.ap-otp-row {
+  display: flex; gap: 8px;
+  justify-content: center;
+}
+
+.ap-otp-box {
+  width: 44px; height: 50px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: #fff;
+  font-size: 20px; font-weight: 700;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+.ap-otp-box:focus {
+  border-color: rgba(255,255,255,0.30);
+  background: rgba(255,255,255,0.07);
+}
+
+/* ── Buttons ─────────────────────────────────────────────────── */
+.ap-actions { display: flex; flex-direction: column; gap: 8px; }
+
+.ap-btn-primary {
+  width: 100%;
+  padding: 12px;
+  border-radius: 13px;
+  font-size: 14px; font-weight: 700;
+  color: #000;
+  background: #fff;
+  border: none; cursor: pointer;
+  transition: all 0.18s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.ap-btn-primary:hover { background: rgba(255,255,255,0.88); transform: translateY(-1px); }
+.ap-btn-primary:disabled { opacity: 0.40; cursor: default; transform: none; }
+
+.ap-btn-secondary {
+  width: 100%;
+  padding: 10px;
+  border-radius: 12px;
+  font-size: 13px; font-weight: 600;
+  color: rgba(255,255,255,0.70);
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  cursor: pointer;
+  transition: all 0.18s;
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+}
+.ap-btn-secondary:hover { background: rgba(255,255,255,0.10); color: #fff; }
+.ap-btn-secondary:disabled { opacity: 0.40; cursor: default; }
+
+.ap-btn-ghost {
+  width: 100%;
+  padding: 9px;
+  border-radius: 12px;
+  font-size: 13px; font-weight: 600;
+  color: rgba(255,255,255,0.42);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.ap-btn-ghost:hover { color: rgba(255,255,255,0.80); background: rgba(255,255,255,0.04); }
+
+/* ── Messages ────────────────────────────────────────────────── */
+.ap-error {
+  font-size: 12.5px;
+  color: #f87171;
+  background: rgba(248,113,113,0.08);
+  border: 1px solid rgba(248,113,113,0.18);
+  border-radius: 10px;
+  padding: 9px 12px;
+  margin: 0;
+}
+
+.ap-msg {
+  font-size: 12.5px;
+  color: #6ee7b7;
+  background: rgba(110,231,183,0.07);
+  border: 1px solid rgba(110,231,183,0.16);
+  border-radius: 10px;
+  padding: 9px 12px;
+  margin: 0;
+}
+
+/* ── Switch link ─────────────────────────────────────────────── */
+.ap-switch {
+  text-align: center;
+  font-size: 13px;
+  color: rgba(255,255,255,0.34);
+}
+
+.ap-switch-link {
+  background: none; border: none;
+  color: rgba(255,255,255,0.78);
+  font-weight: 700; cursor: pointer;
+  font-size: inherit;
+  margin-left: 4px;
+  transition: color 0.15s;
+}
+.ap-switch-link:hover { color: #fff; }
+
+/* ── Disclaimer ──────────────────────────────────────────────── */
+.ap-disclaimer {
+  font-size: 11.5px;
+  color: rgba(255,255,255,0.22);
+  text-align: center;
+  line-height: 1.7;
+  max-width: 400px;
+}
+
+/* Spinner */
+.spin { animation: spin 0.75s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }

@@ -10,6 +10,7 @@ import java.util.UUID;
 public class CardListingResponse {
     private UUID id;
     private String bankName;
+    private String cardName;
     private String cardNetwork;
     private String cardType;
     private String maskedNumber; // Formatted: "XXXX XXXX XXXX XXXX"
