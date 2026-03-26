@@ -1,49 +1,27 @@
 import { useNavigate } from 'react-router-dom'
 import { useAuthContext } from '../context/AuthContext'
-import { CreditCard, Shield, Zap, Users, ArrowRight, Star, CheckCircle, Bell, ChevronRight } from 'lucide-react'
+import { CreditCard, Shield, Zap, Users, ArrowRight, CheckCircle, Bell, ChevronRight, Fingerprint } from 'lucide-react'
 import HeroVideo from '../assets/Hero.mp4'
+import PremiumCard from '../components/PremiumCard'
 import './LandingPage.css'
 
 const DEMO_CARDS = [
-  { id: 1, bank: 'HDFC Bank', type: 'Credit', network: 'Visa', masked: 'XXXX XXXX XXXX 4821', commission: 2.5, rating: 4.9 },
-  { id: 2, bank: 'ICICI Bank', type: 'Debit', network: 'Mastercard', masked: 'XXXX XXXX XXXX 7543', commission: 1.5, rating: 4.7 },
-  { id: 3, bank: 'SBI Bank', type: 'Credit', network: 'RuPay', masked: 'XXXX XXXX XXXX 2290', commission: 3.0, rating: 5.0 },
+  { id: 1, bankName: 'HDFC Bank', cardName: 'Infinia Metal', cardType: 'Credit', cardNetwork: 'Visa', maskedNumber: 'XXXX XXXX XXXX 4821', holderName: 'VERIFIED HOLDER' },
+  { id: 2, bankName: 'ICICI Bank', cardName: 'Emeralde', cardType: 'Credit', cardNetwork: 'Mastercard', maskedNumber: 'XXXX XXXX XXXX 7543', holderName: 'VERIFIED HOLDER' },
+  { id: 3, bankName: 'SBI Bank', cardName: 'Aurum', cardType: 'Credit', cardNetwork: 'RuPay', maskedNumber: 'XXXX XXXX XXXX 2290', holderName: 'VERIFIED HOLDER' },
 ]
 
 const STEPS = [
-  { icon: <Users size={24} />, title: 'Browse Offers', desc: 'Explore card holders who share their eligible bank cards for exclusive discounts.' },
-  { icon: <CreditCard size={24} />, title: 'Request a Card', desc: 'Send a request to a card holder with the offer details you need help with.' },
-  { icon: <Bell size={24} />, title: 'Get Connected', desc: 'Card holder receives a notification and reaches out to you directly via WhatsApp.' },
-  { icon: <CheckCircle size={24} />, title: 'Save & Enjoy', desc: 'Complete your purchase using the discount. Pay a small commission to the card holder.' },
+  { num: '01', title: 'Discover', desc: 'Explore premium cards shared by verified holders for exclusive discounts.' },
+  { num: '02', title: 'Request', desc: 'Send a secure request detailing the exact offer you wish to unlock.' },
+  { num: '03', title: 'Connect', desc: 'Match instantly and finalize the transaction safely off-platform.' }
 ]
 
 const FEATURES = [
-  { icon: <Shield size={20} />, title: 'Zero Sensitive Data', desc: 'We never store card numbers, CVV, or expiry. Only masked identifiers.' },
-  { icon: <Zap size={20} />, title: 'Instant Notifications', desc: 'Real-time WebSocket alerts so card holders never miss a request.' },
-  { icon: <Users size={20} />, title: 'Verified Users Only', desc: 'Phone OTP + email verification ensures every user is trustworthy.' },
+  { icon: <Fingerprint size={28} strokeWidth={1} />, title: 'Zero Data Exposure', desc: 'No sensitive card numbers or CVVs are ever stored or transmitted in our ecosystem.' },
+  { icon: <Zap size={28} strokeWidth={1} />, title: 'Real-time Pulse', desc: 'Advanced WebSocket infrastructure perfectly synchronizes deal seekers with card holders instantly.' },
+  { icon: <Shield size={28} strokeWidth={1} />, title: 'Verified Identity', desc: 'Strict multi-factor authentication ensures every participant belongs to a trusted community.' },
 ]
-
-function CardDemo({ card }) {
-  return (
-    <div className="demo-card animate-fade-in">
-      <div className="demo-card-header">
-        <div>
-          <p className="demo-card-bank">{card.bank}</p>
-          <p className="demo-card-sub">{card.type} · {card.network}</p>
-        </div>
-        <div className="demo-card-rating">
-          <Star size={13} fill="currentColor" />
-          <span>{card.rating}</span>
-        </div>
-      </div>
-      <div className="demo-card-number">{card.masked}</div>
-      <div className="demo-card-footer">
-        <div className="badge badge-primary">{card.commission}% commission</div>
-        <span className="demo-card-active">● Active</span>
-      </div>
-    </div>
-  )
-}
 
 export default function LandingPage() {
   const navigate = useNavigate()
@@ -52,147 +30,131 @@ export default function LandingPage() {
   const handleCTA = () => navigate(isAuthenticated ? '/dashboard' : '/auth')
 
   return (
-    <div className="landing">
-      {/* NAVBAR */}
-      <nav className="landing-nav">
-        <div className="container landing-nav-inner">
-          <div className="landing-logo">
-            <div className="landing-logo-icon">
-              <span className="notification-dot" style={{ position: 'absolute', top: -2, right: -2 }}></span>
-              <CreditCard size={18} />
-            </div>
-            <span>Cardnect</span>
+    <div className="landing-min">
+      {/* MINIMAL NAV */}
+      <nav className="nav-min">
+        <div className="container nav-min-inner">
+          <div className="brand-min">
+            <CreditCard size={18} strokeWidth={1.5} />
+            <span>CARDNECT</span>
           </div>
-          <div className="landing-nav-links">
-            <a href="#features" className="nav-link">Features</a>
-            <a href="#how-it-works" className="nav-link">Docs</a>
-            <a href="#offers" className="nav-link">Pricing</a>
+          <div className="nav-min-links">
+            <a href="#offers">Offers</a>
+            <a href="#how-it-works">Platform</a>
+            <a href="#security">Security</a>
           </div>
-          <div className="landing-nav-actions">
+          <div className="nav-min-actions">
             {isAuthenticated ? (
-              <button className="btn btn-primary btn-sm" onClick={() => navigate('/dashboard')}>
+              <button className="btn-min-primary" onClick={() => navigate('/dashboard')}>
                 Dashboard <ArrowRight size={14} />
               </button>
             ) : (
-              <>
-                <button className="btn btn-ghost btn-sm" onClick={() => navigate('/auth')}>Log in</button>
-                <button className="btn btn-primary btn-sm" onClick={() => navigate('/auth')}>Get Started <ArrowRight size={14} /></button>
-              </>
+              <button className="btn-min-primary" onClick={() => navigate('/auth')}>
+                Get Started
+              </button>
             )}
           </div>
         </div>
       </nav>
 
-      {/* HERO */}
-      <section className="hero">
-        {/* Background grid */}
-        <div className="hero-grid-bg" />
-        {/* Radial glow */}
-        <div className="hero-radial" />
-
-        <div className="container hero-content">
-          {/* ── LEFT: Copy ── */}
-          <div className="hero-text">
-            {/* Trust badge */}
-            <div className="hero-trust-badge">
-              <span className="hero-trust-dot" />
-              <span>Trusted by 2,000+ verified users</span>
+      {/* HERO SECTION */}
+      <section className="hero-min">
+        <div className="hero-min-glow"></div>
+        <div className="container hero-min-content">
+          <div className="hero-min-text">
+            <div className="hero-min-badge">
+              <span className="hero-min-dot" /> TRUSTED NETWORK
             </div>
-
-            <h1 className="hero-title">
-              Connect <em>Card</em><br />
-              Rewards without<br />
-              <span className="hero-title-line3">friction</span>
+            
+            <h1 className="hero-min-title">
+              Unlock <span>Premium</span><br />
+              Card Rewards<br />
+              Instantly.
             </h1>
-
-            <p className="hero-sub">
-              The most direct way to deliver transactional rewards that users want. Tap 
-              into curated card perks with verified users and zero card exposure at scale.
+            
+            <p className="hero-min-sub">
+              A frictionless protocol to connect deal seekers with verified card holders. Secure, minimal, and entirely peer-to-peer.
             </p>
-
-            {/* CTA row */}
-            <div className="hero-actions">
-              <button className="btn-hero-primary" onClick={handleCTA}>
-                Get started <ArrowRight size={16} />
+            
+            <div className="hero-min-actions">
+              <button className="btn-min-solid" onClick={handleCTA}>
+                Enter App <ArrowRight size={16} />
               </button>
-              <a href="#how-it-works" className="btn-hero-ghost">
-                Documentation →
+              <a href="#how-it-works" className="btn-min-outline">
+                How it works
               </a>
             </div>
 
-            {/* Stats strip */}
-            <div className="hero-stats">
-              <div className="hero-stat">
-                <span className="hero-stat-num">500+</span>
-                <span className="hero-stat-label">Active Card Listings</span>
+            <div className="hero-min-stats">
+              <div className="stat-min">
+                <h4>₹50L+</h4>
+                <p>Volume</p>
               </div>
-              <div className="hero-stat-divider" />
-              <div className="hero-stat">
-                <span className="hero-stat-num">2,000+</span>
-                <span className="hero-stat-label">Verified Users</span>
-              </div>
-              <div className="hero-stat-divider" />
-              <div className="hero-stat">
-                <span className="hero-stat-num">₹50L+</span>
-                <span className="hero-stat-label">Discounts Shared</span>
+              <div className="stat-min-divider"></div>
+              <div className="stat-min">
+                <h4>2K+</h4>
+                <p>Verified</p>
               </div>
             </div>
           </div>
 
-          {/* ── RIGHT: Hero Video ── */}
-          <div className="hero-visual hero-visual--video">
-            <video 
-              className="hero-video-element" 
-              src={HeroVideo} 
-              autoPlay 
-              loop 
-              muted 
-              playsInline
-            />
+          <div className="hero-min-visual">
+            <div className="video-min-wrapper">
+              <video 
+                className="hero-video-element" 
+                src={HeroVideo} 
+                autoPlay 
+                loop 
+                muted 
+                playsInline
+              />
+            </div>
           </div>
         </div>
       </section>
 
-      {/* DEMO CARDS */}
-      <section id="offers" className="section-offers">
+      {/* PREMIUM CARDS SHOWCASE */}
+      <section id="offers" className="section-min section-cards">
         <div className="container">
-          <div className="section-header">
-            <div className="badge-ghost" style={{ marginBottom: 12 }}>● LIVE <span style={{ opacity: 0.8 }}>v2.0.0</span></div>
-            <h2>Live Card Offers</h2>
-            <p>Browse real card listings from verified holders</p>
+          <div className="section-min-header">
+            <h2>Live Network</h2>
+            <p>Real-time access to top-tier banking card discounts globally.</p>
           </div>
-          <div className="demo-cards-grid">
-            {DEMO_CARDS.map(card => <CardDemo key={card.id} card={card} />)}
+          
+          <div className="premium-cards-grid">
+            {DEMO_CARDS.map(card => (
+              <div className="premium-card-item" key={card.id}>
+                <PremiumCard {...card} />
+                <div className="card-item-meta">
+                  <span className="live-indicator"></span> Active Now
+                </div>
+              </div>
+            ))}
           </div>
-          <div className="text-center" style={{ marginTop: '32px' }}>
-            <button className="btn btn-secondary" onClick={handleCTA}>
-              View All Offers <ChevronRight size={16} />
+
+          <div className="center-action">
+            <button className="btn-min-outline" onClick={handleCTA}>
+              View All Cards
             </button>
           </div>
         </div>
       </section>
 
-      {/* ADVANCED PROJECT FLOW */}
-      <section id="how-it-works" className="section-steps">
+      {/* WORKFLOW */}
+      <section id="how-it-works" className="section-min section-dark">
         <div className="container">
-          <div className="section-header">
-            <div className="label-mono" style={{ color: 'var(--color-accent)', marginBottom: 10 }}>// flow</div>
-            <h2>Frictionless Connection Flow</h2>
-            <p>A completely restructured approach to sharing bank discounts securely and instantly.</p>
+          <div className="section-min-header">
+            <h2>The Protocol</h2>
+            <p>Three steps to infinite savings without the friction.</p>
           </div>
           
-          <div className="project-flow-container">
-            <div className="flow-line" />
+          <div className="steps-min-grid">
             {STEPS.map((step, i) => (
-              <div key={i} className={`flow-node ${i % 2 === 0 ? 'flow-left' : 'flow-right'}`}>
-                <div className="flow-content card-glass animate-fade-in" style={{ animationDelay: `${i * 0.15}s` }}>
-                  <div className="flow-number">0{i + 1}</div>
-                  <div className="flow-icon-wrapper">{step.icon}</div>
+              <div key={i} className="step-min-card">
+                <div className="step-min-num">{step.num}</div>
+                <div className="step-min-content">
                   <h3>{step.title}</h3>
                   <p>{step.desc}</p>
-                </div>
-                <div className="flow-point">
-                  <div className="flow-point-inner" />
                 </div>
               </div>
             ))}
@@ -200,69 +162,68 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* FEATURES */}
-      <section id="features" className="section-features">
-        <div className="container section-features-inner">
-          <div className="section-features-text">
-            <div className="badge-ghost" style={{ marginBottom: '16px' }}>NEW</div>
-            <h2>Security First,<br />Always</h2>
-            <p>Cardnect is designed to connect people without ever compromising security. No card numbers, no CVVs — ever.</p>
-            <ul className="features-list">
-              {FEATURES.map((f, i) => (
-                <li key={i} className="feature-item">
-                  <div className="feature-icon">{f.icon}</div>
-                  <div>
-                    <strong>{f.title}</strong>
-                    <p>{f.desc}</p>
+      {/* FEATURES / SECURITY */}
+      <section id="security" className="section-min section-features-min">
+        <div className="container">
+          <div className="features-min-layout">
+            <div className="features-min-text">
+              <h2>Engineered for Trust</h2>
+              <p>Cardnect operates on a zero-trust architecture. We bridge the gap without ever touching your sensitive information.</p>
+              
+              <div className="features-min-list">
+                {FEATURES.map((f, i) => (
+                  <div key={i} className="feature-min-item">
+                    <div className="feature-min-icon">{f.icon}</div>
+                    <div className="feature-min-info">
+                      <h4>{f.title}</h4>
+                      <p>{f.desc}</p>
+                    </div>
                   </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="section-features-visual">
-            <div className="security-card card-glass">
-              <div className="security-card-header">
-                <Shield size={24} color="var(--color-success)" />
-                <span>Security Certificate</span>
+                ))}
               </div>
-              <div className="divider" />
-              <div className="security-item"><CheckCircle size={16} color="var(--color-success)" /> Phone OTP Verified</div>
-              <div className="security-item"><CheckCircle size={16} color="var(--color-success)" /> Email Verified</div>
-              <div className="security-item"><CheckCircle size={16} color="var(--color-success)" /> No Card Data Stored</div>
-              <div className="security-item"><CheckCircle size={16} color="var(--color-success)" /> Rate Limited APIs</div>
-              <div className="security-item"><CheckCircle size={16} color="var(--color-success)" /> Input Validation</div>
+            </div>
+            
+            <div className="features-min-cert">
+              <div className="cert-glass">
+                <div className="cert-header">
+                  <Shield size={20} className="cert-icon" />
+                  <span>Architecture</span>
+                </div>
+                <div className="cert-items">
+                  <div className="cert-item"><CheckCircle size={14} /> End-to-End Encrypted</div>
+                  <div className="cert-item"><CheckCircle size={14} /> OTP Verification</div>
+                  <div className="cert-item"><CheckCircle size={14} /> WebSocket Secured</div>
+                  <div className="cert-item"><CheckCircle size={14} /> PCI-DSS Scope Zero</div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* CTA BANNER */}
-      <section className="section-cta">
+      {/* CTA */}
+      <section className="section-min section-cta-min">
         <div className="container">
-          <div className="cta-banner">
-            <div className="cta-bg-blob" />
-            <h2>Ready to Start Saving?</h2>
-            <p>Join thousands of verified users already using Cardnect to unlock exclusive bank discounts.</p>
-            <button className="btn btn-primary btn-lg" onClick={handleCTA}>
-              Create Free Account <ArrowRight size={18} />
+          <div className="cta-min-box">
+            <h2>Experience the Network.</h2>
+            <p>Join the elusive club of deal seekers and premium cardholders today.</p>
+            <button className="btn-min-solid btn-min-lg" onClick={handleCTA}>
+              Ignite Access <ArrowRight size={18} />
             </button>
-            <p className="cta-disclaimer">
-              ⚠️ Disclaimer: This platform only connects users and card holders. All transactions occur outside the platform. Cardnect is not responsible for any transactions.
-            </p>
           </div>
         </div>
       </section>
 
       {/* FOOTER */}
-      <footer className="landing-footer">
-        <div className="container landing-footer-inner">
-          <div className="landing-logo">
-            <div className="landing-logo-icon" style={{ position: 'relative' }}>
-              <CreditCard size={16} />
-            </div>
-            <span>Cardnect</span>
+      <footer className="footer-min">
+        <div className="container footer-min-inner">
+          <div className="brand-min">
+            <CreditCard size={16} strokeWidth={1.5} />
+            <span>CARDNECT</span>
           </div>
-          <p className="footer-text">© 2026 Cardnect. Connecting card holders and deal seekers.</p>
+          <div className="footer-min-copy">
+            © 2026 Cardnect Protocol. All rights reserved.
+          </div>
         </div>
       </footer>
     </div>

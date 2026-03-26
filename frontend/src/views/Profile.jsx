@@ -8,9 +8,8 @@ import './Profile.css'
 
 export default function Profile() {
   const { user } = useAuthContext()
-  const phoneVerified   = !!user?.phoneVerified
   const emailVerified   = !!user?.emailVerified
-  const isFullyVerified = phoneVerified && emailVerified
+  const isFullyVerified = emailVerified;
 
   const [showVerifyModal, setShowVerifyModal] = useState(false)
 
@@ -35,8 +34,8 @@ export default function Profile() {
           <p className="prof-email">{user?.email}</p>
           <div className={`prof-verif-badge ${isFullyVerified ? 'ok' : 'warn'}`}>
             {isFullyVerified
-              ? <><CheckCircle size={13} /> Fully Verified</>
-              : <><AlertCircle size={13} /> Verification Incomplete</>}
+              ? <><CheckCircle size={13} /> Verified User</>
+              : <><AlertCircle size={13} /> Verification Pending</>}
           </div>
         </div>
 
@@ -86,40 +85,7 @@ export default function Profile() {
         <div className="prof-section">
           <div className="prof-section-title"><Shield size={15} /> Verification Status</div>
           <div className="prof-rows">
-            {/* Phone */}
-            <div className="prof-verif-row">
-              <div className={`prof-verif-icon ${phoneVerified ? 'ok' : 'warn'}`}>
-                <Phone size={15} />
-              </div>
-              <div className="prof-verif-body">
-                <p className="prof-verif-label">Phone Number</p>
-                <p className="prof-verif-val">{user?.phone || 'Not added'}</p>
-              </div>
-              <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                <span className={`prof-badge ${phoneVerified ? 'ok' : 'warn'}`}>
-                  {phoneVerified ? <><CheckCircle size={11} /> Verified</> : <><AlertCircle size={11} /> Unverified</>}
-                </span>
-                {!phoneVerified && (
-                  <button 
-                    className="btn prof-wa-btn" 
-                    onClick={() => setShowVerifyModal(true)}
-                    style={{ 
-                      background: 'rgba(37, 211, 102, 0.1)', 
-                      color: '#25D366', 
-                      border: '1px solid rgba(37, 211, 102, 0.3)', 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      gap: 6, 
-                      padding: '4px 12px',
-                      fontSize: 12,
-                      borderRadius: 20
-                    }}
-                  >
-                    <MessageCircle size={12} /> Verify
-                  </button>
-                )}
-              </div>
-            </div>
+
 
             {/* Email */}
             <div className="prof-verif-row">
@@ -138,7 +104,7 @@ export default function Profile() {
 
           {!isFullyVerified && (
             <div className="alert alert-warning" style={{ marginTop:14, fontSize:12 }}>
-              Complete phone and email verification to send and receive card requests.
+              Please verify your email to unlock all platform features.
             </div>
           )}
         </div>

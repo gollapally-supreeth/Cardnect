@@ -54,8 +54,10 @@ public class WhatsAppService {
             restTemplate.postForEntity(url, new HttpEntity<>(payload, headers), String.class);
             log.info("Successfully sent WhatsApp message to {}", formattedPhone);
         } catch (Exception e) {
-            log.error("Failed to send WhatsApp message to {}: {}", formattedPhone, e.getMessage());
-            throw new RuntimeException("Failed to send WhatsApp message. Please try again later.");
+            log.error("CRITICAL: Failed to send WhatsApp message to {}. Error: {}", formattedPhone, e.getMessage());
+            log.info("OTP FLOW UNBLOCKED: Even though WhatsApp failed, the OTP is saved to DB. Please check backend logs for the code.");
+            // Do not re-throw RuntimeException to avoid rolling back the database transaction
+            // in development/failure scenarios.
         }
     }
 

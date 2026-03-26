@@ -314,3 +314,95 @@
 /* Shared page text */
 .page-title  { font-size: 28px; font-weight: 600; color: #fff; letter-spacing: -0.6px; }
 .page-subtitle { font-size: 14px; color: rgba(255,255,255,0.36); }
+
+/* --- Premium Modal --- */
+.premium-modal {
+  max-width: 480px !important;
+  padding: 0 !important;
+  overflow: hidden;
+  border-radius: 20px !important;
+}
+
+.premium-modal .modal-header {
+  padding: 24px 32px;
+  background: rgba(255,255,255,0.02);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.modal-title-wrap .modal-title {
+  font-size: 20px; font-weight: 500; color: #fff;
+  margin-bottom: 4px;
+}
+
+.modal-subtitle {
+  font-size: 13px; color: rgba(255,255,255,0.4);
+}
+
+.req-body {
+  padding: 32px;
+}
+
+.req-card-summary {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+}
+
+.rcs-bank { font-size: 16px; font-weight: 600; color: #fff; }
+.rcs-network { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+
+.rcs-right { text-align: right; }
+.rcs-commission { font-size: 22px; font-weight: 700; color: var(--color-gold); line-height: 1; }
+.rcs-label { font-size: 10px; color: rgba(255,255,255,0.3); text-transform: uppercase; margin-top: 4px; }
+
+.premium-textarea {
+  background: rgba(0,0,0,0.3) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 12px !important;
+  padding: 14px !important;
+  font-size: 14px !important;
+  color: #eee !important;
+  margin-top: 12px;
+  transition: all 0.2s;
+}
+
+.premium-textarea:focus {
+  border-color: rgba(220,180,80,0.4) !important;
+  background: rgba(0,0,0,0.4) !important;
+}
+
+.req-info-box {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 14px; border-radius: 10px;
+  background: rgba(255,255,255,0.03);
+  color: rgba(255,255,255,0.4); font-size: 12px; line-height: 1.5;
+}
+
+.btn-secondary-outline {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.6);
+  border-radius: 10px; font-weight: 500;
+  transition: all 0.2s;
+}
+.btn-secondary-outline:hover {
+  background: rgba(255,255,255,0.05);
+  color: #fff; border-color: rgba(255,255,255,0.2)
+}
+
+/* Success ring animation */
+.success-ring-outer {
+  width: 100px; height: 100px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(220,180,80,0.15) 0%, transparent 70%);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.8; }
+}

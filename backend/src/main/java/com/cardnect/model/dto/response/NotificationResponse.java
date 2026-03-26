@@ -11,4 +11,10 @@ public class NotificationResponse {
     private String message;
     private boolean read;
     private LocalDateTime createdAt;
+    
+    // Request details for direct action
+    private UUID requestId;
+    private String requestStatus;
+    private String requesterName;
+    private String requesterPhone;
 }

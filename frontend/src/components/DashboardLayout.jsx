@@ -23,7 +23,7 @@ export default function DashboardLayout({ children }) {
   const { unreadCount } = useApp()
   const [notifOpen, setNotifOpen] = useState(false)
 
-  const isVerified = !!(user?.phoneVerified && user?.emailVerified)
+  const isVerified = !!user?.emailVerified;
 
   const isActive = (path, exact) =>
     exact ? location.pathname === path : location.pathname.startsWith(path)
@@ -146,7 +146,7 @@ export default function DashboardLayout({ children }) {
         {!isVerified && (
           <div className="dash-verif-banner">
             <AlertCircle size={15} />
-            <span>Complete verification to unlock all features —</span>
+            <span>Verify your email to unlock all features —</span>
             <Link to="/dashboard/profile">Verify now →</Link>
           </div>
         )}

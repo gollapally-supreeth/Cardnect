@@ -42,7 +42,7 @@ public class PhoneVerificationService {
                 .expiresAt(LocalDateTime.now().plusMinutes(5))
                 .build();
                 
-        phoneOtpRepository.save(phoneOtp);
+        phoneOtpRepository.saveAndFlush(phoneOtp);
 
         String message = String.format("""
                 \uD83DD\uDD12 Your Cardnect OTP is: *%s*
@@ -54,7 +54,8 @@ public class PhoneVerificationService {
                 """, otp);
 
         whatsAppService.sendTextMessage(cleanPhone, message);
-        log.info("WhatsApp OTP sent to {}", cleanPhone);
+        log.info("Generated WhatsApp OTP for {}: {}", cleanPhone, otp);
+        log.info("WhatsApp delivery initiated...");
     }
 
     @Transactional

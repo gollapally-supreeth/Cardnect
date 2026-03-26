@@ -33,8 +33,8 @@ public class CardRequestService {
 
     @Transactional
     public CardRequestResponse createRequest(User requester, CreateRequestDto dto) {
-        if (!requester.isFullyVerified()) {
-            throw new AccessDeniedException("You must verify your phone and email before sending card requests.");
+        if (!requester.isEmailVerified()) {
+            throw new AccessDeniedException("You must verify your email before sending card requests.");
         }
 
         CardListing listing = listingRepository.findById(dto.getListingId())
@@ -85,9 +85,12 @@ public class CardRequestService {
                 reqId, 
                 reqId);
                 
+        /* WhatsApp Business delivery is disabled - platform notifications are used for direct acceptance */
+        /*
         if (listing.getUser().getPhone() != null && !listing.getUser().getPhone().isBlank()) {
             whatsAppService.sendTextMessage(listing.getUser().getPhone(), waMessage);
         }
+        */
 
         String message = String.format(
                 "New card request from %s for '%s' on your %s %s.",

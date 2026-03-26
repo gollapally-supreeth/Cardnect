@@ -40,11 +40,20 @@ public class NotificationService {
     }
 
     private NotificationResponse toResponse(Notification n) {
-        return NotificationResponse.builder()
+        NotificationResponse res = NotificationResponse.builder()
                 .id(n.getId())
                 .message(n.getMessage())
                 .read(n.isRead())
                 .createdAt(n.getCreatedAt())
                 .build();
+                
+        if (n.getRequest() != null) {
+            res.setRequestId(n.getRequest().getId());
+            res.setRequestStatus(n.getRequest().getStatus().name());
+            res.setRequesterName(n.getRequest().getRequester().getName());
+            res.setRequesterPhone(n.getRequest().getRequester().getPhone());
+        }
+        
+        return res;
     }
 }

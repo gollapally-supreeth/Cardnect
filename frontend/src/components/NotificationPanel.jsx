@@ -1,7 +1,8 @@
 import { useRef, useEffect } from 'react'
-import { Bell, CheckCheck, X } from 'lucide-react'
+import { Bell, CheckCheck, X, MessageCircle, Check, Trash2, Loader } from 'lucide-react'
 import { useApp } from '../context/AppContext'
-import { markNotificationRead, markAllNotificationsRead } from '../api/services'
+import { markNotificationRead, markAllNotificationsRead, updateRequestStatus } from '../api/services'
+import { useState } from 'react'
 import './NotificationPanel.css'
 
 function timeAgo(dateStr) {
@@ -64,19 +65,105 @@ export default function NotificationPanel({ onClose }) {
           </div>
         ) : (
           notifications.slice(0, 20).map(notif => (
-            <div
-              key={notif.id}
-              className={`notif-item ${!notif.read ? 'unread' : ''}`}
-              onClick={() => !notif.read && handleMarkRead(notif.id)}
-            >
-              <div className="notif-item-dot">{!notif.read && <span className="notification-dot" />}</div>
-              <div className="notif-item-body">
-                <p className="notif-item-msg">{notif.message}</p>
-                <p className="notif-item-time">{timeAgo(notif.createdAt)}</p>
-              </div>
-            </div>
+            <NotificationItem 
+              key={notif.id} 
+              notif={notif} 
+              onMarkRead={handleMarkRead} 
+            />
           ))
         )}
+      </div>
+    </div>
+  )
+}
+
+function NotificationItem({ notif, onMarkRead }) {
+  const { refreshNotifications } = useApp()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleAction = async (status) => {
+    setLoading(true)
+    setError('')
+    try {
+      await updateRequestStatus(notif.requestId, status)
+      await refreshNotifications() // To update the local status seen in notification
+    } catch (err) {
+      setError('Failed to update')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const isRequest = !!notif.requestId
+  const status = notif.requestStatus
+  const isPending = status === 'PENDING'
+  const isAccepted = status === 'ACCEPTED'
+  const isRejected = status === 'REJECTED'
+
+  // WhatsApp link for accepted requests
+  const waLink = isAccepted && notif.requesterPhone 
+    ? `https://wa.me/${notif.requesterPhone.replace(/\D/g, '')}?text=${encodeURIComponent(`Hi ${notif.requesterName || ''}! I've accepted your card request on Cardnect. Let's discuss details.`)}`
+    : null
+
+  return (
+    <div
+      className={`notif-item ${!notif.read ? 'unread' : ''}`}
+      onClick={() => !notif.read && onMarkRead(notif.id)}
+    >
+      <div className="notif-item-dot">{!notif.read && <span className="notification-dot" />}</div>
+      <div className="notif-item-body">
+        <p className="notif-item-msg">{notif.message}</p>
+        
+        {isRequest && (
+          <div className="notif-request-content">
+            {isPending && (
+              <div className="notif-actions">
+                <button 
+                  className="notif-btn notif-btn-accept" 
+                  disabled={loading}
+                  onClick={(e) => { e.stopPropagation(); handleAction('ACCEPTED') }}
+                >
+                  {loading ? <Loader size={12} className="spin" /> : <><Check size={14} /> Accept</>}
+                </button>
+                <button 
+                  className="notif-btn notif-btn-decline" 
+                  disabled={loading}
+                  onClick={(e) => { e.stopPropagation(); handleAction('REJECTED') }}
+                >
+                  Decline
+                </button>
+              </div>
+            )}
+
+            {isAccepted && (
+              <div style={{ marginTop: 8 }}>
+                <span className="notif-status-tag accepted">Accepted</span>
+                {waLink && (
+                  <a 
+                    href={waLink} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="notif-wa-link"
+                    onClick={e => e.stopPropagation()}
+                  >
+                    <MessageCircle size={14} /> Message on WhatsApp
+                  </a>
+                )}
+              </div>
+            )}
+
+            {isRejected && (
+              <div style={{ marginTop: 8 }}>
+                <span className="notif-status-tag rejected">Declined</span>
+              </div>
+            )}
+
+            {error && <p className="ap-error" style={{ fontSize: 10, marginTop: 4 }}>{error}</p>}
+          </div>
+        )}
+
+        <p className="notif-item-time">{timeAgo(notif.createdAt)}</p>
       </div>
     </div>
   )

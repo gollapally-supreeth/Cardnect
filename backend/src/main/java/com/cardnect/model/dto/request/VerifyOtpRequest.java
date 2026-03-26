@@ -15,11 +15,9 @@ public class VerifyOtpRequest {
     @Email(message = "Please provide a valid email")
     private String email;
 
-    @NotBlank(message = "Name is required")
     @Size(max = 100, message = "Name must be at most 100 characters")
     private String name;
 
-    @NotBlank(message = "Phone number is required")
     @Pattern(regexp = "^[0-9+\\-()\\s]{7,20}$", message = "Please provide a valid phone number")
     private String phone;
 

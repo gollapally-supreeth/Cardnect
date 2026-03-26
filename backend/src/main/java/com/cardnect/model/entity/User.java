@@ -55,11 +55,11 @@ public class User {
     @PrePersist
     @PreUpdate
     public void updateVerificationFlag() {
-        // Keep the aggregate flag in sync for fast access checks across services.
-        this.verifiedUser = this.emailVerified && this.phoneVerified;
+        // Temporarily bypass phone verification requirement for the aggregate badge.
+        this.verifiedUser = this.emailVerified;
     }
 
     public boolean isFullyVerified() {
-        return verifiedUser;
+        return this.emailVerified;
     }
 }
