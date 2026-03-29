@@ -1,209 +1,356 @@
-/* ── Premium Metallic Card Design ── */
+/* ═══════════════════════════════════════════════════════════════════════════
+   Pure black metal card — static reflection, premium texture, no hover motion
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 .premium-card-wrap {
-  perspective: 1000px;
+  perspective: 1200px;
   width: 100%;
   max-width: 320px;
-  cursor: pointer;
   margin: 0 auto;
+  border-radius: 15px;
+  cursor: default;
 }
 
 .premium-card {
   position: relative;
   width: 100%;
-  aspect-ratio: 1.586 / 1; /* Standard credit card ratio (85.6mm x 53.98mm) */
-  border-radius: 12px;
+  aspect-ratio: 1.586 / 1;
+  border-radius: 15px;
   overflow: hidden;
-  background: linear-gradient(135deg, #1f1f22 0%, #0a0a0c 40%, #000000 100%);
-  box-shadow: 
-    0 10px 20px -5px rgba(0, 0, 0, 0.8),
-    0 4px 6px -2px rgba(0, 0, 0, 0.4),
-    inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  isolation: isolate;
+
+  /* Pure black metal base */
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.06) 0%,
+      transparent 38%,
+      transparent 62%,
+      rgba(255, 255, 255, 0.025) 100%
+    ),
+    radial-gradient(ellipse 120% 80% at 20% 0%, rgba(55, 55, 58, 0.35) 0%, transparent 55%),
+    linear-gradient(180deg, #0a0a0a 0%, #000000 45%, #030303 100%);
+  background-color: #000000;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.8),
+    0 16px 40px -12px rgba(0, 0, 0, 0.9);
+
   color: #fff;
-  font-family: 'DM Sans', sans-serif;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  transform-style: preserve-3d;
+  font-family: 'DM Sans', system-ui, sans-serif;
 }
 
-.premium-card:hover {
-  transform: translateY(-4px) rotateX(4deg) rotateY(2deg);
-  box-shadow: 
-    0 20px 30px -10px rgba(0, 0, 0, 0.9),
-    0 8px 12px -4px rgba(0, 0, 0, 0.6),
-    inset 0 1px 1px rgba(255, 255, 255, 0.15);
+/* Browse grid: darker glass over animated Silk (see BrowseOffers) */
+.premium-card.premium-card--browse {
+  background: linear-gradient(168deg, rgba(0, 0, 0, 0.42) 0%, rgba(0, 0, 0, 0.78) 52%, rgba(0, 0, 0, 0.9) 100%);
+  background-color: transparent;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.07),
+    inset 0 -2px 8px rgba(0, 0, 0, 0.55);
 }
 
-/* Brushed Metal / Noise Texture Overlay */
+.premium-card--browse .pc-metal-layers {
+  opacity: 0.16;
+}
+
+.premium-card--browse::before {
+  opacity: 0.32;
+}
+
+.premium-card--browse::after {
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.055),
+    inset 0 0 22px rgba(0, 0, 0, 0.48);
+}
+
+.premium-card-wrap--browse {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  width: 100%;
+  max-width: none;
+}
+
+/* Texture + noise + micro-pattern (premium “random” grain) */
+.pc-metal-layers {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  border-radius: inherit;
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    repeating-linear-gradient(
+      -18deg,
+      transparent 0px,
+      transparent 3px,
+      rgba(255, 255, 255, 0.018) 3px,
+      rgba(255, 255, 255, 0.018) 4px
+    ),
+    repeating-linear-gradient(
+      72deg,
+      transparent 0px,
+      transparent 7px,
+      rgba(255, 255, 255, 0.012) 7px,
+      rgba(255, 255, 255, 0.012) 8px
+    );
+  background-size: 100% 100%, auto, auto;
+  opacity: 0.38;
+  mix-blend-mode: overlay;
+}
+
+/* Static specular reflection band (no animation) */
 .premium-card::before {
   content: '';
   position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-  opacity: 0.04;
-  mix-blend-mode: overlay;
+  inset: -15% -20% 40% -30%;
+  background: linear-gradient(
+    118deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.03) 35%,
+    rgba(255, 255, 255, 0.09) 48%,
+    rgba(255, 255, 255, 0.02) 58%,
+    transparent 75%
+  );
   pointer-events: none;
+  z-index: 1;
+  border-radius: inherit;
 }
 
-/* Diagonal Shine Overlay */
 .premium-card::after {
   content: '';
   position: absolute;
-  top: 0;
-  left: -100%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0) 100%);
-  transform: skewX(-25deg);
-  transition: left 0.6s ease;
-  pointer-events: none;
-}
-
-.premium-card:hover::after {
-  left: 200%;
-}
-
-/* Internal Layout Setup */
-.pc-inner {
-  position: absolute;
   inset: 0;
-  padding: 20px 24px;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.07),
+    inset 0 0 32px rgba(0, 0, 0, 0.55);
+}
+
+/* Face layout */
+.pc-inner {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 11% 7.5% 8.5%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  z-index: 2;
+  gap: 0;
 }
 
-/* Top Row (Bank + Tier) */
-.pc-top {
+.pc-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
-.pc-bank-name {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.1rem;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  background: linear-gradient(180deg, #fff, #b8b8b8);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+.pc-bank-brand {
   display: flex;
   align-items: center;
-  gap: 6px;
-}
-
-.pc-card-name {
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: #c9a84c; /* Gold highlight for tier */
-}
-
-/* Middle Row (Chip + Wifi) */
-.pc-chip-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 10px;
-}
-
-.pc-chip {
-  width: 42px;
-  height: 32px;
-  background: linear-gradient(135deg, #e6c875 0%, #c9a84c 50%, #997423 100%);
-  border-radius: 6px;
-  position: relative;
-  overflow: hidden;
-  box-shadow: inset 0 0 4px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
-}
-
-.pc-chip-lines {
-  position: absolute;
-  inset: 0;
-  border: 1px solid rgba(0,0,0,0.2);
-  border-radius: 5px;
-}
-
-.pc-chip-lines::before,
-.pc-chip-lines::after {
-  content: '';
-  position: absolute;
-  background: rgba(0,0,0,0.15);
-}
-.pc-chip-lines::before {
-  top: 30%; bottom: 30%; left: 0; right: 0;
-  border-top: 1px solid rgba(0,0,0,0.2);
-  border-bottom: 1px solid rgba(0,0,0,0.2);
-}
-.pc-chip-lines::after {
-  left: 30%; right: 30%; top: 0; bottom: 0;
-  border-left: 1px solid rgba(0,0,0,0.2);
-  border-right: 1px solid rgba(0,0,0,0.2);
-}
-
-.pc-nfc {
-  color: rgba(255,255,255,0.6);
-  transform: rotate(90deg);
-}
-
-/* Number Row */
-.pc-number {
-  font-family: 'DM Sans', monospace;
-  font-size: 1.4rem;
-  font-weight: 500;
-  letter-spacing: 3px;
-  margin-top: 16px;
-  margin-bottom: 8px;
-  display: flex;
-  gap: 12px;
-  /* Embossed effect */
-  color: #e2e2e2;
-  text-shadow: 
-    1px 1px 1px rgba(0, 0, 0, 0.8),
-    -1px -1px 0px rgba(255, 255, 255, 0.2);
-}
-
-/* Bottom Row (Name + Network) */
-.pc-bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-}
-
-.pc-holder {
-  font-size: 0.85rem;
-  font-weight: 500;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.85);
-  text-shadow: 1px 1px 1px rgba(0,0,0,0.6);
-}
-
-.pc-network {
-  font-size: 1.4rem;
-  font-weight: 800;
-  font-style: italic;
-  display: flex;
-  align-items: center;
-}
-
-.pc-network-img {
-  height: 22px;
-  width: auto;
-  max-width: 65px;
-  object-fit: contain;
-  opacity: 0.95;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)) brightness(1.05);
-  border-radius: 3px;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
 }
 
 .pc-bank-img {
-  height: 22px;
-  max-width: 80px;
+  height: clamp(26px, 8vw, 34px);
+  max-width: min(140px, 44vw);
+  width: auto;
+  flex-shrink: 0;
   object-fit: contain;
-  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.6)) brightness(1.1);
+  object-position: left center;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.9)) brightness(1.04);
+}
+
+.pc-bank-custom-name {
+  font-family: 'Cormorant Garamond', 'Times New Roman', serif;
+  font-size: clamp(0.7rem, 2vw, 0.9rem);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  line-height: 1.15;
+  color: #f2f2f5;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
+  min-width: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.pc-bank-fallback-icon {
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.pc-tier {
+  flex-shrink: 0;
+  max-width: 42%;
+  text-align: right;
+  font-size: clamp(0.58rem, 1.65vw, 0.68rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  line-height: 1.35;
+  color: #c4a060;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.pc-pan {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 0;
+  padding: 2% 0;
+}
+
+.pc-number {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: clamp(0.55rem, 2.8vw, 0.95rem);
+  row-gap: 0.35rem;
+  align-self: flex-start;
+  font-family: 'DM Sans', ui-monospace, monospace;
+  font-size: clamp(1.05rem, 3.8vw, 1.38rem);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
+}
+
+.pc-number__g {
+  color: #e8eaee;
+  text-shadow:
+    0 -1px 0 rgba(255, 255, 255, 0.18),
+    0 1px 0 rgba(0, 0, 0, 0.95),
+    0 2px 5px rgba(0, 0, 0, 0.75);
+}
+
+.pc-number__g--last {
+  color: #f4f5f7;
+  letter-spacing: 0.18em;
+}
+
+.pc-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+  flex-shrink: 0;
+  min-width: 0;
+  padding-top: 2%;
+}
+
+/* Full name: wrap lines, no ellipsis */
+.pc-holder {
+  flex: 1;
+  min-width: 0;
+  font-size: clamp(0.62rem, 1.85vw, 0.76rem);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1.45;
+  color: rgba(240, 241, 245, 0.94);
+  text-shadow:
+    0 -0.5px 0 rgba(255, 255, 255, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.95);
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+
+.pc-network-mark {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.pc-network-img {
+  display: block;
+  height: clamp(22px, 6.5vw, 30px);
+  width: auto;
+  max-width: 76px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.85)) brightness(1.04);
+}
+
+.pc-network {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.net-visa {
+  font-style: italic;
+  font-weight: 900;
+  font-size: clamp(1.05rem, 3.2vw, 1.35rem);
+  color: #fff;
+  letter-spacing: 0.02em;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85);
+}
+
+.net-mastercard {
+  position: relative;
+  width: 42px;
+  height: 26px;
+}
+
+.pc-net-mc {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  top: 50%;
+  margin-top: -12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.pc-net-mc--red {
+  left: 0;
+  z-index: 1;
+  background: #eb001b;
+  opacity: 0.96;
+}
+
+.pc-net-mc--orange {
+  left: 16px;
+  z-index: 2;
+  background: #f79e1b;
+  opacity: 0.96;
+}
+
+.net-rupay {
+  font-weight: 800;
+  font-style: italic;
+  font-size: clamp(0.85rem, 2.6vw, 1.05rem);
+  color: #fff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+.net-amex {
+  font-weight: 800;
+  font-size: 0.68rem;
+  padding: 3px 5px;
   border-radius: 3px;
+  background: #fff;
+  color: #006fcf;
+  letter-spacing: 0.04em;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+}
+
+.net-fallback {
+  font-size: clamp(0.75rem, 2.2vw, 0.9rem);
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
 }

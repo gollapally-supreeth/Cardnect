@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Plus, Pencil, Trash2, X, Loader, CreditCard, Wifi, TrendingUp } from 'lucide-react'
+import { Plus, Pencil, Trash2, X, Loader, CreditCard, Shield } from 'lucide-react'
 import { fetchMyListings, createListing, updateListing, deleteListing } from '../api/services'
 import { useAuthContext } from '../context/AuthContext'
 import PremiumCard from '../components/PremiumCard'
@@ -61,18 +61,25 @@ function ListingModal({ listing, onClose }) {
 
   return (
     <div className="black-glass-overlay" onClick={onClose}>
-      <div className="black-glass-content" onClick={e => e.stopPropagation()}>
-        <div className="black-glass-header">
-          <h1>{isEdit ? 'Edit Card Listing' : 'Add New Listing'}</h1>
-          <button className="black-glass-close" onClick={onClose}><X size={18} /></button>
+      <div className="black-glass-content ml-listing-modal" onClick={e => e.stopPropagation()}>
+        <button type="button" className="black-glass-close" onClick={onClose} aria-label="Close"><X size={16} /></button>
+
+        <div className="ml-listing-modal-head">
+          <div className="ml-listing-modal-icon" aria-hidden>
+            <CreditCard size={18} strokeWidth={1.75} />
+          </div>
+          <div>
+            <h1 className="ml-listing-modal-title">{isEdit ? 'Edit listing' : 'Add card'}</h1>
+            <p className="ml-listing-modal-sub">Preview updates as you type</p>
+          </div>
         </div>
 
-        <div className="bg-info">
-          Only enter the <strong>last 4 digits</strong> of your card. Never enter full number, CVV, or expiry.
+        <div className="ml-listing-info" role="note">
+          <Shield size={14} className="ml-listing-info-icon" aria-hidden />
+          <span><strong>Last 4 digits only</strong> — never full number, CVV, or expiry.</span>
         </div>
 
-        {/* LIVE 3D PREVIEW */}
-        <div style={{ marginBottom: 32, display: 'flex', justifyContent: 'center' }}>
+        <div className="ml-listing-preview">
           <PremiumCard 
             bankName={displayBankName}
             cardName={form.cardName}
@@ -83,7 +90,7 @@ function ListingModal({ listing, onClose }) {
           />
         </div>
 
-        <div className="ml-form-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
+        <div className="ml-form-grid ml-listing-form" style={{ gridTemplateColumns: '1fr 1fr' }}>
           <div className="bg-input-group" style={{ gridColumn: showCustomBank ? '1' : '1/-1' }}>
             <label className="bg-label">Bank Name *</label>
             <select className="bg-input" value={form.bankName} onChange={e => set('bankName', e.target.value)}>
@@ -132,15 +139,15 @@ function ListingModal({ listing, onClose }) {
         </div>
 
         {(error || mutation.error) && (
-          <div className="bg-err" style={{ marginTop: 16 }}>
+          <div className="bg-err ml-listing-err">
             {error || mutation.error?.message}
           </div>
         )}
 
-        <div style={{ display:'flex', gap:12, marginTop:32 }}>
-          <button className="bg-btn-secondary" style={{ flex:1 }} onClick={onClose} disabled={mutation.isPending}>Cancel</button>
-          <button className="bg-btn" style={{ flex:2 }} onClick={handleSubmit} disabled={mutation.isPending}>
-            {mutation.isPending ? <><Loader size={18} className="spin" /> Saving…</> : isEdit ? 'Save Changes' : 'Add Listing'}
+        <div className="ml-listing-actions">
+          <button type="button" className="bg-btn-secondary" onClick={onClose} disabled={mutation.isPending}>Cancel</button>
+          <button type="button" className="bg-btn" onClick={handleSubmit} disabled={mutation.isPending}>
+            {mutation.isPending ? <><Loader size={16} className="spin" /> Saving…</> : isEdit ? 'Save' : 'Add listing'}
           </button>
         </div>
       </div>

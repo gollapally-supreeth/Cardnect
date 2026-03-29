@@ -103,21 +103,180 @@
 /* ── Cards grid ───────────────────────────────────────────── */
 .bo-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 22px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 580px), 1fr));
+  gap: 28px 20px;
 }
 
-/* ── Listing card wrapper ──────────────────────────────────── */
+/* ── Listing: card (left) + docked detail panel (right, slides open) ── */
 .lc-wrap {
   animation: cardFadeUp 0.45s ease both;
+  padding: 12px 8px 28px;
+  position: relative;
   display: flex;
-  flex-direction: column;
-  gap: 0;
+  justify-content: center;
+  min-width: 0;
 }
 
 @keyframes cardFadeUp {
   from { opacity: 0; transform: translateY(24px) scale(0.98); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.lc-dock {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  max-width: 100%;
+  position: relative;
+}
+
+/* Silk behind browse card */
+.lc-silk-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: 15px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.lc-card-stage {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 320px;
+  flex-shrink: 0;
+  transition:
+    transform 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+    filter 0.5s ease;
+  filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.72));
+}
+
+.lc-wrap:hover .lc-card-stage,
+.lc-wrap:focus-within .lc-card-stage {
+  transform: translateY(-12px);
+  filter:
+    drop-shadow(0 28px 48px rgba(0, 0, 0, 0.88))
+    drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
+}
+
+/* Right panel: attached, slides from card edge */
+.lc-hover-panel {
+  flex: 0 0 0;
+  width: 0;
+  min-width: 0;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  margin-left: 0;
+  border-radius: 0 16px 16px 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-left: none;
+  background: linear-gradient(180deg, rgba(18, 18, 20, 0.98) 0%, rgba(8, 8, 10, 0.99) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    4px 12px 32px rgba(0, 0, 0, 0.45);
+  transform: translateX(-6px);
+  pointer-events: none;
+  transition:
+    flex-basis 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+    max-width 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+    width 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+    opacity 0.4s ease 0.05s,
+    transform 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+    margin 0.45s ease,
+    min-width 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.lc-wrap:hover .lc-hover-panel,
+.lc-wrap:focus-within .lc-hover-panel {
+  flex: 0 0 min(260px, 42vw);
+  width: min(260px, 42vw);
+  min-width: min(260px, 42vw);
+  max-width: min(260px, 42vw);
+  opacity: 1;
+  transform: translateX(0);
+  margin-left: -1px;
+  pointer-events: auto;
+}
+
+.lc-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 12px;
+  padding: 14px 14px 12px 16px;
+  flex: 1;
+  min-height: 0;
+}
+
+.lc-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.lc-detail-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.lc-detail-val {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+@media (max-width: 700px) {
+  .lc-dock {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .lc-hover-panel {
+    border-radius: 0 0 16px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: none;
+    margin-left: 0 !important;
+    transform: translateY(-10px);
+    max-height: 0;
+    opacity: 0;
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    transition:
+      max-height 0.5s cubic-bezier(0.23, 1, 0.32, 1),
+      opacity 0.35s ease,
+      transform 0.45s ease;
+  }
+
+  .lc-wrap:hover .lc-hover-panel,
+  .lc-wrap:focus-within .lc-hover-panel {
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    max-height: 320px;
+    opacity: 1;
+    transform: translateY(0);
+    margin-top: -1px;
+  }
+
+  .lc-info {
+    border-radius: 0 0 16px 16px;
+  }
 }
 
 /* ── Credit card visual ────────────────────────────────────── */
@@ -248,19 +407,18 @@
   color: rgba(255,255,255,0.70);
 }
 
-/* ── Info bar below card ───────────────────────────────────── */
+/* ── Info bar (inside hover panel) ─────────────────────────── */
 .lc-info {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.07);
-  border-top: none;
-  border-radius: 0 0 14px 14px;
-  padding: 12px 16px;
-  transition: background 0.2s;
+  gap: 12px;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.04);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 0 0 16px 0;
+  padding: 12px 14px 12px 16px;
 }
-.lc-wrap:hover .lc-info { background: rgba(255,255,255,0.05); }
 
 .lc-commission { display: flex; align-items: baseline; gap: 5px; }
 

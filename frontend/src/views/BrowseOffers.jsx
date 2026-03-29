@@ -5,6 +5,7 @@ import { fetchListings, createRequest } from '../api/services'
 import { useAuthContext } from '../context/AuthContext'
 import VerifyPhoneModal from '../components/VerifyPhoneModal'
 import PremiumCard from '../components/PremiumCard'
+import Silk from '../components/Silk'
 import './BrowseOffers.css'
 
 const NETWORKS = ['All', 'Visa', 'Mastercard', 'RuPay', 'Amex']
@@ -145,35 +146,68 @@ function RequestModal({ listing, onClose, isVerified, user, onVerifyClick }) {
   )
 }
 
-/* ── Premium listing card wrapper ── */
+/* ── Premium listing card: card + Silk; details dock right on hover ── */
 function ListingCard({ listing, onRequest, index }) {
+  const tier = listing.cardName?.trim() || '—'
   return (
-    <div
-      className="lc-wrap"
-      style={{ animationDelay: `${index * 60}ms`, padding: 16, display: 'flex', flexDirection: 'column' }}
-    >
-      <PremiumCard 
-        bankName={listing.bankName}
-        cardName={listing.cardName}
-        cardNetwork={listing.cardNetwork}
-        cardType={listing.cardType}
-        maskedNumber={`•••• •••• •••• ${listing.maskedNumber?.slice(-4) || 'XXXX'}`}
-        holderName={listing.holderName}
-      />
-
-      {/* Info + CTA below card */}
-      <div className="lc-info" style={{ marginTop: 16 }}>
-        <div className="lc-commission">
-          <span className="lc-commission-pct">{listing.commissionPercentage}%</span>
-          <span className="lc-commission-label">commission</span>
+    <div className="lc-wrap" style={{ animationDelay: `${index * 60}ms` }}>
+      <div className="lc-dock">
+        <div className="lc-card-stage">
+          <div className="lc-silk-bg" aria-hidden="true">
+            <Silk
+              speed={1.65}
+              scale={1.2}
+              color="#8a8a90"
+              noiseIntensity={1.25}
+              rotation={14}
+              monochrome
+            />
+          </div>
+          <PremiumCard
+            variant="browse"
+            bankName={listing.bankName}
+            cardName={listing.cardName}
+            cardNetwork={listing.cardNetwork}
+            cardType={listing.cardType}
+            maskedNumber={`•••• •••• •••• ${listing.maskedNumber?.slice(-4) || 'XXXX'}`}
+            holderName={listing.holderName}
+          />
         </div>
-        <button
-          id={`request-btn-${listing.id}`}
-          className="lc-request-btn"
-          onClick={() => onRequest(listing)}
-        >
-          Request <ArrowRight size={14} />
-        </button>
+
+        <aside className="lc-hover-panel">
+          <div className="lc-details-grid">
+            <div className="lc-detail">
+              <span className="lc-detail-label">Bank</span>
+              <span className="lc-detail-val">{listing.bankName}</span>
+            </div>
+            <div className="lc-detail">
+              <span className="lc-detail-label">Network</span>
+              <span className="lc-detail-val">{listing.cardNetwork}</span>
+            </div>
+            <div className="lc-detail">
+              <span className="lc-detail-label">Type</span>
+              <span className="lc-detail-val">{listing.cardType}</span>
+            </div>
+            <div className="lc-detail">
+              <span className="lc-detail-label">Tier</span>
+              <span className="lc-detail-val">{tier}</span>
+            </div>
+          </div>
+          <div className="lc-info">
+            <div className="lc-commission">
+              <span className="lc-commission-pct">{listing.commissionPercentage}%</span>
+              <span className="lc-commission-label">commission</span>
+            </div>
+            <button
+              type="button"
+              id={`request-btn-${listing.id}`}
+              className="lc-request-btn"
+              onClick={() => onRequest(listing)}
+            >
+              Request <ArrowRight size={14} />
+            </button>
+          </div>
+        </aside>
       </div>
     </div>
   )

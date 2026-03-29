@@ -103,15 +103,16 @@ float snoise(vec3 v) {
 }
 `;
 
-const SilkGeometry = ({ speed, scale, color, noiseIntensity, rotation }) => {
+const SilkGeometry = ({ speed, scale, color, noiseIntensity, rotation, monochrome }) => {
   const meshRef = useRef();
   
   const uniforms = useMemo(() => ({
     uTime: { value: 0 },
-    uSpeed: { value: speed * 0.08 }, // Slightly increased speed
+    uSpeed: { value: speed * 0.08 },
     uNoiseIntensity: { value: noiseIntensity },
     uColor: { value: new THREE.Color(color) },
-  }), [speed, noiseIntensity, color]);
+    uMono: { value: monochrome ? 1.0 : 0.0 },
+  }), [speed, noiseIntensity, color, monochrome]);
 
   const vertexShader = `
     ${noiseSnippet}
@@ -140,24 +141,34 @@ const SilkGeometry = ({ speed, scale, color, noiseIntensity, rotation }) => {
 
   const fragmentShader = `
     uniform vec3 uColor;
+    uniform float uMono;
     varying vec2 vUv;
     varying float vDisplacement;
     
     void main() {
-      // Normalize displacement (-1.0 to 1.0) into a clean 0.0 to 1.0 curve
       float wave = vDisplacement * 0.5 + 0.5;
       
-      // Silver metallic color stops
-      vec3 shadowColor = vec3(0.65, 0.65, 0.67); // #a3a3a8
-      vec3 midColor = vec3(0.85, 0.85, 0.87);    // #d9d9de
-      vec3 highlightColor = vec3(1.0, 1.0, 1.0); // #ffffff
+      vec3 shadowColor;
+      vec3 midColor;
+      vec3 highlightColor;
       
-      // Smooth interpolation for the metal surface
+      if (uMono > 0.5) {
+        // Pure black / white metal (browse cards)
+        shadowColor = vec3(0.04, 0.04, 0.045);
+        midColor = vec3(0.14, 0.14, 0.15);
+        highlightColor = vec3(0.62, 0.62, 0.65);
+      } else {
+        shadowColor = vec3(0.65, 0.65, 0.67);
+        midColor = vec3(0.85, 0.85, 0.87);
+        highlightColor = vec3(1.0, 1.0, 1.0);
+      }
+      
       vec3 finalColor = mix(shadowColor, midColor, smoothstep(0.0, 0.5, wave));
       finalColor = mix(finalColor, highlightColor, smoothstep(0.5, 0.9, wave));
       
-      // Intense, tight specular glint across the highest ridges
-      float specular = pow(smoothstep(0.7, 1.0, wave), 4.0) * 0.5;
+      float specPow = uMono > 0.5 ? 5.0 : 4.0;
+      float specAmt = uMono > 0.5 ? 0.35 : 0.5;
+      float specular = pow(smoothstep(0.7, 1.0, wave), specPow) * specAmt;
       finalColor += specular;
       
       gl_FragColor = vec4(finalColor, 1.0);
@@ -191,7 +202,8 @@ export default function Silk({
   scale = 1, 
   color = "#7B7481", 
   noiseIntensity = 1.5, 
-  rotation = 0 
+  rotation = 0,
+  monochrome = false,
 }) {
   return (
     <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0, pointerEvents: 'none' }}>
@@ -206,7 +218,8 @@ export default function Silk({
           scale={scale} 
           color={color} 
           noiseIntensity={noiseIntensity} 
-          rotation={rotation} 
+          rotation={rotation}
+          monochrome={monochrome}
         />
       </Canvas>
     </div>
