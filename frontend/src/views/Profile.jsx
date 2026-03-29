@@ -9,21 +9,21 @@ import './Profile.css'
 const formatCardId = (id) => {
   if (!id) return '0000 0000 0000 0000'
   const clean = id.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().padEnd(16, 'X')
-  return `${clean.substring(0,4)} ${clean.substring(4,8)} ${clean.substring(8,12)} ${clean.substring(12,16)}`
+  return `${clean.substring(0, 4)} ${clean.substring(4, 8)} ${clean.substring(8, 12)} ${clean.substring(12, 16)}`
 }
 
 export default function Profile() {
   const { user } = useAuthContext()
-  const emailVerified   = !!user?.emailVerified
-  const phoneVerified   = !!user?.phoneVerified
+  const emailVerified = !!user?.emailVerified
+  const phoneVerified = !!user?.phoneVerified
   const isFullyVerified = emailVerified && phoneVerified;
 
   const [showVerifyModal, setShowVerifyModal] = useState(false)
-  const [showPwdModal, setShowPwdModal]       = useState(false)
-  const [isFlipped, setIsFlipped]             = useState(false)
+  const [showPwdModal, setShowPwdModal] = useState(false)
+  const [isFlipped, setIsFlipped] = useState(false)
 
   const memberSince = user?.createdAt
-    ? new Date(user.createdAt).toLocaleDateString('en-US', { month:'2-digit', year:'2-digit' })
+    ? new Date(user.createdAt).toLocaleDateString('en-US', { month: '2-digit', year: '2-digit' })
     : '12/24'
 
   return (
@@ -32,7 +32,7 @@ export default function Profile() {
 
       <div className="vmax-scene">
         <div className={`vmax-card ${isFlipped ? 'flipped' : ''}`}>
-          
+
           {/* ════ FRONT OF CARD ════ */}
           <div className="vmax-face vmax-front" style={{ pointerEvents: isFlipped ? 'none' : 'auto' }}>
             <div className="vmax-glare" />
@@ -47,7 +47,7 @@ export default function Profile() {
                 rotation={15}
               />
             </div>
-            
+
             {/* Advanced Geometry Background */}
             <div className="vmax-geo">
               <div className="vmax-circle c1" />
@@ -58,8 +58,8 @@ export default function Profile() {
               <div className="vmax-header">
                 <div className="vmax-brand">
                   <div className="vmax-logo-dots">
-                    <span className="dot d1"/>
-                    <span className="dot d2"/>
+                    <span className="dot d1" />
+                    <span className="dot d2" />
                   </div>
                   CARDNECT
                 </div>
@@ -77,7 +77,7 @@ export default function Profile() {
 
               <div className="vmax-meta">
                 <div className="vmax-label-group">
-                  <span>VALID<br/>THRU</span>
+                  <span>VALID<br />THRU</span>
                   <strong>{memberSince}</strong>
                 </div>
               </div>
@@ -90,11 +90,11 @@ export default function Profile() {
               </div>
             </div>
 
-            <button 
-              className="vmax-btn-flip to-back" 
+            <button
+              className="vmax-btn-flip to-back"
               onClick={(e) => { e.stopPropagation(); setIsFlipped(true); }}
             >
-              Security Center <ChevronRight size={14} />
+              Back  <ChevronRight size={14} />
             </button>
           </div>
 
@@ -105,19 +105,19 @@ export default function Profile() {
             {/* Custom R3F Silk Background for Back Face */}
             <div className="vmax-silk-bg">
               <Silk
-                speed={4.5} 
+                speed={4.5}
                 scale={1.2}
                 color="#ffffff"
-                noiseIntensity={1.3} 
+                noiseIntensity={1.3}
                 rotation={45}
               />
             </div>
 
             {/* Magstripe at the top */}
             <div className="vmax-magstripe" />
-            
+
             <div className="vmax-back-inner">
-              
+
               {/* Signature Panel with proper email handling */}
               <div className="vmax-signature-wrap">
                 <span className="sig-label">AUTHORIZED CREDENTIAL <span className="sig-arrow">►</span></span>
@@ -131,7 +131,7 @@ export default function Profile() {
               <div className="vmax-actions">
                 <div className="vmax-action-row">
                   <div className="vmax-action-info">
-                    <Phone size={14} className="action-icon" /> 
+                    <Phone size={14} className="action-icon" />
                     <span className="action-text">{user?.phone || 'No phone linked'}</span>
                   </div>
                   {phoneVerified ? (
@@ -146,7 +146,7 @@ export default function Profile() {
 
                 <div className="vmax-action-row">
                   <div className="vmax-action-info">
-                    <Lock size={14} className="action-icon" /> 
+                    <Lock size={14} className="action-icon" />
                     <span className="action-text">Account Password</span>
                   </div>
                   <button className="vmax-action-btn" onClick={(e) => {
@@ -157,17 +157,17 @@ export default function Profile() {
               </div>
 
               <div className="vmax-disclaimer">
-                <strong>GLOBAL IDENTIFICATION PROTOCOL</strong><br/>
+                <strong>GLOBAL IDENTIFICATION PROTOCOL</strong><br />
                 This physical asset proxy is cryptographically secured via zero-knowledge architecture. Authorized personnel only. If found, return to issuing authority immediately.
               </div>
 
             </div>
 
-            <button 
-              className="vmax-btn-flip to-front" 
+            <button
+              className="vmax-btn-flip to-front"
               onClick={(e) => { e.stopPropagation(); setIsFlipped(false); }}
             >
-              <ChevronRight size={14} style={{transform: 'rotate(180deg)'}} /> Front
+              <ChevronRight size={14} style={{ transform: 'rotate(180deg)' }} /> Front
             </button>
           </div>
 

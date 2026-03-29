@@ -35,17 +35,27 @@ function RequestRow({ req, isIncoming, onStatusChange }) {
 
   return (
     <tr>
-      <td>
+      <td data-label="Card">
         <div className="req-bank">{req.listingBankName}</div>
         <div className="req-sub">{req.listingCardType} · {req.listingCardNetwork}</div>
       </td>
-      <td>
+      <td data-label="Offer Details">
         <p style={{ fontSize: 13 }}>{req.offerDetails}</p>
       </td>
-      {isIncoming && <td style={{ fontSize: 13 }}>{req.requesterName}</td>}
-      <td><span className={`badge ${STATUS_COLORS[req.status] || 'badge-muted'}`}>{req.status}</span></td>
-      <td style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{timeAgo(req.createdAt)}</td>
-      <td>
+      {isIncoming && (
+        <td data-label="Requester" style={{ fontSize: 13 }}>
+          {req.requesterName}
+        </td>
+      )}
+      <td data-label="Status">
+        <span className={`badge ${STATUS_COLORS[req.status] || 'badge-muted'}`}>
+          {req.status}
+        </span>
+      </td>
+      <td data-label="Date" style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>
+        {timeAgo(req.createdAt)}
+      </td>
+      <td data-label="Actions">
         <div className="req-actions">
           {isIncoming && req.status === 'PENDING' && (
             <>

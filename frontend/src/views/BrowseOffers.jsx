@@ -146,12 +146,11 @@ function RequestModal({ listing, onClose, isVerified, user, onVerifyClick }) {
   )
 }
 
-/* ── Premium listing card: card + Silk; details dock right on hover ── */
+/* ── Premium listing card: card + Silk + stable action bar ── */
 function ListingCard({ listing, onRequest, index }) {
-  const tier = listing.cardName?.trim() || '—'
   return (
     <div className="lc-wrap" style={{ animationDelay: `${index * 60}ms` }}>
-      <div className="lc-dock">
+      <div className="lc-card-group">
         <div className="lc-card-stage">
           <div className="lc-silk-bg" aria-hidden="true">
             <Silk
@@ -169,45 +168,25 @@ function ListingCard({ listing, onRequest, index }) {
             cardName={listing.cardName}
             cardNetwork={listing.cardNetwork}
             cardType={listing.cardType}
-            maskedNumber={`•••• •••• •••• ${listing.maskedNumber?.slice(-4) || 'XXXX'}`}
+            maskedNumber={`XXXX XXXX XXXX ${listing.maskedNumber?.slice(-4) || 'XXXX'}`}
             holderName={listing.holderName}
           />
         </div>
 
-        <aside className="lc-hover-panel">
-          <div className="lc-details-grid">
-            <div className="lc-detail">
-              <span className="lc-detail-label">Bank</span>
-              <span className="lc-detail-val">{listing.bankName}</span>
-            </div>
-            <div className="lc-detail">
-              <span className="lc-detail-label">Network</span>
-              <span className="lc-detail-val">{listing.cardNetwork}</span>
-            </div>
-            <div className="lc-detail">
-              <span className="lc-detail-label">Type</span>
-              <span className="lc-detail-val">{listing.cardType}</span>
-            </div>
-            <div className="lc-detail">
-              <span className="lc-detail-label">Tier</span>
-              <span className="lc-detail-val">{tier}</span>
-            </div>
+        <div className="lc-bottom-bar">
+          <div className="lc-commission">
+            <span className="lc-commission-pct">{listing.commissionPercentage}%</span>
+            <span className="lc-commission-label">commission</span>
           </div>
-          <div className="lc-info">
-            <div className="lc-commission">
-              <span className="lc-commission-pct">{listing.commissionPercentage}%</span>
-              <span className="lc-commission-label">commission</span>
-            </div>
-            <button
-              type="button"
-              id={`request-btn-${listing.id}`}
-              className="lc-request-btn"
-              onClick={() => onRequest(listing)}
-            >
-              Request <ArrowRight size={14} />
-            </button>
-          </div>
-        </aside>
+          <button
+            type="button"
+            id={`request-btn-${listing.id}`}
+            className="lc-request-btn"
+            onClick={() => onRequest(listing)}
+          >
+            Request <ArrowRight size={14} />
+          </button>
+        </div>
       </div>
     </div>
   )
@@ -230,7 +209,12 @@ export default function BrowseOffers() {
   })
 
   const filtered = listings.filter(l => {
-    const matchSearch  = !search || l.bankName.toLowerCase().includes(search.toLowerCase())
+    const s = search.toLowerCase()
+    const matchSearch = !search || 
+      l.bankName?.toLowerCase().includes(s) || 
+      l.cardName?.toLowerCase().includes(s) ||
+      l.cardNetwork?.toLowerCase().includes(s)
+      
     const matchNetwork = network === 'All' || l.cardNetwork === network
     const matchType    = type   === 'All' || l.cardType    === type
     return matchSearch && matchNetwork && matchType
@@ -256,6 +240,11 @@ export default function BrowseOffers() {
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
+          {search && (
+            <button className="bo-search-clear" onClick={() => setSearch('')}>
+              <X size={14} />
+            </button>
+          )}
         </div>
         <div className="bo-filter-pills">
           <SlidersHorizontal size={14} style={{ color: 'rgba(255,255,255,0.30)' }} />

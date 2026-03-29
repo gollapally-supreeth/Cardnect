@@ -161,9 +161,8 @@ function MyCard({ l, onEdit, onDelete, deleting }) {
     <div className="ml-card" style={{ animationDelay: `${Math.random() * 120}ms` }}>
       
       <div className="ml-card-header">
-        <div className="ml-card-badge">{l.cardType}</div>
-        <div className="ml-card-comm">
-          <strong>{l.commissionPercentage}%</strong> Comm
+        <div className="ml-card-comm-tag">
+          {l.commissionPercentage}% Commission
         </div>
       </div>
 
@@ -173,7 +172,7 @@ function MyCard({ l, onEdit, onDelete, deleting }) {
           cardName={l.cardName}
           cardNetwork={l.cardNetwork}
           cardType={l.cardType}
-          maskedNumber={`•••• •••• •••• ${l.maskedNumber?.slice(-4) || 'XXXX'}`}
+          maskedNumber={`XXXX XXXX XXXX ${l.maskedNumber?.slice(-4) || 'XXXX'}`}
           holderName={l.holderName}
         />
       </div>

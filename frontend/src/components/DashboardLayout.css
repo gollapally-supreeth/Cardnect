@@ -373,20 +373,170 @@
   z-index: 1;
 }
 
-/* ── Mobile ───────────────────────────────────────────────── */
+/* ── Visibility Utilities ── */
+.desktop-only { display: flex !important; }
+.mobile-only { display: none !important; }
+
 @media (max-width: 768px) {
-  .dash-sidebar {
-    left: 8px; top: auto; bottom: 16px;
-    transform: none;
-    flex-direction: row;
-    width: auto; height: 56px;
-    border-radius: 28px;
-    padding: 0 14px; gap: 6px;
+  .desktop-only { display: none !important; }
+  .mobile-only { display: flex !important; }
+}
+
+/* ── Mobile Bottom Navigation Bar (Pixel-Perfect Image Match) ── */
+.mobile-nav-bar {
+  position: fixed;
+  bottom: 12px; 
+  left: 12px;
+  right: 12px;
+  height: 65px;
+  background: #ffffff;
+  border-radius: 40px;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.mobile-nav-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.mobile-nav-item {
+  position: relative;
+  z-index: 10;
+  flex: 1;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  color: #555;
+  transition: color 0.3s ease;
+}
+
+.mobile-nav-item.active {
+  color: #fff;
+}
+
+.mobile-nav-icon-wrapper {
+  transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-nav-item.active .mobile-nav-icon-wrapper {
+  transform: translateY(-34px);
+}
+
+/* ── Active Liquid Indicator / Floating Droplet ── */
+.mobile-nav-indicator {
+  position: absolute;
+  top: -38px;
+  width: calc((100% - 20px) / 4);
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  transition: left 0.5s cubic-bezier(0.68, -0.6, 0.32, 1.6);
+  pointer-events: none;
+}
+
+.indicator-droplet {
+  position: relative;
+  width: 60px; /* Slightly smaller for a better gap feel */
+  height: 60px;
+  background: #ff5a5f;
+  border-radius: 50%;
+  z-index: 5;
+  /* Removal of border to allow true gap from background valley */
+  box-shadow: 
+    0 10px 20px rgba(255, 90, 95, 0.3),
+    0 0 15px rgba(255, 90, 95, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.droplet-glow {
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 90, 95, 0.2) 0%, transparent 70%);
+  z-index: -1;
+  animation: dropletPulse 2s infinite ease-in-out;
+}
+
+@keyframes dropletPulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.15); opacity: 0.8; }
+}
+
+/* Precise Liquid Cutout / Valley logic */
+.mobile-nav-indicator::before,
+.mobile-nav-indicator::after {
+  content: '';
+  position: absolute;
+  top: 38px;
+  width: 30px;
+  height: 30px;
+  background: transparent;
+  z-index: 10;
+}
+
+.mobile-nav-indicator::before {
+  left: calc(50% - 65px);
+  border-bottom-right-radius: 30px;
+  box-shadow: 12px 12px 0 0 #ffffff;
+}
+
+.mobile-nav-indicator::after {
+  right: calc(50% - 65px);
+  border-bottom-left-radius: 30px;
+  box-shadow: -12px 12px 0 0 #ffffff;
+}
+
+/* ── Mobile Responsive Adjustments ── */
+@media (max-width: 768px) {
+  .dash-sidebar { display: none !important; }
+  
+  .dash-main {
+    margin-bottom: 95px;
   }
-  .dash-sidebar-divider, .dash-sidebar-spacer { display: none; }
-  .dash-sidebar-bottom { flex-direction: row; }
-  .dash-nav { flex-direction: row; }
-  .dash-main { margin-left: 0; margin-bottom: 80px; }
-  .dash-nav-item::after, .dash-sidebar-avatar::after { display: none; }
-  .dash-content { padding: 16px; }
+
+  .dash-topbar {
+    padding: 0 16px;
+    height: 62px;
+    background: rgba(0, 0, 0, 0.92);
+    backdrop-filter: blur(25px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .dash-topbar-right {
+    gap: 6px;
+  }
+
+  .logout-icon-mobile {
+    color: #ff5a5f;
+  }
+
+  .topbar-icon-btn.active {
+    background: rgba(255, 90, 95, 0.15);
+    color: #ff5a5f;
+  }
+
+  .dash-verif-banner {
+    padding: 10px 16px;
+    background: rgba(255, 90, 95, 0.05);
+    border-bottom: 1px solid rgba(255, 90, 95, 0.1);
+    color: #ff5a5f;
+  }
 }

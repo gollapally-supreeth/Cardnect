@@ -108,7 +108,7 @@ const SilkGeometry = ({ speed, scale, color, noiseIntensity, rotation, monochrom
   
   const uniforms = useMemo(() => ({
     uTime: { value: 0 },
-    uSpeed: { value: speed * 0.08 },
+    uSpeed: { value: speed * 0.15 },
     uNoiseIntensity: { value: noiseIntensity },
     uColor: { value: new THREE.Color(color) },
     uMono: { value: monochrome ? 1.0 : 0.0 },
@@ -131,8 +131,8 @@ const SilkGeometry = ({ speed, scale, color, noiseIntensity, rotation, monochrom
       // Primary slow waves
       float primaryNoise = snoise(vec3(pos.x * uNoiseIntensity * 0.4, pos.y * uNoiseIntensity * 0.4, uTime * uSpeed));
       
-      // Gentle displacement so it looks like a sculpted metal surface, not wrinkled cloth
-      pos.z += primaryNoise * 0.8;
+      // Tighter displacement for a mirror-metal feel
+      pos.z += primaryNoise * 0.4;
       vDisplacement = primaryNoise;
       
       gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
@@ -166,8 +166,8 @@ const SilkGeometry = ({ speed, scale, color, noiseIntensity, rotation, monochrom
       vec3 finalColor = mix(shadowColor, midColor, smoothstep(0.0, 0.5, wave));
       finalColor = mix(finalColor, highlightColor, smoothstep(0.5, 0.9, wave));
       
-      float specPow = uMono > 0.5 ? 5.0 : 4.0;
-      float specAmt = uMono > 0.5 ? 0.35 : 0.5;
+      float specPow = uMono > 0.5 ? 6.0 : 4.0;
+      float specAmt = uMono > 0.5 ? 0.6 : 0.5;
       float specular = pow(smoothstep(0.7, 1.0, wave), specPow) * specAmt;
       finalColor += specular;
       

@@ -64,9 +64,34 @@
 }
 .bo-search-input::placeholder { color: rgba(255, 255, 255, 0.2); }
 .bo-search-input:focus { 
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.25);
-  box-shadow: 0 0 20px rgba(255, 255, 255, 0.03), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 0 0 4px rgba(255, 255, 255, 0.02),
+    inset 0 1px 1px rgba(255, 255, 255, 0.05);
+}
+
+.bo-search-clear {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.bo-search-clear:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
 }
 
 .bo-filter-pills { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -103,18 +128,25 @@
 /* ── Cards grid ───────────────────────────────────────────── */
 .bo-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 580px), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr));
   gap: 28px 20px;
 }
 
-/* ── Listing: card (left) + docked detail panel (right, slides open) ── */
+/* ── Listing: card (top) + action bar (bottom) ── */
 .lc-wrap {
   animation: cardFadeUp 0.45s ease both;
-  padding: 12px 8px 28px;
+  padding: 12px;
   position: relative;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
   min-width: 0;
+  z-index: 1;
+}
+
+.lc-wrap:hover {
+  z-index: 10;
 }
 
 @keyframes cardFadeUp {
@@ -122,15 +154,41 @@
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-.lc-dock {
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  max-width: 100%;
+.lc-wrap {
   position: relative;
+  width: 100%;
+  padding: 0;
+  margin: 0;
 }
 
-/* Silk behind browse card */
+.lc-card-group {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.lc-card-stage {
+  position: relative;
+  z-index: 2; /* Content sits above drawer */
+  width: 100%;
+  flex: 0 0 auto;
+  border-radius: 15px;
+  background: #000; /* Ensure drawer doesn't show through */
+  transform: translateZ(0);
+  will-change: transform, box-shadow;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.72);
+}
+
+.lc-wrap:hover .lc-card-stage,
+.lc-wrap:focus-within .lc-card-stage {
+  transform: translateY(-4px);
+  box-shadow:
+    0 24px 38px rgba(0, 0, 0, 0.88),
+    0 10px 20px rgba(0, 0, 0, 0.5);
+}
+
 .lc-silk-bg {
   position: absolute;
   inset: 0;
@@ -140,143 +198,78 @@
   pointer-events: none;
 }
 
-.lc-card-stage {
-  position: relative;
-  z-index: 1;
+.lc-bottom-bar {
+  position: absolute;
+  top: calc(100% - 24px);
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   width: 100%;
-  max-width: 320px;
-  flex-shrink: 0;
-  transition:
-    transform 0.5s cubic-bezier(0.23, 1, 0.32, 1),
-    filter 0.5s ease;
-  filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.72));
-}
-
-.lc-wrap:hover .lc-card-stage,
-.lc-wrap:focus-within .lc-card-stage {
-  transform: translateY(-12px);
-  filter:
-    drop-shadow(0 28px 48px rgba(0, 0, 0, 0.88))
-    drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
-}
-
-/* Right panel: attached, slides from card edge */
-.lc-hover-panel {
-  flex: 0 0 0;
-  width: 0;
-  min-width: 0;
-  max-width: 0;
-  opacity: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-self: stretch;
-  margin-left: 0;
-  border-radius: 0 16px 16px 0;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-left: none;
-  background: linear-gradient(180deg, rgba(18, 18, 20, 0.98) 0%, rgba(8, 8, 10, 0.99) 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    4px 12px 32px rgba(0, 0, 0, 0.45);
-  transform: translateX(-6px);
+  background: rgba(22, 22, 24, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: none;
+  border-radius: 0 0 16px 16px;
+  padding: 24px 22px 20px 24px;
+  z-index: 1; /* Hide behind card */
+  
+  /* Start hidden */
+  opacity: 0 !important;
+  visibility: hidden !important;
   pointer-events: none;
-  transition:
-    flex-basis 0.5s cubic-bezier(0.23, 1, 0.32, 1),
-    max-width 0.5s cubic-bezier(0.23, 1, 0.32, 1),
-    width 0.5s cubic-bezier(0.23, 1, 0.32, 1),
-    opacity 0.4s ease 0.05s,
-    transform 0.5s cubic-bezier(0.23, 1, 0.32, 1),
-    margin 0.45s ease,
-    min-width 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  transform: translateY(-30px) scaleY(0);
+  transform-origin: top;
+  transition: 
+    opacity 0.3s ease,
+    visibility 0.3s ease,
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
 }
 
-.lc-wrap:hover .lc-hover-panel,
-.lc-wrap:focus-within .lc-hover-panel {
-  flex: 0 0 min(260px, 42vw);
-  width: min(260px, 42vw);
-  min-width: min(260px, 42vw);
-  max-width: min(260px, 42vw);
-  opacity: 1;
-  transform: translateX(0);
-  margin-left: -1px;
+.lc-wrap:hover .lc-bottom-bar,
+.lc-wrap:focus-within .lc-bottom-bar {
+  opacity: 1 !important;
+  visibility: visible !important;
   pointer-events: auto;
+  transform: translateY(12px) scaleY(1);
 }
 
-.lc-details-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px 12px;
-  padding: 14px 14px 12px 16px;
-  flex: 1;
-  min-height: 0;
-}
-
-.lc-detail {
+.lc-commission {
   display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0;
+  align-items: baseline;
+  gap: 5px;
 }
-
-.lc-detail-label {
-  font-size: 10px;
+.lc-commission-pct {
+  font-size: 20px;
   font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.35);
+  color: #fff;
+  line-height: 1;
+}
+.lc-commission-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
 }
 
-.lc-detail-val {
-  font-size: 13px;
+.lc-request-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.88);
-  line-height: 1.3;
-  overflow-wrap: anywhere;
-  word-break: break-word;
+  color: #000;
+  background: #ffffff;
+  border: 1px solid #ffffff;
+  border-radius: 12px;
+  padding: 10px 18px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
 }
-
-@media (max-width: 700px) {
-  .lc-dock {
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    max-width: 320px;
-  }
-
-  .lc-hover-panel {
-    border-radius: 0 0 16px 16px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-top: none;
-    margin-left: 0 !important;
-    transform: translateY(-10px);
-    max-height: 0;
-    opacity: 0;
-    flex: 0 0 auto !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    transition:
-      max-height 0.5s cubic-bezier(0.23, 1, 0.32, 1),
-      opacity 0.35s ease,
-      transform 0.45s ease;
-  }
-
-  .lc-wrap:hover .lc-hover-panel,
-  .lc-wrap:focus-within .lc-hover-panel {
-    flex: 0 0 auto !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    max-width: 100% !important;
-    max-height: 320px;
-    opacity: 1;
-    transform: translateY(0);
-    margin-top: -1px;
-  }
-
-  .lc-info {
-    border-radius: 0 0 16px 16px;
-  }
+.lc-request-btn:hover {
+  background: #f0f0f0;
+  transform: scale(1.05) translateY(-1px);
+  box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
 }
 
 /* ── Credit card visual ────────────────────────────────────── */
@@ -407,18 +400,7 @@
   color: rgba(255,255,255,0.70);
 }
 
-/* ── Info bar (inside hover panel) ─────────────────────────── */
-.lc-info {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.04);
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 0 0 16px 0;
-  padding: 12px 14px 12px 16px;
-}
+/* Render base commission styles */
 
 .lc-commission { display: flex; align-items: baseline; gap: 5px; }
 
@@ -432,7 +414,7 @@
   background: #ffffff;
   border: 1px solid #ffffff;
   border-radius: 12px;
-  padding: 10px 18px;
+  padding: 12px 22px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
@@ -578,4 +560,91 @@
   0% { transform: scale(1); opacity: 0.8; }
   50% { transform: scale(1.1); opacity: 1; }
   100% { transform: scale(1); opacity: 0.8; }
+}
+/* ── Mobile Responsive Overrides ── */
+@media (max-width: 768px) {
+  .bo-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+  }
+
+  .bo-title {
+    font-size: 24px;
+    text-align: center;
+  }
+
+  .bo-subtitle {
+    text-align: center;
+  }
+
+  .bo-stats {
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 15px;
+    border-radius: 12px;
+  }
+
+  .bo-stat {
+    align-items: center;
+  }
+
+  .bo-stat-num {
+    font-size: 20px;
+  }
+
+  .bo-filters {
+    padding: 12px;
+  }
+
+  .bo-search-input {
+    font-size: 14px;
+    padding: 10px 14px 10px 38px;
+  }
+
+  .bo-filter-pills {
+    justify-content: center;
+  }
+
+  .bo-grid {
+    grid-template-columns: 1fr; /* Stack cards on mobile */
+    gap: 16px;
+  }
+
+  /* On mobile, we show the bottom bar by default or with a different animation */
+  .lc-bottom-bar {
+    position: relative;
+    top: -1px; /* Slightly overlap to merge with card */
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto;
+    transform: none !important;
+    border-radius: 0 0 16px 16px;
+    padding: 16px;
+    background: rgba(30, 30, 32, 1);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .lc-card-stage {
+    border-radius: 16px 16px 0 0;
+    transform: none !important;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  }
+
+  .lc-card {
+    border-radius: 16px 16px 0 0;
+  }
+
+  .lc-commission-pct {
+    font-size: 18px;
+  }
+
+  .lc-request-btn {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  .bo-empty {
+    padding: 40px 20px;
+  }
 }

@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import {
   CreditCard, Bell, LayoutDashboard, ListPlus, Inbox,
-  User, LogOut, AlertCircle
+  User, LogOut, AlertCircle, Home, ShoppingBag
 } from 'lucide-react'
 import { useState } from 'react'
 import { useApp } from '../context/AppContext'
@@ -15,6 +15,8 @@ const NAV_ITEMS = [
   { path: '/dashboard/requests',    label: 'My Requests',   icon: Inbox },
   { path: '/dashboard/profile',     label: 'Profile',       icon: User },
 ]
+
+const MOBILE_ICONS = [Home, ShoppingBag, Inbox, User];
 
 export default function DashboardLayout({ children }) {
   const { user, signOut } = useAuthContext()
@@ -35,8 +37,8 @@ export default function DashboardLayout({ children }) {
   return (
     <div className="dash-shell">
 
-      {/* ── Floating icon sidebar ── */}
-      <aside className="dash-sidebar">
+      {/* ── Floating icon sidebar (Desktop) ── */}
+      <aside className="dash-sidebar desktop-only">
         {/* Logo */}
         <Link to="/" className="dash-logo-btn" title="Cardnect">
           <CreditCard size={20} />
@@ -91,6 +93,41 @@ export default function DashboardLayout({ children }) {
         </div>
       </aside>
 
+      {/* ── Mobile Bottom Navigation ── */}
+      <nav className="mobile-nav-bar mobile-only">
+        <div className="mobile-nav-inner">
+          {/* Main Nav Items (using specific MOBILE_ICONS to match reference) */}
+          {NAV_ITEMS.map(({ path, exact }, index) => {
+             const active = isActive(path, exact);
+             const Icon = MOBILE_ICONS[index];
+             return (
+               <Link
+                 key={path}
+                 to={path}
+                 className={`mobile-nav-item ${active ? 'active' : ''}`}
+                 onClick={() => setNotifOpen(false)}
+               >
+                 <div className="mobile-nav-icon-wrapper">
+                    <Icon size={24} />
+                 </div>
+               </Link>
+             );
+          })}
+          
+          {/* Active Liquid Indicator / Droplet */}
+          <div 
+            className="mobile-nav-indicator" 
+            style={{ 
+              left: `calc(${(NAV_ITEMS.findIndex(item => isActive(item.path, item.exact)))} * (100% / ${NAV_ITEMS.length}))` 
+            }}
+          >
+            <div className="indicator-droplet">
+               <div className="droplet-glow"></div>
+            </div>
+          </div>
+        </div>
+      </nav>
+
       {/* Notification panel */}
       {notifOpen && (
         <div className="notif-panel-anchor">
@@ -100,10 +137,10 @@ export default function DashboardLayout({ children }) {
 
       {/* ── Main area ── */}
       <div className="dash-main">
-        {/* Minimal topbar — only avatar + bell */}
+        {/* Topbar: Added Logout and Notifications for mobile */}
         <header className="dash-topbar">
           <div className="dash-topbar-right">
-            {/* Bell */}
+            {/* Bell (Always visible now) */}
             <div className="notif-btn-wrapper">
               <button
                 className={`topbar-icon-btn ${notifOpen ? 'active' : ''}`}
@@ -116,6 +153,15 @@ export default function DashboardLayout({ children }) {
                 )}
               </button>
             </div>
+
+            {/* Logout (Visible on mobile topbar) */}
+            <button 
+              className="topbar-icon-btn mobile-only" 
+              onClick={handleSignOut}
+              title="Sign Out"
+            >
+              <LogOut size={20} className="logout-icon-mobile" />
+            </button>
 
             {/* Avatar */}
             <Link to="/dashboard/profile" className="dash-topbar-avatar" title="Profile">

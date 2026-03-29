@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Building2 } from 'lucide-react';
+import { Building2, Wifi } from 'lucide-react';
 import { getBankLogoUrl, getNetworkLogoUrl } from '../constants/cardLogos';
 import './PremiumCard.css';
 
@@ -56,12 +56,12 @@ export default function PremiumCard({
 
   const renderMasked = () => {
     const last4 = maskedNumber?.slice(-4)?.replace(/\D/g, '') || '';
-    const safeLast4 = last4.padEnd(4, '•');
+    const safeLast4 = last4.padEnd(4, 'X');
     return (
       <div className="pc-number">
-        <span className="pc-number__g">••••</span>
-        <span className="pc-number__g">••••</span>
-        <span className="pc-number__g">••••</span>
+        <span className="pc-number__g">XXXX</span>
+        <span className="pc-number__g">XXXX</span>
+        <span className="pc-number__g">XXXX</span>
         <span className="pc-number__g pc-number__g--last">{safeLast4}</span>
       </div>
     );
@@ -98,10 +98,19 @@ export default function PremiumCard({
                 <span className="pc-bank-custom-name">{bankName}</span>
               ) : null}
             </div>
-            <div className="pc-tier">{tierLabel}</div>
+            <div className="pc-identity">
+              <span className="pc-tier">{tierLabel}</span>
+              <span className="pc-type">{_cardType}</span>
+            </div>
           </header>
 
-          <section className="pc-pan" aria-label="Masked card number">
+          <section className="pc-body" aria-label="Masked card number">
+            <div className="pc-chip-row">
+              <div className="pc-chip">
+                <div className="pc-chip-lines"></div>
+              </div>
+              <Wifi size={24} className="pc-nfc" strokeWidth={1.5} />
+            </div>
             {renderMasked()}
           </section>
 

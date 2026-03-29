@@ -5,7 +5,7 @@
 .premium-card-wrap {
   perspective: 1200px;
   width: 100%;
-  max-width: 320px;
+  max-width: 420px;
   margin: 0 auto;
   border-radius: 15px;
   cursor: default;
@@ -19,18 +19,11 @@
   overflow: hidden;
   isolation: isolate;
 
-  /* Pure black metal base */
+  /* Pure metallic base */
   background:
-    linear-gradient(
-      145deg,
-      rgba(255, 255, 255, 0.06) 0%,
-      transparent 38%,
-      transparent 62%,
-      rgba(255, 255, 255, 0.025) 100%
-    ),
-    radial-gradient(ellipse 120% 80% at 20% 0%, rgba(55, 55, 58, 0.35) 0%, transparent 55%),
-    linear-gradient(180deg, #0a0a0a 0%, #000000 45%, #030303 100%);
-  background-color: #000000;
+    linear-gradient(115deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0) 25%, rgba(255,255,255,0) 50%, rgba(255,255,255,0.12) 100%),
+    radial-gradient(ellipse 150% 100% at 30% 0%, rgba(85, 85, 90, 0.3) 0%, rgba(20, 20, 22, 0.9) 60%, rgba(0, 0, 0, 1) 100%);
+  background-color: #0b0b0d;
 
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.1),
@@ -50,18 +43,12 @@
     inset 0 -2px 8px rgba(0, 0, 0, 0.55);
 }
 
-.premium-card--browse .pc-metal-layers {
-  opacity: 0.16;
-}
-
-.premium-card--browse::before {
-  opacity: 0.32;
-}
-
-.premium-card--browse::after {
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.055),
-    inset 0 0 22px rgba(0, 0, 0, 0.48);
+.premium-card-wrap--browse {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  width: 100%;
+  max-width: none;
 }
 
 .premium-card-wrap--browse {
@@ -72,50 +59,25 @@
   max-width: none;
 }
 
-/* Texture + noise + micro-pattern (premium “random” grain) */
-.pc-metal-layers {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  border-radius: inherit;
-  background-image:
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
-    repeating-linear-gradient(
-      -18deg,
-      transparent 0px,
-      transparent 3px,
-      rgba(255, 255, 255, 0.018) 3px,
-      rgba(255, 255, 255, 0.018) 4px
-    ),
-    repeating-linear-gradient(
-      72deg,
-      transparent 0px,
-      transparent 7px,
-      rgba(255, 255, 255, 0.012) 7px,
-      rgba(255, 255, 255, 0.012) 8px
-    );
-  background-size: 100% 100%, auto, auto;
-  opacity: 0.38;
-  mix-blend-mode: overlay;
-}
-
-/* Static specular reflection band (no animation) */
+/* Static high-polish specular reflection band */
 .premium-card::before {
   content: '';
   position: absolute;
-  inset: -15% -20% 40% -30%;
+  inset: 0;
   background: linear-gradient(
-    118deg,
+    105deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.03) 35%,
-    rgba(255, 255, 255, 0.09) 48%,
-    rgba(255, 255, 255, 0.02) 58%,
-    transparent 75%
+    rgba(255, 255, 255, 0.03) 25%,
+    rgba(255, 255, 255, 0.15) 45%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(255, 255, 255, 0.15) 55%,
+    rgba(255, 255, 255, 0.03) 75%,
+    transparent 100%
   );
   pointer-events: none;
   z-index: 1;
   border-radius: inherit;
+  mix-blend-mode: soft-light;
 }
 
 .premium-card::after {
@@ -132,11 +94,11 @@
 
 /* Face layout */
 .pc-inner {
-  position: relative;
+  position: absolute;
+  inset: 0;
   z-index: 2;
-  height: 100%;
   box-sizing: border-box;
-  padding: 11% 7.5% 8.5%;
+  padding: 11% 8% 9%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -189,55 +151,116 @@
   color: rgba(255, 255, 255, 0.45);
 }
 
-.pc-tier {
+.pc-identity {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
   flex-shrink: 0;
-  max-width: 42%;
-  text-align: right;
-  font-size: clamp(0.58rem, 1.65vw, 0.68rem);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  line-height: 1.35;
-  color: #c4a060;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
-.pc-pan {
+.pc-type {
+  font-size: clamp(0.55rem, 1.5vw, 0.65rem);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.pc-tier {
+  font-size: clamp(0.58rem, 1.65vw, 0.75rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #c4a060; /* Restored original gold */
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  flex-shrink: 0;
+}
+
+.pc-body {
   flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  gap: clamp(8px, 3.5vw, 14px);
   min-height: 0;
   padding: 2% 0;
 }
 
+.pc-chip-row {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 3vw, 14px);
+}
+
+.pc-chip {
+  width: clamp(34px, 10vw, 44px);
+  height: clamp(24px, 7vw, 32px);
+  background: linear-gradient(135deg, #e6c875 0%, #c9a84c 50%, #997423 100%);
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 4px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.pc-chip-lines {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 5px;
+}
+
+.pc-chip-lines::before,
+.pc-chip-lines::after {
+  content: '';
+  position: absolute;
+  background: rgba(0,0,0,0.15);
+}
+.pc-chip-lines::before {
+  top: 30%; bottom: 30%; left: 0; right: 0;
+  border-top: 1px solid rgba(0,0,0,0.2);
+  border-bottom: 1px solid rgba(0,0,0,0.2);
+}
+.pc-chip-lines::after {
+  left: 30%; right: 30%; top: 0; bottom: 0;
+  border-left: 1px solid rgba(0,0,0,0.2);
+  border-right: 1px solid rgba(0,0,0,0.2);
+}
+
+.pc-nfc {
+  color: rgba(255, 255, 255, 0.6);
+  transform: rotate(90deg);
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.6));
+}
+
 .pc-number {
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: clamp(0.55rem, 2.8vw, 0.95rem);
-  row-gap: 0.35rem;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: clamp(0.6rem, 2.5vw, 1rem);
   align-self: flex-start;
-  font-family: 'DM Sans', ui-monospace, monospace;
-  font-size: clamp(1.05rem, 3.8vw, 1.38rem);
+  font-family: 'DM Mono', 'Space Mono', monospace;
+  font-size: clamp(0.95rem, 3.2vw, 1.3rem);
   font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.12em;
-  line-height: 1.2;
+  letter-spacing: 0.15em;
+  margin-top: 10px;
 }
 
 .pc-number__g {
-  color: #e8eaee;
-  text-shadow:
-    0 -1px 0 rgba(255, 255, 255, 0.18),
-    0 1px 0 rgba(0, 0, 0, 0.95),
-    0 2px 5px rgba(0, 0, 0, 0.75);
+  color: rgba(255, 255, 255, 0.28);
+  font-size: 0.8em;
+  letter-spacing: 0.2em;
 }
 
 .pc-number__g--last {
-  color: #f4f5f7;
-  letter-spacing: 0.18em;
+  color: #ffffff;
+  font-size: 1.15em;
+  letter-spacing: 0.12em;
+  text-shadow: 0 0 10px rgba(255,255,255,0.1);
+  margin-left: 2px;
 }
+
+/* End of card number groups */
 
 .pc-footer {
   display: flex;

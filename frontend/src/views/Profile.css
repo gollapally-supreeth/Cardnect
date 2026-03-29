@@ -280,3 +280,59 @@
   transform: translateZ(1px); /* Force GPU stacking to beat WebGL Canvas intercepts */
 }
 .vmax-btn-flip:hover { background: #fff; color: #000; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+/* ── Mobile Responsive Overrides ── */
+@media (max-width: 768px) {
+  .prof-page-vmax {
+    flex-direction: column;
+    padding: 0; /* Remove padding to allow full box centering */
+    min-height: calc(100vh - 137px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    top: -10px; /* Slight optical adjustment for better visual centering between bars */
+  }
+
+  .vmax-ambient-glow {
+    width: 120vw;
+    height: 120vw;
+    opacity: 0.12;
+  }
+
+  .vmax-scene {
+    width: 92vw;
+    margin: 0; /* Clear margins */
+    max-width: 440px;
+  }
+
+  .vmax-card {
+    font-size: clamp(10.5px, 3.4vw, 16px);
+  }
+
+  .vmax-inner {
+    padding: 1.6em;
+  }
+
+  .vmax-action-btn {
+    padding: 0.8em 1.6em;
+    font-size: 0.65em;
+    background: linear-gradient(135deg, #ff5a5f, #ff3b30); /* Red gradients for buttons on mobile */
+    border: none;
+    box-shadow: 0 4px 12px rgba(255, 90, 95, 0.3);
+  }
+
+  .vmax-action-row {
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(255, 90, 95, 0.1);
+  }
+
+  .vmax-signature {
+    height: 3.4em;
+    border: 1px solid rgba(255, 90, 95, 0.15);
+  }
+
+  .vmax-disclaimer {
+    font-size: 0.58em;
+    color: rgba(0, 0, 0, 0.6);
+  }
+}

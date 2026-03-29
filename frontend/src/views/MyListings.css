@@ -11,7 +11,9 @@
 .page-title {
   font-size: 28px; font-weight: 800; letter-spacing: -0.03em; margin: 0 0 4px 0;
   background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 50%, #94a3b8 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text; 
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   text-shadow: 0 4px 20px rgba(255,255,255,0.1);
 }
 .page-subtitle { font-size: 14px; color: #94a3b8; margin: 0; }
@@ -35,7 +37,7 @@
 /* Grid */
 .ml-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
   gap: 20px;
 }
 
@@ -66,71 +68,17 @@
   margin-bottom: 12px;
 }
 
-.ml-card-badge {
-  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
-  color: #a3a3a3; background: rgba(255,255,255,0.03);
-  padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05);
+.ml-card-comm-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
-
-.ml-card-comm {
-  font-size: 12px; color: #fff; background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.0));
-  padding: 4px 12px; border-radius: 100px; border: 1px solid rgba(255,255,255,0.15);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2); font-weight: 600;
-}
-
-.ml-card-body {
-  padding: 0 20px;
-  display: flex; justify-content: center;
-}
-
-/* Card face */
-.ml-card-face {
-  position: relative;
-  margin: 12px; border-radius: 12px;
-  background: linear-gradient(145deg, #161616, #0d0d0d 50%, #121212);
-  border: 1px solid rgba(255,255,255,0.07);
-  padding: 14px 16px;
-  overflow: hidden;
-  aspect-ratio: 85.6 / 54;
-  display: flex; flex-direction: column; justify-content: space-between;
-}
-
-.ml-card-face-shine {
-  position: absolute; inset: 0;
-  background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.04) 50%, transparent 70%);
-  pointer-events: none;
-}
-
-.ml-card-face::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: repeating-linear-gradient(0deg, rgba(255,255,255,0.009) 0px, rgba(255,255,255,0.009) 1px, transparent 1px, transparent 4px);
-  border-radius: inherit;
-  pointer-events: none;
-}
-
-.ml-face-top { display: flex; justify-content: space-between; align-items: flex-start; }
-.ml-face-bank { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.85); }
-.ml-face-nfc  { color: rgba(255,255,255,0.28); }
-
-.ml-face-chip { }
-.ml-face-chip-body {
-  width: 34px; height: 26px;
-  background: linear-gradient(135deg, #b8901a, #e8c040 40%, #b8901a 70%, #7a5800);
-  border-radius: 4px;
-  display: grid; grid-template-columns:1fr 1fr; gap:2px; padding:4px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.5);
-}
-.ml-face-chip-body span { background: rgba(0,0,0,0.28); border-radius: 1px; }
-
-.ml-face-number {
-  font-family: 'DM Mono', monospace; font-size: 11px;
-  letter-spacing: 2px; color: rgba(255,255,255,0.40);
-}
-
-.ml-face-bottom { display: flex; justify-content: space-between; align-items: flex-end; }
-.ml-face-type { font-size: 10px; color: rgba(255,255,255,0.36); }
-.ml-face-comm { font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.80); }
 
 /* Actions */
 .ml-actions {
@@ -264,12 +212,13 @@
 
 .ml-listing-preview {
   display: flex;
-  justify-content: center;
-  margin: 0 auto 0.65rem;
+  justify-content: flex-start;
+  margin-bottom: 1.5rem;
 }
 
 .ml-listing-modal .ml-listing-preview .premium-card-wrap {
-  max-width: 300px;
+  width: 100%;
+  max-width: 380px;
 }
 
 .ml-listing-form .bg-input-group {
@@ -325,4 +274,50 @@
 @keyframes cardFadeUp {
   from { opacity:0; transform:translateY(14px); }
   to   { opacity:1; transform:translateY(0); }
+}
+/* ── Mobile Responsive Overrides ── */
+@media (max-width: 768px) {
+  .ml-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 16px;
+  }
+
+  .ml-stats {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .ml-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .ml-card {
+    border-radius: 16px;
+  }
+
+  .ml-actions {
+    padding: 16px;
+  }
+
+  .ml-action-btn {
+    padding: 12px 0;
+    font-size: 14px;
+  }
+
+  /* Modal Adjustments */
+  .ml-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .black-glass-content.ml-listing-modal {
+    padding: 1rem !important;
+  }
+
+  .ml-listing-actions {
+    flex-direction: column;
+  }
 }
