@@ -109,6 +109,11 @@ function SignInForm({ onFlip }) {
 
   return (
     <div className="ap-face ap-front">
+      <div className="ap-card-decor" aria-hidden="true">
+        <div className="ap-card-chip" />
+        <div className="ap-card-network">CARDNECT SECURE</div>
+      </div>
+
       <div className="ap-form-header">
         <h2 className="ap-form-title">Welcome back</h2>
         <p className="ap-form-sub">Sign in to your Cardnect account</p>
@@ -224,6 +229,11 @@ function SignUpForm({ onFlip }) {
 
   return (
     <div className="ap-face ap-back">
+      <div className="ap-card-decor" aria-hidden="true">
+        <div className="ap-card-chip" />
+        <div className="ap-card-network">PREMIUM ACCESS</div>
+      </div>
+
       <div className="ap-form-header">
         <h2 className="ap-form-title">Create account</h2>
         <p className="ap-form-sub">Join Cardnect — it's free</p>

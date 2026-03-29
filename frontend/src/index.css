@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&family=Playfair+Display:ital,wght@1,500&display=swap');
-
 /* ===========================
    CSS DESIGN TOKENS
 =========================== */
@@ -31,7 +29,7 @@
   /* Typography */
   --font-body: 'DM Sans', system-ui, -apple-system, sans-serif;
   --font-heading: 'DM Sans', system-ui, -apple-system, sans-serif;
-  --font-mono: 'Geist Mono', 'SFMono-Regular', Consolas, monospace;
+  --font-mono: 'DM Mono', 'SFMono-Regular', Consolas, monospace;
   --font-serif-italic: 'Instrument Serif', Georgia, serif;
 
   /* Spacing */
@@ -62,6 +60,7 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -72,6 +71,7 @@ body {
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
   position: relative;
+  overflow-x: hidden;
 }
 
 body::after {
@@ -109,6 +109,20 @@ input, textarea, select { font-family: inherit; }
   max-width: 1180px;
   margin: 0 auto;
   padding: 0 24px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 16px;
+  }
+
+  .btn {
+    min-height: 42px;
+  }
+
+  .card {
+    padding: 20px;
+  }
 }
 
 .badge {

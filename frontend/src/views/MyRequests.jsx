@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Inbox, MessageCircle, Loader, ArrowRight, RefreshCw } from 'lucide-react'
+import { Inbox, MessageCircle, Loader, ArrowRight, Clock3, CheckCircle2, XCircle } from 'lucide-react'
 import { fetchMyRequests, fetchIncomingRequests, updateRequestStatus } from '../api/services'
 import './MyRequests.css'
 
@@ -40,7 +40,7 @@ function RequestRow({ req, isIncoming, onStatusChange }) {
         <div className="req-sub">{req.listingCardType} · {req.listingCardNetwork}</div>
       </td>
       <td data-label="Offer Details">
-        <p style={{ fontSize: 13 }}>{req.offerDetails}</p>
+        <p className="req-offer-text">{req.offerDetails}</p>
       </td>
       {isIncoming && (
         <td data-label="Requester" style={{ fontSize: 13 }}>
@@ -95,9 +95,12 @@ export default function MyRequests() {
 
   const isLoading = tab === 'sent' ? loadingSent : loadingIncoming
   const requests = tab === 'sent' ? sentReqs : incomingReqs
+  const pendingCount = requests.filter(r => r.status === 'PENDING').length
+  const acceptedCount = requests.filter(r => r.status === 'ACCEPTED').length
+  const rejectedCount = requests.filter(r => r.status === 'REJECTED').length
 
   return (
-    <div>
+    <div className="mr-page">
       <div className="browse-header">
         <div>
           <h1 className="page-title">Card Requests</h1>
@@ -113,7 +116,7 @@ export default function MyRequests() {
             onClick={() => setTab('sent')}
           >
             <Inbox size={14} />
-            Sent
+            Sent Requests
             {sentReqs.length > 0 && (
               <span className="req-pill-count">{sentReqs.length}</span>
             )}
@@ -123,13 +126,37 @@ export default function MyRequests() {
             onClick={() => setTab('incoming')}
           >
             <ArrowRight size={14} />
-            Received
+            Received Requests
             {incomingReqs.filter(r => r.status === 'PENDING').length > 0 && (
               <span className="req-pill-count pending">
                 {incomingReqs.filter(r => r.status === 'PENDING').length}
               </span>
             )}
           </button>
+        </div>
+      </div>
+
+      <div className="req-kpi-grid">
+        <div className="req-kpi-card">
+          <span className="req-kpi-icon warn"><Clock3 size={14} /></span>
+          <div>
+            <div className="req-kpi-label">Pending</div>
+            <div className="req-kpi-value">{pendingCount}</div>
+          </div>
+        </div>
+        <div className="req-kpi-card">
+          <span className="req-kpi-icon ok"><CheckCircle2 size={14} /></span>
+          <div>
+            <div className="req-kpi-label">Accepted</div>
+            <div className="req-kpi-value">{acceptedCount}</div>
+          </div>
+        </div>
+        <div className="req-kpi-card">
+          <span className="req-kpi-icon bad"><XCircle size={14} /></span>
+          <div>
+            <div className="req-kpi-label">Rejected</div>
+            <div className="req-kpi-value">{rejectedCount}</div>
+          </div>
         </div>
       </div>
 

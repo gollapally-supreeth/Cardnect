@@ -17,6 +17,7 @@ const NAV_ITEMS = [
 ]
 
 const MOBILE_ICONS = [Home, ShoppingBag, Inbox, User];
+const MOBILE_LABELS = ['Home', 'Listings', 'Requests', 'Profile']
 
 export default function DashboardLayout({ children }) {
   const { user, signOut } = useAuthContext()
@@ -33,6 +34,11 @@ export default function DashboardLayout({ children }) {
   const handleSignOut = async () => { signOut(); navigate('/') }
 
   const initials = (user?.name || user?.email || 'U')?.[0]?.toUpperCase() || 'U'
+  const activeMobileIndex = Math.max(
+    0,
+    NAV_ITEMS.findIndex(item => isActive(item.path, item.exact))
+  )
+  const ActiveMobileIcon = MOBILE_ICONS[activeMobileIndex]
 
   return (
     <div className="dash-shell">
@@ -105,11 +111,13 @@ export default function DashboardLayout({ children }) {
                  key={path}
                  to={path}
                  className={`mobile-nav-item ${active ? 'active' : ''}`}
+                 aria-label={NAV_ITEMS[index].label}
                  onClick={() => setNotifOpen(false)}
                >
                  <div className="mobile-nav-icon-wrapper">
                     <Icon size={24} />
                  </div>
+                 <span className="mobile-nav-label">{MOBILE_LABELS[index]}</span>
                </Link>
              );
           })}
@@ -118,10 +126,11 @@ export default function DashboardLayout({ children }) {
           <div 
             className="mobile-nav-indicator" 
             style={{ 
-              left: `calc(${(NAV_ITEMS.findIndex(item => isActive(item.path, item.exact)))} * (100% / ${NAV_ITEMS.length}))` 
+              left: `calc(${activeMobileIndex} * (100% / ${NAV_ITEMS.length}))` 
             }}
           >
             <div className="indicator-droplet">
+               <ActiveMobileIcon size={20} className="indicator-icon" />
                <div className="droplet-glow"></div>
             </div>
           </div>

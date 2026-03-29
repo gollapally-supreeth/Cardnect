@@ -20,6 +20,15 @@ const NET_COLORS = {
   default:    '#2a2a2a',
 }
 
+const FLOW_THEMES = [
+  { speed: 1.25, scale: 1.12, color: '#8d8d96', noiseIntensity: 1.0, rotation: 8 },
+  { speed: 1.6, scale: 1.18, color: '#9a9388', noiseIntensity: 1.2, rotation: 26 },
+  { speed: 1.9, scale: 1.06, color: '#7f8d97', noiseIntensity: 1.35, rotation: -18 },
+  { speed: 1.35, scale: 1.24, color: '#9b8f9d', noiseIntensity: 1.1, rotation: 42 },
+  { speed: 2.1, scale: 1.1, color: '#8f9a8d', noiseIntensity: 1.45, rotation: -34 },
+  { speed: 1.45, scale: 1.2, color: '#929292', noiseIntensity: 1.15, rotation: 58 },
+]
+
 function NetworkBadge({ name }) {
   return (
     <span className="net-badge" style={{ '--net-color': NET_COLORS[name] || NET_COLORS.default }}>
@@ -147,18 +156,35 @@ function RequestModal({ listing, onClose, isVerified, user, onVerifyClick }) {
 }
 
 /* ── Premium listing card: card + Silk + stable action bar ── */
-function ListingCard({ listing, onRequest, index }) {
+function ListingCard({ listing, onRequest, index, isExpanded, onToggle }) {
+  const themeIndex = index % FLOW_THEMES.length
+  const theme = FLOW_THEMES[themeIndex]
+
   return (
-    <div className="lc-wrap" style={{ animationDelay: `${index * 60}ms` }}>
+    <div
+      className={`lc-wrap flow-theme-${themeIndex} ${isExpanded ? 'is-expanded is-selected' : ''}`}
+      style={{ animationDelay: `${index * 60}ms` }}
+    >
       <div className="lc-card-group">
-        <div className="lc-card-stage">
+        <div
+          className="lc-card-stage"
+          role="button"
+          tabIndex={0}
+          onClick={onToggle}
+          onKeyDown={e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault()
+              onToggle()
+            }
+          }}
+        >
           <div className="lc-silk-bg" aria-hidden="true">
             <Silk
-              speed={1.65}
-              scale={1.2}
-              color="#8a8a90"
-              noiseIntensity={1.25}
-              rotation={14}
+              speed={theme.speed}
+              scale={theme.scale}
+              color={theme.color}
+              noiseIntensity={theme.noiseIntensity}
+              rotation={theme.rotation}
               monochrome
             />
           </div>
@@ -182,7 +208,10 @@ function ListingCard({ listing, onRequest, index }) {
             type="button"
             id={`request-btn-${listing.id}`}
             className="lc-request-btn"
-            onClick={() => onRequest(listing)}
+            onClick={(e) => {
+              e.stopPropagation()
+              onRequest(listing)
+            }}
           >
             Request <ArrowRight size={14} />
           </button>
@@ -200,6 +229,7 @@ export default function BrowseOffers() {
   const [type,    setType]    = useState('All')
   const [selectedListing, setSelectedListing] = useState(null)
   const [showVerifyModal, setShowVerifyModal] = useState(false)
+  const [selectedCardId, setSelectedCardId] = useState(null)
 
   const isVerified = !!user?.emailVerified;
 
@@ -276,9 +306,28 @@ export default function BrowseOffers() {
       ) : (
         <div className="bo-grid">
           {filtered.map((l, i) => (
-            <ListingCard key={l.id} listing={l} onRequest={setSelectedListing} index={i} />
+            <ListingCard
+              key={l.id}
+              listing={l}
+              onRequest={(listing) => {
+                setSelectedListing(listing)
+                setSelectedCardId(null)
+              }}
+              index={i}
+              isExpanded={selectedCardId === l.id}
+              onToggle={() => setSelectedCardId(prev => (prev === l.id ? null : l.id))}
+            />
           ))}
         </div>
+      )}
+
+      {selectedCardId && (
+        <button
+          type="button"
+          className="bo-selection-overlay"
+          aria-label="Close card selection"
+          onClick={() => setSelectedCardId(null)}
+        />
       )}
 
       {selectedListing && (

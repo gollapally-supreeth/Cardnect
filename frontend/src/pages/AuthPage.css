@@ -77,6 +77,7 @@
 
 /* Shared face styles */
 .ap-face {
+  position: relative;
   background: rgba(11, 11, 11, 0.95);
   backdrop-filter: blur(24px);
   border: 1px solid rgba(255,255,255,0.09);
@@ -91,6 +92,57 @@
   gap: 18px;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
+  overflow: hidden;
+}
+
+.ap-face::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(115deg, rgba(255,255,255,0.1) 0%, transparent 38%),
+    linear-gradient(295deg, rgba(255,255,255,0.06) 0%, transparent 42%);
+  pointer-events: none;
+}
+
+.ap-face::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255,255,255,0.018) 0px,
+    rgba(255,255,255,0.018) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.ap-card-decor {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.ap-card-chip {
+  width: 40px;
+  height: 30px;
+  border-radius: 7px;
+  background: linear-gradient(135deg, #8f8f8f, #f2f2f2 35%, #7a7a7a 70%, #555);
+  border: 1px solid rgba(255,255,255,0.35);
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.35), 0 2px 8px rgba(0,0,0,0.45);
+}
+
+.ap-card-network {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: rgba(255,255,255,0.55);
 }
 
 .ap-front { }
@@ -106,6 +158,17 @@
 .ap-form-header { text-align: center; }
 .ap-form-title { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 4px; letter-spacing: -0.3px; }
 .ap-form-sub   { font-size: 13px; color: rgba(255,255,255,0.36); }
+
+.ap-form-header,
+.ap-mode-tabs,
+.ap-fields,
+.ap-error,
+.ap-msg,
+.ap-actions,
+.ap-switch {
+  position: relative;
+  z-index: 1;
+}
 
 /* ── Mode toggle tabs ────────────────────────────────────────── */
 .ap-mode-tabs {
@@ -323,3 +386,103 @@
 /* Spinner */
 .spin { animation: spin 0.75s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 768px) {
+  .ap-page {
+    justify-content: flex-start;
+    padding: 74px 14px 24px;
+    gap: 14px;
+  }
+
+  .ap-back-btn {
+    top: 12px;
+    left: 12px;
+    font-size: 12px;
+    padding: 6px 8px;
+  }
+
+  .ap-logo {
+    margin-top: 4px;
+    margin-bottom: 0;
+    font-size: 18px;
+  }
+
+  .ap-card-scene {
+    max-width: 100%;
+  }
+
+  .ap-face {
+    border-radius: 18px;
+    padding: 24px 16px 20px;
+    gap: 14px;
+  }
+
+  .ap-card-chip {
+    width: 34px;
+    height: 26px;
+  }
+
+  .ap-card-network {
+    font-size: 9px;
+    letter-spacing: 0.14em;
+  }
+
+  .ap-form-title {
+    font-size: 20px;
+  }
+
+  .ap-form-sub {
+    font-size: 12px;
+  }
+
+  .ap-row2 {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .ap-otp-row {
+    gap: 6px;
+  }
+
+  .ap-otp-box {
+    width: calc((100vw - 76px) / 6);
+    max-width: 42px;
+    min-width: 36px;
+    height: 46px;
+    font-size: 18px;
+  }
+
+  .ap-btn-primary,
+  .ap-btn-secondary,
+  .ap-btn-ghost {
+    min-height: 42px;
+  }
+
+  .ap-disclaimer {
+    font-size: 11px;
+    line-height: 1.5;
+    padding: 0 8px;
+  }
+}
+
+@media (max-width: 420px) {
+  .ap-face {
+    padding: 20px 12px 16px;
+  }
+
+  .ap-mode-tab {
+    font-size: 12px;
+    padding: 7px 6px;
+  }
+
+  .ap-input {
+    font-size: 13px;
+    padding-left: 34px;
+  }
+
+  .ap-verify-btn {
+    right: 8px;
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+}

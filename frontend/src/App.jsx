@@ -1,9 +1,11 @@
+import { Suspense, lazy } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuthContext } from './context/AuthContext'
-import LandingPage from './pages/LandingPage.jsx'
-import AuthPage from './pages/AuthPage.jsx'
-import DashboardPage from './pages/DashboardPage.jsx'
 import './App.css'
+
+const LandingPage = lazy(() => import('./pages/LandingPage.jsx'))
+const AuthPage = lazy(() => import('./pages/AuthPage.jsx'))
+const DashboardPage = lazy(() => import('./pages/DashboardPage.jsx'))
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, isLoading } = useAuthContext()
@@ -21,20 +23,22 @@ function PublicOnlyRoute({ children }) {
 export default function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/auth/*" element={
-          <PublicOnlyRoute>
-            <AuthPage />
-          </PublicOnlyRoute>
-        } />
-        <Route path="/dashboard/*" element={
-          <ProtectedRoute>
-            <DashboardPage />
-          </ProtectedRoute>
-        } />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <Suspense fallback={<div className="page-loader"><div className="loader-spinner" /></div>}>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/auth/*" element={
+            <PublicOnlyRoute>
+              <AuthPage />
+            </PublicOnlyRoute>
+          } />
+          <Route path="/dashboard/*" element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          } />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   )
 }

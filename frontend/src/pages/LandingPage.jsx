@@ -1,6 +1,7 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthContext } from '../context/AuthContext'
-import { CreditCard, Shield, Zap, Users, ArrowRight, CheckCircle, TrendingUp, Wallet, Bell, Star, Lock, ChevronRight, Fingerprint } from 'lucide-react'
+import { CreditCard, Shield, Zap, ArrowRight, TrendingUp, Wallet, Star, Lock, Fingerprint } from 'lucide-react'
 import HeroVideo from '../assets/Hero.mp4'
 import PremiumCard from '../components/PremiumCard'
 import ShinyText from '../components/ShinyText'
@@ -37,66 +38,41 @@ const SECURITY = [
   { icon: <Shield      size={28} strokeWidth={1} />, title: 'Verified Identity',     desc: 'Email-verified accounts and multi-factor authentication for every participant.' },
 ]
 
-/* ── Animated rotating benefit line ── */
-const HERO_LINES = [
-  'Earn passive income on your premium cards.',
-  'Unlock exclusive card discounts, instantly.',
-  'Card holders earn. Deal seekers save. Win-win.',
-]
-
 export default function LandingPage() {
   const navigate = useNavigate()
   const { isAuthenticated } = useAuthContext()
+  const [shouldRenderVideo, setShouldRenderVideo] = useState(false)
+
+  useEffect(() => {
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const saveData = navigator.connection?.saveData === true
+    setShouldRenderVideo(!reduceMotion && !saveData)
+  }, [])
+
   const handleCTA = () => navigate(isAuthenticated ? '/dashboard' : '/auth')
 
   return (
     <div className="landing-min">
 
-      {/* ── NAV ── */}
-      <nav className="nav-min">
-        <div className="container nav-min-inner">
-          <div className="brand-min">
-            <CreditCard size={18} strokeWidth={1.5} />
-            <span>CARDNECT</span>
-          </div>
-          <div className="nav-min-links">
-            <a href="#for-holders">For Holders</a>
-            <a href="#for-seekers">For Seekers</a>
-            <a href="#how-it-works">Platform</a>
-            <a href="#security">Security</a>
-          </div>
-          <div className="nav-min-actions">
-            {isAuthenticated ? (
-              <button className="btn-min-primary" onClick={() => navigate('/dashboard')}>
-                Dashboard <ArrowRight size={14} />
-              </button>
-            ) : (
-              <button className="btn-min-primary" onClick={() => navigate('/auth')}>
-                Get Started
-              </button>
-            )}
-          </div>
-        </div>
-      </nav>
-
       {/* ── HERO ── */}
       <section className="hero-min">
-        <video
-          className="hero-video-bg"
-          src={HeroVideo}
-          autoPlay loop muted playsInline
-          ref={el => { if (el) el.playbackRate = 0.75 }}
-        />
+        {shouldRenderVideo ? (
+          <video
+            className="hero-video-bg"
+            src={HeroVideo}
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="metadata"
+            ref={el => { if (el) el.playbackRate = 0.75 }}
+          />
+        ) : (
+          <div className="hero-static-bg" aria-hidden="true" />
+        )}
         <div className="hero-video-overlay" />
 
         <div className="container hero-min-content hero-min-content--center">
-
-          {/* Badge */}
-          <div className="hero-min-badge">
-            <span className="hero-min-dot" />
-            India's First P2P Card-Discount Network
-          </div>
-
           {/* Brand title */}
           <ShinyText text="CARDNECT" speed={3.5} className="hero-shiny-title" />
 
@@ -135,14 +111,7 @@ export default function LandingPage() {
             </a>
           </div>
 
-          {/* Stats */}
-          <div className="hero-min-stats">
-            <div className="stat-min"><h4>₹50L+</h4><p>Offers Unlocked</p></div>
-            <div className="stat-min-divider" />
-            <div className="stat-min"><h4>2K+</h4><p>Verified Members</p></div>
-            <div className="stat-min-divider" />
-            <div className="stat-min"><h4>4.9★</h4><p>Trust Score</p></div>
-          </div>
+
         </div>
       </section>
 
@@ -176,14 +145,12 @@ export default function LandingPage() {
           </div>
 
           <div className="audience-col audience-cards-preview">
-            {DEMO_CARDS.map(card => (
-              <div className="audience-card-wrap" key={card.id}>
-                <PremiumCard {...card} />
-                <div className="card-item-meta">
-                  <span className="live-indicator" /> Active Now
-                </div>
+            <div className="audience-card-wrap">
+              <PremiumCard {...DEMO_CARDS[0]} />
+              <div className="card-item-meta">
+                <span className="live-indicator" /> Active Now
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </section>
@@ -218,12 +185,21 @@ export default function LandingPage() {
             </button>
           </div>
 
-          {/* Decorative benefit tags */}
+          {/* Offer Cards Grid */}
           <div className="audience-col seeker-visual">
-            <div className="seeker-tags">
-              {['20% off on Swiggy', 'Airport Lounge Access', '5% Fuel Cashback',
-                'Hotel Upgrades', '10% off Myntra', '₹500 Zomato Credit'].map((tag, i) => (
-                <div key={i} className={`seeker-tag seeker-tag--${i % 3}`}>{tag}</div>
+            <div className="offer-cards-grid">
+              {[
+                { icon: '🛒', text: '10% Cashback on Amazon' },
+                { icon: '📦', text: '15% off Flipkart Fashion' },
+                { icon: '⚡', text: 'Amazon Prime Access' },
+                { icon: '🎁', text: 'Extra Rewards Points' },
+                { icon: '🛍️', text: '20% Flipkart Offers' },
+                { icon: '💳', text: 'Special Payment Discounts' }
+              ].map((offer, i) => (
+                <div key={i} className="offer-card">
+                  <div className="offer-icon">{offer.icon}</div>
+                  <div className="offer-text">{offer.text}</div>
+                </div>
               ))}
             </div>
           </div>
@@ -231,60 +207,92 @@ export default function LandingPage() {
       </section>
 
       {/* ── HOW IT WORKS ── */}
-      <section id="how-it-works" className="section-min">
+      <section id="how-it-works" className="section-min section-flow">
         <div className="container">
-          <div className="section-min-header">
-            <h2>The Protocol</h2>
-            <p>Three clean steps. Two sides. One win-win marketplace.</p>
+          <div className="section-min-header flow-header">
+            <h2>The Cardnect Flow</h2>
+            <p>A sophisticated peer-to-peer system that connects card holders and deal seekers seamlessly.</p>
           </div>
-          <div className="steps-min-grid">
-            {STEPS.map((step, i) => (
-              <div key={i} className="step-min-card">
-                <div className="step-min-num">{step.num}</div>
-                <div className="step-min-content">
-                  <h3>{step.title}</h3>
-                  <p>{step.desc}</p>
-                </div>
+          
+          {/* Minimal Flow Diagram */}
+          <div className="flow-diagram-minimal">
+            
+            {/* Actors Row */}
+            <div className="minimal-actors-row">
+              <div className="minimal-actor">
+                <div className="actor-symbol seeker-symbol">○</div>
+                <div className="actor-label">Deal Seeker</div>
+                <div className="actor-desc">Browse & Discover exclusive offers from verified card holders</div>
               </div>
-            ))}
+              <div className="minimal-arrow">→</div>
+              <div className="minimal-actor center">
+                <div className="actor-symbol center-symbol">◆</div>
+                <div className="actor-label">Cardnect</div>
+                <div className="actor-desc-center">Secure P2P Network connecting both parties</div>
+              </div>
+              <div className="minimal-arrow">→</div>
+              <div className="minimal-actor">
+                <div className="actor-symbol holder-symbol">■</div>
+                <div className="actor-label">Card Holder</div>
+                <div className="actor-desc">Review requests & earn commission from verified members</div>
+              </div>
+            </div>
+
+            {/* Steps Row with Descriptions */}
+            <div className="minimal-steps-container">
+              <div className="minimal-steps-row">
+                {[
+                  { symbol: '🔍', title: 'Search', num: '1', desc: 'Browse verified card offers' },
+                  { symbol: '📝', title: 'Request', num: '2', desc: 'Send interested inquiry' },
+                  { symbol: '✓', title: 'Approve', num: '3', desc: 'Get holder approval' },
+                  { symbol: '↔', title: 'Connect', num: '4', desc: 'Chat & coordinate' },
+                  { symbol: '✨', title: 'Complete', num: '5', desc: 'Transaction finalized' }
+                ].map((step, i) => (
+                  <div key={i} className="minimal-step">
+                    <div className="step-number">{step.num}</div>
+                    <div className="step-label">{step.title}</div>
+                    <div className="step-description">{step.desc}</div>
+                  </div>
+                ))}
+              </div>
+              <div className="steps-flow-line"></div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* ── SECURITY ── */}
-      <section id="security" className="section-min section-features-min section-dark">
+      {/* ── TRUST ── */}
+      <section id="security" className="section-min section-trust-min section-dark">
         <div className="container">
-          <div className="features-min-layout">
-            <div className="features-min-text">
-              <h2>Engineered for Trust</h2>
-              <p>Cardnect operates on a zero-trust architecture. We bridge both sides without ever touching sensitive information.</p>
-              <div className="features-min-list">
-                {SECURITY.map((f, i) => (
-                  <div key={i} className="feature-min-item">
-                    <div className="feature-min-icon">{f.icon}</div>
-                    <div className="feature-min-info">
-                      <h4>{f.title}</h4>
-                      <p>{f.desc}</p>
-                    </div>
-                  </div>
-                ))}
+          <div className="trust-layout">
+            <div className="trust-text-col">
+              <h2>Built on Trust</h2>
+              <p>No card numbers. No CVVs. No data breaches. We connect people directly — never holding your sensitive information.</p>
+              <div className="trust-highlights">
+                <div className="trust-highlight-item">
+                  <span className="highlight-symbol">✓</span>
+                  <span>End-to-end encryption on all communications</span>
+                </div>
+                <div className="trust-highlight-item">
+                  <span className="highlight-symbol">✓</span>
+                  <span>Zero-knowledge architecture — we can't access your data</span>
+                </div>
+                <div className="trust-highlight-item">
+                  <span className="highlight-symbol">✓</span>
+                  <span>Independent security audits performed quarterly</span>
+                </div>
               </div>
             </div>
-            <div className="features-min-cert">
-              <div className="cert-glass">
-                <div className="cert-header">
-                  <Shield size={20} className="cert-icon" />
-                  <span>Platform Architecture</span>
+            <div className="trust-cards-grid">
+              {SECURITY.map((f, i) => (
+                <div key={i} className="trust-card-clean">
+                  <div className="trust-card-icon-wrapper">
+                    <div className="trust-card-icon">{f.icon}</div>
+                  </div>
+                  <h4>{f.title}</h4>
+                  <p>{f.desc}</p>
                 </div>
-                <div className="cert-items">
-                  <div className="cert-item"><CheckCircle size={14} /> End-to-End Encrypted</div>
-                  <div className="cert-item"><CheckCircle size={14} /> Email OTP Verification</div>
-                  <div className="cert-item"><CheckCircle size={14} /> WebSocket Secured</div>
-                  <div className="cert-item"><CheckCircle size={14} /> PCI-DSS Scope Zero</div>
-                  <div className="cert-item"><CheckCircle size={14} /> No Card Data Storage</div>
-                  <div className="cert-item"><CheckCircle size={14} /> In-App Consent Flow</div>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>

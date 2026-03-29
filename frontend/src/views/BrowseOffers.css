@@ -3,6 +3,22 @@
 /* ── Page layout ─────────────────────────────────────────── */
 .bo-page { display: flex; flex-direction: column; gap: 28px; }
 
+.bo-selection-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background: rgba(0, 0, 0, 0.46);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+@media (min-width: 769px) {
+  .bo-selection-overlay { display: none; }
+}
+
 .bo-header {
   display: flex;
   align-items: flex-start;
@@ -161,6 +177,10 @@
   margin: 0;
 }
 
+.lc-wrap.is-selected {
+  z-index: 40;
+}
+
 .lc-card-group {
   position: relative;
   width: 100%;
@@ -198,6 +218,70 @@
   pointer-events: none;
 }
 
+.lc-silk-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0.48;
+  mix-blend-mode: screen;
+  animation: cardFlowShift 11s ease-in-out infinite alternate;
+}
+
+.lc-wrap.flow-theme-0 .lc-silk-bg::after {
+  background:
+    radial-gradient(circle at 14% 20%, rgba(255, 255, 255, 0.26), transparent 52%),
+    linear-gradient(120deg, rgba(170, 170, 180, 0.16), rgba(255, 255, 255, 0.03));
+}
+
+.lc-wrap.flow-theme-1 .lc-silk-bg::after {
+  background:
+    radial-gradient(circle at 80% 26%, rgba(255, 228, 178, 0.22), transparent 54%),
+    linear-gradient(205deg, rgba(188, 168, 140, 0.14), rgba(255, 255, 255, 0.02));
+  animation-duration: 13s;
+}
+
+.lc-wrap.flow-theme-2 .lc-silk-bg::after {
+  background:
+    radial-gradient(circle at 72% 78%, rgba(184, 220, 255, 0.18), transparent 56%),
+    linear-gradient(155deg, rgba(132, 155, 182, 0.15), rgba(255, 255, 255, 0.02));
+  animation-duration: 9.5s;
+}
+
+.lc-wrap.flow-theme-3 .lc-silk-bg::after {
+  background:
+    radial-gradient(circle at 22% 76%, rgba(220, 190, 255, 0.16), transparent 58%),
+    linear-gradient(320deg, rgba(166, 142, 178, 0.14), rgba(255, 255, 255, 0.02));
+  animation-duration: 12.5s;
+}
+
+.lc-wrap.flow-theme-4 .lc-silk-bg::after {
+  background:
+    radial-gradient(circle at 50% 18%, rgba(206, 255, 214, 0.14), transparent 54%),
+    linear-gradient(90deg, rgba(138, 170, 142, 0.14), rgba(255, 255, 255, 0.02));
+  animation-duration: 10s;
+}
+
+.lc-wrap.flow-theme-5 .lc-silk-bg::after {
+  background:
+    radial-gradient(circle at 48% 48%, rgba(255, 255, 255, 0.2), transparent 60%),
+    linear-gradient(240deg, rgba(178, 178, 178, 0.14), rgba(255, 255, 255, 0.02));
+  animation-duration: 14s;
+}
+
+@keyframes cardFlowShift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1) rotate(0deg);
+  }
+  50% {
+    transform: translate3d(-2.5%, 2%, 0) scale(1.03) rotate(1.6deg);
+  }
+  100% {
+    transform: translate3d(2%, -2%, 0) scale(1.02) rotate(-1.2deg);
+  }
+}
+
 .lc-bottom-bar {
   position: absolute;
   top: calc(100% - 24px);
@@ -228,11 +312,21 @@
 }
 
 .lc-wrap:hover .lc-bottom-bar,
-.lc-wrap:focus-within .lc-bottom-bar {
+.lc-wrap:focus-within .lc-bottom-bar,
+.lc-wrap.is-expanded .lc-bottom-bar {
   opacity: 1 !important;
   visibility: visible !important;
   pointer-events: auto;
   transform: translateY(12px) scaleY(1);
+}
+
+/* Hide slider on desktop even when selected */
+@media (min-width: 769px) {
+  .lc-wrap.is-expanded .lc-bottom-bar {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none;
+  }
 }
 
 .lc-commission {
@@ -563,6 +657,10 @@
 }
 /* ── Mobile Responsive Overrides ── */
 @media (max-width: 768px) {
+  .bo-page {
+    gap: 20px;
+  }
+
   .bo-header {
     flex-direction: column;
     align-items: stretch;
@@ -595,6 +693,7 @@
 
   .bo-filters {
     padding: 12px;
+    border-radius: 14px;
   }
 
   .bo-search-input {
@@ -603,7 +702,27 @@
   }
 
   .bo-filter-pills {
-    justify-content: center;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .bo-filter-pills::-webkit-scrollbar { display: none; }
+
+  .bo-pill-group {
+    flex-shrink: 0;
+  }
+
+  .bo-pill {
+    padding: 7px 13px;
+    font-size: 12px;
+  }
+
+  .bo-pill-sep {
+    flex-shrink: 0;
   }
 
   .bo-grid {
@@ -611,18 +730,37 @@
     gap: 16px;
   }
 
-  /* On mobile, we show the bottom bar by default or with a different animation */
+  .lc-wrap {
+    padding-bottom: 0;
+    transition: padding-bottom 0.24s ease;
+  }
+
+  .lc-wrap.is-expanded {
+    padding-bottom: 92px;
+  }
+
+  /* On mobile, bottom bar opens only when card is tapped */
   .lc-bottom-bar {
-    position: relative;
-    top: -1px; /* Slightly overlap to merge with card */
-    opacity: 1 !important;
-    visibility: visible !important;
-    pointer-events: auto;
-    transform: none !important;
+    position: absolute;
+    top: calc(100% - 2px);
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none;
+    transform: translateY(-10px) scaleY(0.95) !important;
     border-radius: 0 0 16px 16px;
     padding: 16px;
     background: rgba(30, 30, 32, 1);
     border-top: 1px solid rgba(255, 255, 255, 0.05);
+    flex-wrap: wrap;
+    gap: 12px;
+    transition: opacity 0.22s ease, transform 0.25s ease, visibility 0.22s ease;
+  }
+
+  .lc-wrap.is-expanded .lc-bottom-bar {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto;
+    transform: translateY(0) scaleY(1) !important;
   }
 
   .lc-card-stage {
@@ -640,11 +778,19 @@
   }
 
   .lc-request-btn {
-    padding: 8px 16px;
+    padding: 10px 14px;
     font-size: 13px;
+    width: 100%;
+    justify-content: center;
   }
 
   .bo-empty {
     padding: 40px 20px;
+  }
+}
+
+@media (max-width: 420px) {
+  .lc-wrap.is-expanded {
+    padding-bottom: 86px;
   }
 }
