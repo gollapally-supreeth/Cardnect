@@ -326,7 +326,7 @@ export default function LandingPage() {
       <footer className="footer-min">
         <div className="container footer-min-inner">
           <div className="brand-min">
-            <CreditCard size={16} strokeWidth={1.5} />
+            <img src="/cardnect-logo.svg" alt="Cardnect logo" className="brand-min-logo" loading="lazy" decoding="async" />
             <span>CARDNECT</span>
           </div>
           <div className="footer-min-copy">

@@ -40,6 +40,12 @@
   color: #ffffff;
 }
 
+.brand-min-logo {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
 .nav-min-links {
   display: flex;
   gap: 32px;

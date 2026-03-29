@@ -55,7 +55,12 @@
   font-size: 20px; font-weight: 700; color: #fff;
   margin-bottom: 4px;
 }
-.ap-logo svg { color: rgba(255,255,255,0.70); }
+
+.ap-logo-mark {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
 
 /* ── 3D card flip ────────────────────────────────────────────── */
 .ap-card-scene {

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { CreditCard, ArrowLeft, Loader, Mail, Phone, User, Lock, CheckCircle, Eye, EyeOff } from 'lucide-react'
+import { ArrowLeft, Loader, Mail, Phone, User, Lock, CheckCircle, Eye, EyeOff } from 'lucide-react'
 import { useAuthContext } from '../context/AuthContext'
 import './AuthPage.css'
 
@@ -319,7 +319,7 @@ export default function AuthPage() {
       </button>
 
       <div className="ap-logo">
-        <CreditCard size={18} />
+        <img src="/cardnect-logo.svg" alt="Cardnect logo" className="ap-logo-mark" loading="lazy" decoding="async" />
         <span>Cardnect</span>
       </div>
 
