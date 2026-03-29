@@ -91,33 +91,36 @@ export default function MyRequests() {
       <div className="browse-header">
         <div>
           <h1 className="page-title">Card Requests</h1>
-          <p className="page-subtitle">Track your sent requests and manage incoming ones</p>
+          <p className="page-subtitle">Manage your sent and incoming card access requests</p>
         </div>
-        <button className="btn btn-secondary btn-sm" onClick={() => {
-          qc.invalidateQueries(['my-requests'])
-          qc.invalidateQueries(['incoming-requests'])
-        }}>
-          <RefreshCw size={14} /> Refresh
-        </button>
       </div>
 
-      <div className="req-tabs">
-        <button
-          className={`req-tab ${tab === 'sent' ? 'active' : ''}`}
-          onClick={() => setTab('sent')}
-        >
-          <Inbox size={15} /> Sent Requests
-          {sentReqs.length > 0 && <span className="req-tab-count">{sentReqs.length}</span>}
-        </button>
-        <button
-          className={`req-tab ${tab === 'incoming' ? 'active' : ''}`}
-          onClick={() => setTab('incoming')}
-        >
-          <ArrowRight size={15} /> Incoming Requests
-          {incomingReqs.filter(r => r.status === 'PENDING').length > 0 && (
-            <span className="req-tab-count pending">{incomingReqs.filter(r => r.status === 'PENDING').length}</span>
-          )}
-        </button>
+      {/* Centered pill-style tab switcher */}
+      <div className="req-tab-switcher">
+        <div className="req-tab-track">
+          <button
+            className={`req-tab-pill ${tab === 'sent' ? 'active' : ''}`}
+            onClick={() => setTab('sent')}
+          >
+            <Inbox size={14} />
+            Sent
+            {sentReqs.length > 0 && (
+              <span className="req-pill-count">{sentReqs.length}</span>
+            )}
+          </button>
+          <button
+            className={`req-tab-pill ${tab === 'incoming' ? 'active' : ''}`}
+            onClick={() => setTab('incoming')}
+          >
+            <ArrowRight size={14} />
+            Received
+            {incomingReqs.filter(r => r.status === 'PENDING').length > 0 && (
+              <span className="req-pill-count pending">
+                {incomingReqs.filter(r => r.status === 'PENDING').length}
+              </span>
+            )}
+          </button>
+        </div>
       </div>
 
       {isLoading ? (

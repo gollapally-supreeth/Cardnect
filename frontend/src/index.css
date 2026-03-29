@@ -13,20 +13,20 @@
   --color-border-focus: rgba(255, 255, 255, 0.35);
 
   --color-primary: #ffffff;
-  --color-primary-light: #f2f2f4;
-  --color-primary-dark: #e5e7eb;
-  --color-primary-glow: rgba(255, 255, 255, 0.08);
+  --color-primary-light: #ffffff;
+  --color-primary-dark: #d1d1d1;
+  --color-primary-glow: rgba(255, 255, 255, 0.15);
 
-  --color-accent: #ededed;
+  --color-accent: #ffffff;
   --color-accent-2: #888888;
-  --color-success: #22c55e;
-  --color-warning: #f59e0b;
-  --color-danger: #ef4444;
-  --color-info: #06b6d4;
+  --color-success: #ffffff;
+  --color-warning: #666666;
+  --color-danger: #ff3333;
+  --color-info: #d1d1d1;
 
-  --color-text: #f2f2f4;
-  --color-text-secondary: #c8c8d0;
-  --color-text-muted: #888892;
+  --color-text: #ffffff;
+  --color-text-secondary: #aaaaaa;
+  --color-text-muted: #666666;
 
   /* Typography */
   --font-body: 'DM Sans', system-ui, -apple-system, sans-serif;

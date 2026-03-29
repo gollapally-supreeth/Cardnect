@@ -4,6 +4,7 @@ import com.cardnect.model.dto.request.LoginRequest;
 import com.cardnect.model.dto.request.RegisterRequest;
 import com.cardnect.model.dto.request.SendOtpRequest;
 import com.cardnect.model.dto.request.VerifyOtpRequest;
+import com.cardnect.model.dto.request.ForgotPasswordRequest;
 import com.cardnect.model.dto.response.AuthResponse;
 import com.cardnect.model.dto.response.UserMeResponse;
 import com.cardnect.service.impl.AuthService;
@@ -42,6 +43,13 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
+    }
+
+    /** Forgot/Change Password with OTP */
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Map<String, String>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        authService.forgotPassword(request);
+        return ResponseEntity.ok(Map.of("message", "Password successfully changed"));
     }
 
     @GetMapping("/me")

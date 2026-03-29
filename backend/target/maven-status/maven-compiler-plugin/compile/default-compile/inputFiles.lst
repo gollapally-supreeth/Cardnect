@@ -11,6 +11,7 @@
 /run/media/Munna/Supreeth/Projects/Cardnect/backend/src/main/java/com/cardnect/exception/GlobalExceptionHandler.java
 /run/media/Munna/Supreeth/Projects/Cardnect/backend/src/main/java/com/cardnect/model/dto/request/CreateListingRequest.java
 /run/media/Munna/Supreeth/Projects/Cardnect/backend/src/main/java/com/cardnect/model/dto/request/CreateRequestDto.java
+/run/media/Munna/Supreeth/Projects/Cardnect/backend/src/main/java/com/cardnect/model/dto/request/ForgotPasswordRequest.java
 /run/media/Munna/Supreeth/Projects/Cardnect/backend/src/main/java/com/cardnect/model/dto/request/LoginRequest.java
 /run/media/Munna/Supreeth/Projects/Cardnect/backend/src/main/java/com/cardnect/model/dto/request/RegisterRequest.java
 /run/media/Munna/Supreeth/Projects/Cardnect/backend/src/main/java/com/cardnect/model/dto/request/SendOtpRequest.java

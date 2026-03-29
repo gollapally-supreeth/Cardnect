@@ -207,19 +207,8 @@ export default function BrowseOffers() {
       {/* Header */}
       <div className="bo-header">
         <div>
-          <h1 className="bo-title">Browse Card Offers</h1>
-          <p className="bo-subtitle">Find verified card holders and request access to exclusive discounts</p>
-        </div>
-        <div className="bo-stats">
-          <div className="bo-stat">
-            <span className="bo-stat-num">{listings.length}</span>
-            <span className="bo-stat-lbl">Active Cards</span>
-          </div>
-          <div className="bo-stat-sep" />
-          <div className="bo-stat">
-            <span className="bo-stat-num">{NETWORKS.length - 1}</span>
-            <span className="bo-stat-lbl">Networks</span>
-          </div>
+          <h1 className="bo-title">Browse Cards</h1>
+          <p className="bo-subtitle">Discover verified card holders and request access to exclusive discounts</p>
         </div>
       </div>
 

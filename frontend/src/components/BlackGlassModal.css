@@ -1,0 +1,76 @@
+/* Black Glassmorphic Modal */
+.black-glass-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.85); backdrop-filter: blur(20px);
+  z-index: 10000; display: flex; align-items: center; justify-content: center;
+  animation: bgFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes bgFadeIn {
+  from { opacity: 0; backdrop-filter: blur(0px); }
+  to { opacity: 1; backdrop-filter: blur(20px); }
+}
+
+.black-glass-content {
+  background: rgba(10,10,10,0.65);
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 40px 80px -20px rgba(0,0,0,1), inset 0 2px 2px rgba(255,255,255,0.08);
+  border-radius: 28px; padding: 2rem 2rem;
+  width: 90%; max-width: 600px; position: relative;
+  overflow: hidden; color: #fff;
+  backdrop-filter: blur(40px) saturate(150%);
+  animation: bgSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes bgSlideUp {
+  0% { opacity: 0; transform: translateY(40px) scale(0.92); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.black-glass-close {
+  position: absolute; top: 1.5rem; right: 1.5rem;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+  width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  color: #fff; cursor: pointer; transition: all 0.25s cubic-bezier(0.25,1,0.3,1);
+}
+.black-glass-close:hover { background: rgba(255,255,255,0.1); transform: rotate(180deg) scale(1.1); box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+
+.black-glass-header { margin-bottom: 2rem; }
+.black-glass-header h1 { font-family: 'Inter', sans-serif; font-size: 1.75rem; font-weight: 800; letter-spacing: -0.02em; color: #fff; text-shadow: 0 2px 10px rgba(255,255,255,0.3); margin:0; }
+
+.bg-input-group { margin-bottom: 1.25rem; text-align: left; }
+.bg-label { display: block; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.15em; color: rgba(255,255,255,0.5); font-weight: 800; margin-bottom: 0.5rem; }
+.bg-input {
+  width: 100%; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.08);
+  padding: 0.85rem 1rem; border-radius: 14px; color: #fff; font-size: 0.95rem; font-weight: 500;
+  transition: all 0.3s; outline: none; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); appearance: none;
+}
+.bg-input:focus { border-color: rgba(255,255,255,0.4); box-shadow: 0 0 20px rgba(255,255,255,0.05), inset 0 2px 4px rgba(0,0,0,0.5); background: rgba(0,0,0,0.8); }
+
+.bg-btn {
+  background: #fff; color: #000; border: none; padding: 1rem;
+  border-radius: 14px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: all 0.3s cubic-bezier(0.25,1,0.3,1);
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+  box-shadow: 0 4px 15px rgba(255,255,255,0.2), inset 0 1px 1px rgba(255,255,255,1);
+}
+.bg-btn:hover:not(:disabled) { transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 25px rgba(255,255,255,0.3), inset 0 1px 1px rgba(255,255,255,1); }
+.bg-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; filter: grayscale(1); }
+
+.bg-btn-secondary {
+  background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.1);
+  padding: 1rem; border-radius: 14px; font-weight: 800; font-size: 1rem; cursor: pointer; transition: all 0.3s cubic-bezier(0.25,1,0.3,1);
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+}
+.bg-btn-secondary:hover:not(:disabled) { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+
+.bg-err { 
+  background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); 
+  color: #fca5a5; padding: 1rem; border-radius: 14px; font-size: 0.85rem; 
+  margin-bottom: 1.5rem; font-weight: 600;
+  box-shadow: inset 0 2px 10px rgba(239,68,68,0.1);
+}
+.bg-info {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); 
+  color: rgba(255,255,255,0.7); padding: 1rem 1.25rem; border-radius: 14px; font-size: 0.85rem; 
+  margin-bottom: 1.5rem; font-weight: 500;
+}

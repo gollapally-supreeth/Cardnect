@@ -3,6 +3,7 @@ package com.cardnect.service.impl;
 import com.cardnect.model.dto.request.LoginRequest;
 import com.cardnect.model.dto.request.RegisterRequest;
 import com.cardnect.model.dto.request.VerifyOtpRequest;
+import com.cardnect.model.dto.request.ForgotPasswordRequest;
 import com.cardnect.model.dto.response.AuthResponse;
 import com.cardnect.model.dto.response.UserMeResponse;
 import com.cardnect.model.entity.User;
@@ -115,6 +116,26 @@ public class AuthService {
 
         String token = jwtService.generateToken(user.getId(), user.getEmail());
         return buildAuthResponse(token, user);
+    }
+
+    /* ── Forgot Password ────────────────────────────────────────── */
+    @Transactional
+    public void forgotPassword(ForgotPasswordRequest request) {
+        String normalized = normalizeEmail(request.getEmail());
+        String otpCode = request.getOtpCode() == null ? "" : request.getOtpCode().trim();
+        
+        // Validate OTP
+        otpService.validateOtp(normalized, otpCode);
+
+        // Fetch User
+        User user = userRepository.findByEmail(normalized)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        // Update password
+        user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+
+        log.info("Password changed successfully for user: {}", normalized);
     }
 
     /* ── Me ──────────────────────────────────────────────────────── */

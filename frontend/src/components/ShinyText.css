@@ -1,0 +1,55 @@
+/* ── ShinyText — ReactBits-style metallic shine animation ── */
+
+.shiny-text {
+  display: inline-block;
+
+  /*  Font: Bebas Neue — cinematic, condensed, bold display typeface   */
+  font-family: 'Bebas Neue', 'DM Sans', sans-serif;
+  font-weight: 400;          /* Bebas Neue has only one weight */
+  letter-spacing: 0.06em;
+  line-height: 1;
+  text-transform: uppercase;
+
+  /*
+    TWO Background Layers (both clipped to text):
+      [0] Animated shine beam  — sweeps left → right
+      [1] Static silver metallic base gradient
+  */
+  background:
+    /* Layer 0 — shine beam */
+    linear-gradient(
+      105deg,
+      transparent  20%,
+      rgba(255,255,255,0.00) 38%,
+      rgba(255,255,255,0.95) 50%,
+      rgba(255,255,255,0.00) 62%,
+      transparent  80%
+    ) -250% center / 300% 100% no-repeat,
+    /* Layer 1 — silver metallic base */
+    linear-gradient(
+      180deg,
+      #ffffff 0%,
+      #d8d8d8 18%,
+      #a0a0a0 40%,
+      #c8c8c8 58%,
+      #eeeeee 76%,
+      #b0b0b0 100%
+    );
+
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+
+  /* Animate only the shine layer's x-position */
+  animation: shinyTextSweep var(--shine-speed, 4s) linear infinite;
+}
+
+.shiny-text.disabled {
+  animation: none;
+}
+
+@keyframes shinyTextSweep {
+  0%   { background-position: -250% center, 0 0; }
+  100% { background-position:  250% center, 0 0; }
+}

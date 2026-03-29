@@ -1,122 +1,177 @@
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
 import { useAuthContext } from '../context/AuthContext'
-import { CheckCircle, AlertCircle, Phone, Mail, Shield, CreditCard, Clock, Award, MessageCircle } from 'lucide-react'
-import { fetchMyListings } from '../api/services'
+import { CheckCircle, AlertCircle, Phone, Lock, Zap, ChevronRight } from 'lucide-react'
 import VerifyPhoneModal from '../components/VerifyPhoneModal'
+import ChangePasswordModal from '../components/ChangePasswordModal'
+import Silk from '../components/Silk'
 import './Profile.css'
+
+const formatCardId = (id) => {
+  if (!id) return '0000 0000 0000 0000'
+  const clean = id.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().padEnd(16, 'X')
+  return `${clean.substring(0,4)} ${clean.substring(4,8)} ${clean.substring(8,12)} ${clean.substring(12,16)}`
+}
 
 export default function Profile() {
   const { user } = useAuthContext()
   const emailVerified   = !!user?.emailVerified
-  const isFullyVerified = emailVerified;
+  const phoneVerified   = !!user?.phoneVerified
+  const isFullyVerified = emailVerified && phoneVerified;
 
   const [showVerifyModal, setShowVerifyModal] = useState(false)
+  const [showPwdModal, setShowPwdModal]       = useState(false)
+  const [isFlipped, setIsFlipped]             = useState(false)
 
-  const { data: listings = [] } = useQuery({ queryKey: ['my-listings'], queryFn: fetchMyListings })
-
-  const initials = (user?.name || user?.email || 'U')?.[0]?.toUpperCase() || 'U'
   const memberSince = user?.createdAt
-    ? new Date(user.createdAt).toLocaleDateString('en-IN', { month:'long', year:'numeric' })
-    : '—'
+    ? new Date(user.createdAt).toLocaleDateString('en-US', { month:'2-digit', year:'2-digit' })
+    : '12/24'
 
   return (
-    <div className="prof-page">
-      {/* Hero section */}
-      <div className="prof-hero">
-        <div className="prof-avatar-wrap">
-          <div className="prof-avatar">{initials}</div>
-          <div className={`prof-avatar-ring ${isFullyVerified ? 'ok' : 'warn'}`} />
-        </div>
+    <div className="prof-page-vmax">
+      <div className="vmax-ambient-glow" />
 
-        <div className="prof-hero-info">
-          <h1 className="prof-name">{user?.name || 'User'}</h1>
-          <p className="prof-email">{user?.email}</p>
-          <div className={`prof-verif-badge ${isFullyVerified ? 'ok' : 'warn'}`}>
-            {isFullyVerified
-              ? <><CheckCircle size={13} /> Verified User</>
-              : <><AlertCircle size={13} /> Verification Pending</>}
-          </div>
-        </div>
+      <div className="vmax-scene">
+        <div className={`vmax-card ${isFlipped ? 'flipped' : ''}`}>
+          
+          {/* ════ FRONT OF CARD ════ */}
+          <div className="vmax-face vmax-front" style={{ pointerEvents: isFlipped ? 'none' : 'auto' }}>
+            <div className="vmax-glare" />
 
-        {/* Quick stats */}
-        <div className="prof-quick-stats">
-          <div className="prof-qs-item">
-            <CreditCard size={16} />
-            <span className="prof-qs-num">{listings.length}</span>
-            <span className="prof-qs-lbl">Listings</span>
-          </div>
-          <div className="prof-qs-sep" />
-          <div className="prof-qs-item">
-            <Award size={16} />
-            <span className="prof-qs-num">{listings.filter(l=>l.active).length}</span>
-            <span className="prof-qs-lbl">Active</span>
-          </div>
-          <div className="prof-qs-sep" />
-          <div className="prof-qs-item">
-            <Clock size={16} />
-            <span className="prof-qs-num">—</span>
-            <span className="prof-qs-lbl">Requests</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="prof-grid">
-        {/* Personal info */}
-        <div className="prof-section">
-          <div className="prof-section-title"><Shield size={15} /> Personal Info</div>
-          <div className="prof-rows">
-            <div className="prof-row">
-              <span className="prof-row-lbl">Display Name</span>
-              <span className="prof-row-val">{user?.name || '—'}</span>
+            {/* Custom R3F Silk Background */}
+            <div className="vmax-silk-bg">
+              <Silk
+                speed={4.5} // Increased speed
+                scale={1.2}
+                color="#ffffff"
+                noiseIntensity={1.3} // Slightly more intense ripples
+                rotation={15}
+              />
             </div>
-            <div className="prof-row">
-              <span className="prof-row-lbl">User ID</span>
-              <span className="prof-row-val prof-mono" style={{ fontSize:11 }}>{user?.id || '—'}</span>
+            
+            {/* Advanced Geometry Background */}
+            <div className="vmax-geo">
+              <div className="vmax-circle c1" />
+              <div className="vmax-circle c2" />
             </div>
-            <div className="prof-row">
-              <span className="prof-row-lbl">Member Since</span>
-              <span className="prof-row-val">{memberSince}</span>
-            </div>
-          </div>
-        </div>
 
-        {/* Verification */}
-        <div className="prof-section">
-          <div className="prof-section-title"><Shield size={15} /> Verification Status</div>
-          <div className="prof-rows">
-
-
-            {/* Email */}
-            <div className="prof-verif-row">
-              <div className={`prof-verif-icon ${emailVerified ? 'ok' : 'warn'}`}>
-                <Mail size={15} />
+            <div className="vmax-inner">
+              <div className="vmax-header">
+                <div className="vmax-brand">
+                  <div className="vmax-logo-dots">
+                    <span className="dot d1"/>
+                    <span className="dot d2"/>
+                  </div>
+                  CARDNECT
+                </div>
+                <Zap size={20} className="vmax-icon-contactless" />
               </div>
-              <div className="prof-verif-body">
-                <p className="prof-verif-label">Email Address</p>
-                <p className="prof-verif-val">{user?.email || 'Not added'}</p>
+
+              <div className="vmax-chip">
+                <div className="vmax-chip-lines" />
               </div>
-              <span className={`prof-badge ${emailVerified ? 'ok' : 'warn'}`}>
-                {emailVerified ? <><CheckCircle size={11} /> Verified</> : <><AlertCircle size={11} /> Unverified</>}
-              </span>
+
+              <div className="vmax-number-group">
+                <span className="vmax-number-label">UID / SYSTEM IDENTIFICATION</span>
+                <div className="vmax-number">{formatCardId(user?.id)}</div>
+              </div>
+
+              <div className="vmax-meta">
+                <div className="vmax-label-group">
+                  <span>VALID<br/>THRU</span>
+                  <strong>{memberSince}</strong>
+                </div>
+              </div>
+
+              <div className="vmax-footer">
+                <div className="vmax-name">{user?.name || 'MEMBER ACCOUNT'}</div>
+                <div className={`vmax-hologram ${isFullyVerified ? 'is-verified' : ''}`}>
+                  {isFullyVerified ? <CheckCircle size={18} /> : <AlertCircle size={18} />}
+                </div>
+              </div>
             </div>
+
+            <button 
+              className="vmax-btn-flip to-back" 
+              onClick={(e) => { e.stopPropagation(); setIsFlipped(true); }}
+            >
+              Security Center <ChevronRight size={14} />
+            </button>
           </div>
 
-          {!isFullyVerified && (
-            <div className="alert alert-warning" style={{ marginTop:14, fontSize:12 }}>
-              Please verify your email to unlock all platform features.
-            </div>
-          )}
-        </div>
-      </div>
+          {/* ════ BACK OF CARD ════ */}
+          <div className="vmax-face vmax-back" style={{ pointerEvents: isFlipped ? 'auto' : 'none' }}>
+            <div className="vmax-glare" />
 
-      {/* Security notice */}
-      <div className="prof-security-note">
-        <Shield size={15} />
-        <p>
-          <strong>Security:</strong> Cardnect never stores full card numbers, CVV codes, expiry dates, or OTP codes.
-          All card data on this platform is masked. Transactions occur outside the platform.
-        </p>
+            {/* Custom R3F Silk Background for Back Face */}
+            <div className="vmax-silk-bg">
+              <Silk
+                speed={4.5} 
+                scale={1.2}
+                color="#ffffff"
+                noiseIntensity={1.3} 
+                rotation={45}
+              />
+            </div>
+
+            {/* Magstripe at the top */}
+            <div className="vmax-magstripe" />
+            
+            <div className="vmax-back-inner">
+              
+              {/* Signature Panel with proper email handling */}
+              <div className="vmax-signature-wrap">
+                <span className="sig-label">AUTHORIZED CREDENTIAL <span className="sig-arrow">►</span></span>
+                <div className="vmax-signature">
+                  <div className="sig-value" title={user?.email}>{user?.email || '—'}</div>
+                  {emailVerified && <div className="sig-badge">✓ Verified</div>}
+                </div>
+              </div>
+
+              {/* Action Center - Refined Minimal Buttons */}
+              <div className="vmax-actions">
+                <div className="vmax-action-row">
+                  <div className="vmax-action-info">
+                    <Phone size={14} className="action-icon" /> 
+                    <span className="action-text">{user?.phone || 'No phone linked'}</span>
+                  </div>
+                  {phoneVerified ? (
+                    <span className="vmax-status ok">Secured</span>
+                  ) : (
+                    <button className="vmax-action-btn" onClick={(e) => {
+                      e.stopPropagation();
+                      setShowVerifyModal(true);
+                    }}>Verify Now</button>
+                  )}
+                </div>
+
+                <div className="vmax-action-row">
+                  <div className="vmax-action-info">
+                    <Lock size={14} className="action-icon" /> 
+                    <span className="action-text">Account Password</span>
+                  </div>
+                  <button className="vmax-action-btn" onClick={(e) => {
+                    e.stopPropagation();
+                    setShowPwdModal(true);
+                  }}>Change</button>
+                </div>
+              </div>
+
+              <div className="vmax-disclaimer">
+                <strong>GLOBAL IDENTIFICATION PROTOCOL</strong><br/>
+                This physical asset proxy is cryptographically secured via zero-knowledge architecture. Authorized personnel only. If found, return to issuing authority immediately.
+              </div>
+
+            </div>
+
+            <button 
+              className="vmax-btn-flip to-front" 
+              onClick={(e) => { e.stopPropagation(); setIsFlipped(false); }}
+            >
+              <ChevronRight size={14} style={{transform: 'rotate(180deg)'}} /> Front
+            </button>
+          </div>
+
+        </div>
       </div>
 
       <VerifyPhoneModal
@@ -124,6 +179,12 @@ export default function Profile() {
         onClose={() => setShowVerifyModal(false)}
         userPhone={user?.phone || ''}
         onVerified={() => setShowVerifyModal(false)}
+      />
+
+      <ChangePasswordModal
+        isOpen={showPwdModal}
+        onClose={() => setShowPwdModal(false)}
+        userEmail={user?.email}
       />
     </div>
   )

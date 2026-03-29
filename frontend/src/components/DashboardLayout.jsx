@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import {
   CreditCard, Bell, LayoutDashboard, ListPlus, Inbox,
-  User, LogOut, CheckCircle, AlertCircle, Settings
+  User, LogOut, AlertCircle
 } from 'lucide-react'
 import { useState } from 'react'
 import { useApp } from '../context/AppContext'
@@ -23,7 +23,7 @@ export default function DashboardLayout({ children }) {
   const { unreadCount } = useApp()
   const [notifOpen, setNotifOpen] = useState(false)
 
-  const isVerified = !!user?.emailVerified;
+  const isVerified = !!user?.emailVerified
 
   const isActive = (path, exact) =>
     exact ? location.pathname === path : location.pathname.startsWith(path)
@@ -40,6 +40,7 @@ export default function DashboardLayout({ children }) {
         {/* Logo */}
         <Link to="/" className="dash-logo-btn" title="Cardnect">
           <CreditCard size={20} />
+          <span className="dash-logo-text">Cardnect</span>
         </Link>
 
         <div className="dash-sidebar-divider" />
@@ -51,52 +52,46 @@ export default function DashboardLayout({ children }) {
               key={path}
               to={path}
               className={`dash-nav-item ${isActive(path, exact) ? 'active' : ''}`}
-              data-label={label}
             >
               <Icon size={20} />
+              <span>{label}</span>
             </Link>
           ))}
         </nav>
 
         <div className="dash-sidebar-spacer" />
 
-        {/* Notifications icon */}
+        {/* Bottom: notifications + profile + sign-out */}
         <div className="dash-sidebar-bottom">
           <button
             id="notifications-btn"
             className={`dash-nav-item notif-icon-btn ${notifOpen ? 'active' : ''}`}
-            data-label="Notifications"
             onClick={() => setNotifOpen(v => !v)}
           >
             <Bell size={20} />
             {unreadCount > 0 && (
               <span className="sidebar-notif-dot">{unreadCount > 9 ? '9+' : unreadCount}</span>
             )}
+            <span>Notifications</span>
           </button>
 
-          {/* Profile / Avatar */}
           <Link
             to="/dashboard/profile"
             className={`dash-sidebar-avatar ${isActive('/dashboard/profile') ? 'active' : ''}`}
-            data-label={user?.name || 'Profile'}
-            title="Profile"
           >
-            {initials}
+            <span className="sidebar-avatar-circle">{initials}</span>
             <span className={`dash-verify-ring ${isVerified ? 'ok' : 'warn'}`} />
+            <span>Profile</span>
           </Link>
 
-          {/* Sign-out */}
-          <button
-            className="dash-nav-item dash-signout-btn"
-            data-label="Sign Out"
-            onClick={handleSignOut}
-          >
+          <button className="dash-nav-item dash-signout-btn" onClick={handleSignOut}>
             <LogOut size={18} />
+            <span>Sign Out</span>
           </button>
         </div>
       </aside>
 
-      {/* Notification panel — positioned absolutely from topbar */}
+      {/* Notification panel */}
       {notifOpen && (
         <div className="notif-panel-anchor">
           <NotificationPanel onClose={() => setNotifOpen(false)} />
@@ -105,30 +100,17 @@ export default function DashboardLayout({ children }) {
 
       {/* ── Main area ── */}
       <div className="dash-main">
-        {/* Top bar */}
+        {/* Minimal topbar — only avatar + bell */}
         <header className="dash-topbar">
-          <div className="dash-topbar-left">
-            <span className="dash-page-label">
-              {NAV_ITEMS.find(n => isActive(n.path, n.exact))?.label ?? 'Dashboard'}
-            </span>
-          </div>
-
           <div className="dash-topbar-right">
-            {/* Verification chip */}
-            <div className={`dash-verif-chip ${isVerified ? 'ok' : 'warn'}`}>
-              {isVerified
-                ? <><CheckCircle size={12} /> Verified</>
-                : <><AlertCircle size={12} /> Incomplete</>}
-            </div>
-
-            {/* Bell — in topbar too for quick access */}
+            {/* Bell */}
             <div className="notif-btn-wrapper">
               <button
                 className={`topbar-icon-btn ${notifOpen ? 'active' : ''}`}
                 onClick={() => setNotifOpen(v => !v)}
                 title="Notifications"
               >
-                <Bell size={18} />
+                <Bell size={22} />
                 {unreadCount > 0 && (
                   <span className="notif-count">{unreadCount > 9 ? '9+' : unreadCount}</span>
                 )}
@@ -142,7 +124,7 @@ export default function DashboardLayout({ children }) {
           </div>
         </header>
 
-        {/* Verification banner */}
+        {/* Verification banner (only if not verified) */}
         {!isVerified && (
           <div className="dash-verif-banner">
             <AlertCircle size={15} />
@@ -151,7 +133,6 @@ export default function DashboardLayout({ children }) {
           </div>
         )}
 
-        {/* Page content */}
         <main className="dash-content">{children}</main>
       </div>
     </div>

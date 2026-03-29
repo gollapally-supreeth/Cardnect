@@ -30,6 +30,7 @@ public class CardRequestService {
     private final NotificationRepository notificationRepository;
     private final WebSocketNotificationService wsNotificationService;
     private final WhatsAppService whatsAppService;
+    private final ResendEmailService resendEmailService;
 
     @Transactional
     public CardRequestResponse createRequest(User requester, CreateRequestDto dto) {
@@ -106,8 +107,28 @@ public class CardRequestService {
                 .message(message)
                 .build();
         notificationRepository.save(notification);
-
         wsNotificationService.sendNotification(listing.getUser().getId().toString(), notification);
+
+        // ── Send email to card holder ──
+        String holderEmail = listing.getUser().getEmail();
+        if (holderEmail != null && !holderEmail.isBlank()) {
+            try {
+                resendEmailService.sendCardRequestEmail(
+                        holderEmail,
+                        holderName,
+                        requesterName,
+                        requester.getEmail(),
+                        listing.getBankName(),
+                        listing.getCardType(),
+                        listing.getCardNetwork(),
+                        listing.getMaskedNumber(),
+                        commissionStr,
+                        dto.getOfferDetails()
+                );
+            } catch (Exception e) {
+                log.warn("Card request email failed for holder {}: {}", holderEmail, e.getMessage());
+            }
+        }
 
         log.info("Card request created: {} -> listing {}", requester.getId(), listing.getId());
         return toResponse(request, false);
@@ -136,7 +157,34 @@ public class CardRequestService {
         }
 
         request.setStatus(newStatus);
-        return toResponse(requestRepository.save(request), true);
+        requestRepository.save(request);
+
+        // ── Notify the requester about the decision ──
+        User requester   = request.getRequester();
+        String holderDisplayName = holder.getName() != null ? holder.getName() : "The card holder";
+        String bankCard  = request.getListing().getBankName() + " " + request.getListing().getCardType();
+
+        String message = switch (newStatus) {
+            case ACCEPTED -> String.format(
+                    "%s accepted your request for '%s'. Check your requests to get in touch.",
+                    holderDisplayName, bankCard);
+            case REJECTED -> String.format(
+                    "%s declined your request for '%s'. Browse other available cards.",
+                    holderDisplayName, bankCard);
+            default -> null;
+        };
+
+        if (message != null) {
+            Notification notification = Notification.builder()
+                    .user(requester)
+                    .request(request)
+                    .message(message)
+                    .build();
+            notificationRepository.save(notification);
+            wsNotificationService.sendNotification(requester.getId().toString(), notification);
+        }
+
+        return toResponse(request, newStatus == RequestStatus.ACCEPTED);
     }
 
     private CardRequestResponse toResponse(CardRequest r, boolean includePhone) {

@@ -4,9 +4,10 @@ import { Plus, Pencil, Trash2, X, Loader, CreditCard, Wifi, TrendingUp } from 'l
 import { fetchMyListings, createListing, updateListing, deleteListing } from '../api/services'
 import { useAuthContext } from '../context/AuthContext'
 import PremiumCard from '../components/PremiumCard'
+import '../components/BlackGlassModal.css' // Deep black aesthetic for listing
 import './MyListings.css'
 
-const BANKS    = ['HDFC Bank','ICICI Bank','SBI','Axis Bank','Kotak Bank','Yes Bank','IndusInd Bank','BOB','PNB','Canara Bank','IDFC First','Virtual Bank','Other']
+const BANKS    = ['HDFC Bank','ICICI Bank','State Bank of India','Axis Bank','Kotak Bank','Yes Bank','IndusInd Bank','Bank of Baroda','Punjab National Bank','Canara Bank','IDFC First Bank','Virtual Bank','Other']
 const NETWORKS = ['Visa','Mastercard','RuPay','Amex','Diners']
 const TYPES    = ['Credit','Debit']
 const EMPTY    = { bankName:'', customBankName:'', cardName:'', cardNetwork:'Visa', cardType:'Credit', maskedNumber:'', commissionPercentage:'' }
@@ -19,9 +20,9 @@ function ListingModal({ listing, onClose }) {
   const [error, setError] = useState('')
 
   const mutation = useMutation({
-    mutationFn: () => isEdit ? updateListing(listing.id, form) : createListing(form),
+    mutationFn: (variables) => isEdit ? updateListing(listing.id, variables) : createListing(variables),
     onSuccess:  () => { qc.invalidateQueries(['my-listings']); onClose() },
-    onError:    e  => setError(e.message),
+    onError:    e  => setError(e.response?.data?.message || e.message),
   })
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
@@ -31,13 +32,23 @@ function ListingModal({ listing, onClose }) {
       ? form.customBankName 
       : form.bankName
 
+    const cleanMasked = typeof form.maskedNumber === 'string' ? form.maskedNumber.replace(/\D/g, '').slice(-4) : ''
+
     if (!finalBankName) { setError('Bank name is required'); return }
-    if (!form.maskedNumber) { setError('Last 4 digits required'); return }
+    if (cleanMasked.length !== 4) { setError('Exactly 4 digits required for the card ending'); return }
     const n = parseFloat(form.commissionPercentage)
     if (isNaN(n) || n < 0 || n > 100) { setError('Commission must be 0–100'); return }
     setError('')
 
-    const payload = { ...form, bankName: finalBankName }
+    const payload = {
+      bankName: finalBankName,
+      cardName: form.cardName || '',
+      cardNetwork: form.cardNetwork,
+      cardType: form.cardType,
+      maskedNumber: cleanMasked,
+      commissionPercentage: Number(n)
+    }
+
     mutation.mutate(payload)
   }
 
@@ -49,19 +60,19 @@ function ListingModal({ listing, onClose }) {
   const showCustomBank = form.bankName === 'Other' || form.bankName === 'Virtual Bank';
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal ml-modal" onClick={e => e.stopPropagation()}>
-        <div className="modal-header">
-          <h3 className="modal-title">{isEdit ? 'Edit Card Listing' : 'Add New Listing'}</h3>
-          <button className="modal-close btn" onClick={onClose}><X size={16} /></button>
+    <div className="black-glass-overlay" onClick={onClose}>
+      <div className="black-glass-content" onClick={e => e.stopPropagation()}>
+        <div className="black-glass-header">
+          <h1>{isEdit ? 'Edit Card Listing' : 'Add New Listing'}</h1>
+          <button className="black-glass-close" onClick={onClose}><X size={18} /></button>
         </div>
 
-        <div className="alert alert-info" style={{ marginBottom: 20, fontSize: 12 }}>
+        <div className="bg-info">
           Only enter the <strong>last 4 digits</strong> of your card. Never enter full number, CVV, or expiry.
         </div>
 
         {/* LIVE 3D PREVIEW */}
-        <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'center' }}>
+        <div style={{ marginBottom: 32, display: 'flex', justifyContent: 'center' }}>
           <PremiumCard 
             bankName={displayBankName}
             cardName={form.cardName}
@@ -73,63 +84,63 @@ function ListingModal({ listing, onClose }) {
         </div>
 
         <div className="ml-form-grid" style={{ gridTemplateColumns: '1fr 1fr' }}>
-          <div className="form-group" style={{ gridColumn: showCustomBank ? '1' : '1/-1' }}>
-            <label className="form-label">Bank Name *</label>
-            <select className="form-select" value={form.bankName} onChange={e => set('bankName', e.target.value)}>
+          <div className="bg-input-group" style={{ gridColumn: showCustomBank ? '1' : '1/-1' }}>
+            <label className="bg-label">Bank Name *</label>
+            <select className="bg-input" value={form.bankName} onChange={e => set('bankName', e.target.value)}>
               <option value="">Select bank…</option>
               {BANKS.map(b => <option key={b}>{b}</option>)}
             </select>
           </div>
           {showCustomBank && (
-            <div className="form-group" style={{ gridColumn: '2' }}>
-              <label className="form-label">Custom Bank Name *</label>
-              <input className="form-input" placeholder="e.g. NeoBank"
+            <div className="bg-input-group" style={{ gridColumn: '2' }}>
+              <label className="bg-label">Custom Bank Name *</label>
+              <input className="bg-input" placeholder="e.g. NeoBank"
                 value={form.customBankName}
                 onChange={e => set('customBankName', e.target.value)} />
             </div>
           )}
-          <div className="form-group" style={{ gridColumn: '1/-1' }}>
-            <label className="form-label">Card Name (Tier)</label>
-            <input className="form-input" placeholder="e.g. Platinum, Infinia, Regalia Gold"
+          <div className="bg-input-group" style={{ gridColumn: '1/-1' }}>
+            <label className="bg-label">Card Name (Tier)</label>
+            <input className="bg-input" placeholder="e.g. Platinum, Infinia, Regalia Gold"
               value={form.cardName}
               onChange={e => set('cardName', e.target.value)} />
           </div>
-          <div className="form-group">
-            <label className="form-label">Network *</label>
-            <select className="form-select" value={form.cardNetwork} onChange={e => set('cardNetwork', e.target.value)}>
+          <div className="bg-input-group">
+            <label className="bg-label">Network *</label>
+            <select className="bg-input" value={form.cardNetwork} onChange={e => set('cardNetwork', e.target.value)}>
               {NETWORKS.map(n => <option key={n}>{n}</option>)}
             </select>
           </div>
-          <div className="form-group">
-            <label className="form-label">Card Type *</label>
-            <select className="form-select" value={form.cardType} onChange={e => set('cardType', e.target.value)}>
+          <div className="bg-input-group">
+            <label className="bg-label">Card Type *</label>
+            <select className="bg-input" value={form.cardType} onChange={e => set('cardType', e.target.value)}>
               {TYPES.map(t => <option key={t}>{t}</option>)}
             </select>
           </div>
-          <div className="form-group">
-            <label className="form-label">Last 4 Digits *</label>
-            <input className="form-input" placeholder="e.g. 4321" maxLength={4}
+          <div className="bg-input-group">
+            <label className="bg-label">Last 4 Digits *</label>
+            <input className="bg-input" placeholder="e.g. 4321" maxLength={4}
               value={form.maskedNumber}
               onChange={e => set('maskedNumber', e.target.value.replace(/\D/g,''))} />
           </div>
-          <div className="form-group">
-            <label className="form-label">Commission % *</label>
-            <input className="form-input" type="number" placeholder="e.g. 2.5" min={0} max={100} step={0.5}
+          <div className="bg-input-group">
+            <label className="bg-label">Commission % *</label>
+            <input className="bg-input" type="number" placeholder="e.g. 2.5" min={0} max={100} step={0.5}
               value={form.commissionPercentage}
               onChange={e => set('commissionPercentage', e.target.value)} />
           </div>
         </div>
 
         {(error || mutation.error) && (
-          <div className="alert alert-danger" style={{ marginTop: 12 }}>
+          <div className="bg-err" style={{ marginTop: 16 }}>
             {error || mutation.error?.message}
           </div>
         )}
 
-        <div style={{ display:'flex', gap:10, marginTop:20 }}>
-          <button className="btn btn-secondary" style={{ flex:1 }} onClick={onClose}>Cancel</button>
-          <button className="btn btn-primary" style={{ flex:2 }} onClick={handleSubmit} disabled={mutation.isPending}>
-            {mutation.isPending ? <><Loader size={15} className="spin" /> Saving…</> : isEdit ? 'Save Changes' : 'Add Listing'}
+        <div style={{ display:'flex', gap:12, marginTop:32 }}>
+          <button className="bg-btn-secondary" style={{ flex:1 }} onClick={onClose} disabled={mutation.isPending}>Cancel</button>
+          <button className="bg-btn" style={{ flex:2 }} onClick={handleSubmit} disabled={mutation.isPending}>
+            {mutation.isPending ? <><Loader size={18} className="spin" /> Saving…</> : isEdit ? 'Save Changes' : 'Add Listing'}
           </button>
         </div>
       </div>
@@ -140,28 +151,28 @@ function ListingModal({ listing, onClose }) {
 /* ── Card tile ── */
 function MyCard({ l, onEdit, onDelete, deleting }) {
   return (
-    <div className="ml-card" style={{ animationDelay: `${Math.random() * 120}ms`, padding: 16 }}>
+    <div className="ml-card" style={{ animationDelay: `${Math.random() * 120}ms` }}>
       
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <span className={`ml-status ${l.active ? 'active' : 'inactive'}`}>
-          {l.active ? '● Active' : '○ Inactive'}
-        </span>
-        <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)' }}>
-          <strong>{l.commissionPercentage}%</strong> Comm.
+      <div className="ml-card-header">
+        <div className="ml-card-badge">{l.cardType}</div>
+        <div className="ml-card-comm">
+          <strong>{l.commissionPercentage}%</strong> Comm
         </div>
       </div>
 
-      <PremiumCard 
-        bankName={l.bankName}
-        cardName={l.cardName}
-        cardNetwork={l.cardNetwork}
-        cardType={l.cardType}
-        maskedNumber={`•••• •••• •••• ${l.maskedNumber?.slice(-4) || 'XXXX'}`}
-        holderName={l.holderName}
-      />
+      <div className="ml-card-body">
+        <PremiumCard 
+          bankName={l.bankName}
+          cardName={l.cardName}
+          cardNetwork={l.cardNetwork}
+          cardType={l.cardType}
+          maskedNumber={`•••• •••• •••• ${l.maskedNumber?.slice(-4) || 'XXXX'}`}
+          holderName={l.holderName}
+        />
+      </div>
 
       {/* Actions */}
-      <div className="ml-actions" style={{ marginTop: 16 }}>
+      <div className="ml-actions">
         <button className="ml-action-btn edit" onClick={() => onEdit(l)}>
           <Pencil size={14} /> Edit
         </button>
@@ -190,10 +201,21 @@ export default function MyListings() {
   })
 
   const openAdd  = ()  => { setModalData(EMPTY); setModalOpen(true) }
-  const openEdit = (l) => { setModalData(l);     setModalOpen(true) }
-
-  const active   = listings.filter(l => l.active).length
-  const inactive = listings.length - active
+  const openEdit = (l) => { 
+    const isCustom = !BANKS.includes(l.bankName) && !["Virtual Bank", "Other"].includes(l.bankName);
+    
+    setModalData({
+      id: l.id,
+      bankName: isCustom ? 'Other' : l.bankName,
+      customBankName: isCustom ? l.bankName : '',
+      cardName: l.cardName || '',
+      cardNetwork: l.cardNetwork,
+      cardType: l.cardType,
+      maskedNumber: l.maskedNumber ? l.maskedNumber.replace(/\D/g, '').slice(-4) : '',
+      commissionPercentage: l.commissionPercentage
+    })
+    setModalOpen(true) 
+  }
 
   return (
     <div className="ml-page">
@@ -211,9 +233,7 @@ export default function MyListings() {
       {/* Stats bar */}
       {listings.length > 0 && (
         <div className="ml-stats">
-          <div className="ml-stat-item"><CreditCard size={14} /><span>{listings.length} Total</span></div>
-          <div className="ml-stat-item ok"><TrendingUp size={14} /><span>{active} Active</span></div>
-          {inactive > 0 && <div className="ml-stat-item muted"><span>{inactive} Inactive</span></div>}
+          <div className="ml-stat-item"><CreditCard size={14} /><span>{listings.length} Active Listings</span></div>
         </div>
       )}
 

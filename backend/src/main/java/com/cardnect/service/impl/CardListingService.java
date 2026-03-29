@@ -5,6 +5,7 @@ import com.cardnect.model.dto.response.CardListingResponse;
 import com.cardnect.model.entity.CardListing;
 import com.cardnect.model.entity.User;
 import com.cardnect.repository.CardListingRepository;
+import com.cardnect.repository.CardRequestRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
@@ -20,6 +21,7 @@ import java.util.UUID;
 public class CardListingService {
 
     private final CardListingRepository listingRepository;
+    private final CardRequestRepository requestRepository;
 
     public List<CardListingResponse> getActiveListings() {
         return listingRepository.findByActiveTrue().stream()
@@ -67,8 +69,9 @@ public class CardListingService {
     public void deleteListing(User user, UUID listingId) {
         CardListing listing = listingRepository.findByIdAndUserId(listingId, user.getId())
                 .orElseThrow(() -> new AccessDeniedException("Listing not found or not owned by you"));
-        listing.setActive(false);
-        listingRepository.save(listing);
+        
+        requestRepository.deleteByListingId(listingId); // Manually cascade delete to bypass schema limitations
+        listingRepository.delete(listing); // Hard delete from database ensuring it can never be viewed again
     }
 
     private CardListingResponse toResponse(CardListing l) {

@@ -34,6 +34,7 @@ com/cardnect/model/entity/User.class
 com/cardnect/exception/GlobalExceptionHandler.class
 com/cardnect/controller/UserController.class
 com/cardnect/model/dto/request/LoginRequest.class
+com/cardnect/model/dto/request/ForgotPasswordRequest.class
 com/cardnect/websocket/WebSocketNotificationService.class
 com/cardnect/model/entity/PhoneOtp.class
 com/cardnect/CardnectApplication.class
@@ -53,6 +54,7 @@ com/cardnect/repository/OtpCodeRepository.class
 com/cardnect/model/dto/request/CreateListingRequest.class
 com/cardnect/controller/CardListingController.class
 com/cardnect/model/dto/request/SendWhatsAppOtpRequest.class
+com/cardnect/service/impl/CardRequestService$1.class
 com/cardnect/model/dto/request/CreateListingRequest$CreateListingRequestBuilder.class
 com/cardnect/service/impl/UserService.class
 com/cardnect/service/impl/CardRequestService.class

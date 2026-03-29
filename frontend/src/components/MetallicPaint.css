@@ -1,0 +1,17 @@
+/* MetallicPaint — transparent canvas with animated text */
+.mp-root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Let the parent control width/height */
+  width: 100%;
+}
+
+.mp-canvas {
+  display: block;
+  /* Canvas fills the root width, height is set by the parent class */
+  width: 100%;
+  height: 100%;
+  /* Transparent background so video/dark bg shows through */
+  background: transparent;
+}
