@@ -1,0 +1,11 @@
+{
+  "name": "cardnect-appwrite-setup",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "setup": "node setup.mjs"
+  },
+  "dependencies": {
+    "node-appwrite": "^26.2.0"
+  }
+}
