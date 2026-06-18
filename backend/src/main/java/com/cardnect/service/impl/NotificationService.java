@@ -7,8 +7,6 @@ import com.cardnect.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -23,7 +21,6 @@ public class NotificationService {
                 .stream().map(this::toResponse).toList();
     }
 
-    @Transactional
     public void markRead(User user, UUID notifId) {
         Notification n = notificationRepository.findById(notifId)
                 .orElseThrow(() -> new RuntimeException("Notification not found"));
@@ -34,7 +31,6 @@ public class NotificationService {
         notificationRepository.save(n);
     }
 
-    @Transactional
     public void markAllRead(User user) {
         notificationRepository.markAllReadByUserId(user.getId());
     }

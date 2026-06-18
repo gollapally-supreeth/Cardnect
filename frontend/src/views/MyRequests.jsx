@@ -11,11 +11,20 @@ const STATUS_COLORS = {
   COMPLETED: 'badge-primary',
 }
 
-function buildWhatsAppLink(phone, requesterName, offerDetails, requestId) {
+function buildWhatsAppLink(phone, requesterName, holderName, cardDetails, offerDetails, requestId) {
   if (!phone) return null
   const clean = phone.replace(/\D/g, '').replace(/^0/, '91')
   const message = encodeURIComponent(
-    `Hello! I got your card request on Cardnect.\n\nRequest #${requestId?.slice(0, 8)}\nRequester: ${requesterName}\nOffer: ${offerDetails}\n\nPlease contact me to proceed.`
+    `Hello ${requesterName},\n\nThis is ${holderName || 'the card holder'} from Cardnect. I have reviewed and accepted your request (Ref: #${requestId?.slice(0, 8)}) to use my ${cardDetails} for the following offer:\n\n"${offerDetails}"\n\nPlease let me know how you would like to proceed with the transaction.\n\nBest regards,\n${holderName || 'Card Holder'}`
+  )
+  return `https://wa.me/${clean}?text=${message}`
+}
+
+function buildHolderWhatsAppLink(phone, holderName, requesterName, cardDetails, offerDetails, requestId) {
+  if (!phone) return null
+  const clean = phone.replace(/\D/g, '').replace(/^0/, '91')
+  const message = encodeURIComponent(
+    `Hello ${holderName || 'there'},\n\nThis is ${requesterName || 'the requester'} from Cardnect. Thank you for accepting my request (Ref: #${requestId?.slice(0, 8)}) to use your ${cardDetails} for the following offer:\n\n"${offerDetails}"\n\nPlease let me know when you are available to coordinate this transaction.\n\nThank you,\n${requesterName || 'Requester'}`
   )
   return `https://wa.me/${clean}?text=${message}`
 }
@@ -28,16 +37,58 @@ function timeAgo(d) {
   return `${Math.floor(s/86400)}d ago`
 }
 
+import { getBankLogoUrl as fetchBankLogo } from '../constants/cardLogos'
+import { useAuthContext } from '../context/AuthContext'
+
+function BankLogo({ bankName, network }) {
+  const [imgError, setImgError] = useState(false);
+  const logoUrl = fetchBankLogo(bankName);
+
+  if (logoUrl && !imgError) {
+    return (
+      <img
+        src={logoUrl}
+        alt={bankName}
+        className="req-card-logo-img"
+        onError={() => setImgError(true)}
+      />
+    );
+  }
+
+  return (
+    <div className="req-card-icon-avatar" data-network={network}>
+      {bankName ? bankName.charAt(0).toUpperCase() : 'C'}
+    </div>
+  );
+}
+
 function RequestRow({ req, isIncoming, onStatusChange }) {
+  const { user } = useAuthContext()
+  const cardDetails = `${req.listingBankName} ${req.listingCardName || ''} ${req.listingCardType} (${req.listingCardNetwork})`
+  const holderName = isIncoming ? user?.name : req.holderName
+  const requesterName = isIncoming ? req.requesterName : user?.name
+
   const waLink = isIncoming
-    ? buildWhatsAppLink(req.requesterPhone, req.requesterName, req.offerDetails, req.id)
-    : null
+    ? buildWhatsAppLink(req.requesterPhone, requesterName, holderName, cardDetails, req.offerDetails, req.id)
+    : req.status === 'ACCEPTED'
+      ? buildHolderWhatsAppLink(req.holderPhone, holderName, requesterName, cardDetails, req.offerDetails, req.id)
+      : null
 
   return (
     <tr>
       <td data-label="Card">
-        <div className="req-bank">{req.listingBankName}</div>
-        <div className="req-sub">{req.listingCardType} · {req.listingCardNetwork}</div>
+        <div className="req-card-info-wrap">
+          <BankLogo bankName={req.listingBankName} network={req.listingCardNetwork} />
+          <div className="req-card-text-details">
+            <div className="req-card-title">{req.listingBankName} {req.listingCardName}</div>
+            <div className="req-card-sub-info">
+              <span>{req.listingCardNetwork}</span>
+              <span className="dot-separator">•</span>
+              <span>{req.listingCardType} Card</span>
+            </div>
+            <div className="req-id-badge">ID: #{req.id?.slice(0, 8).toUpperCase()}</div>
+          </div>
+        </div>
       </td>
       <td data-label="Offer Details">
         <p className="req-offer-text">{req.offerDetails}</p>
@@ -63,12 +114,13 @@ function RequestRow({ req, isIncoming, onStatusChange }) {
               <button className="btn btn-danger btn-sm" onClick={() => onStatusChange(req.id, 'REJECTED')}>Reject</button>
             </>
           )}
-          {isIncoming && req.status === 'ACCEPTED' && waLink && (
+          {req.status === 'ACCEPTED' && waLink ? (
             <a className="btn btn-primary btn-sm" href={waLink} target="_blank" rel="noopener noreferrer">
               <MessageCircle size={14} /> WhatsApp
             </a>
+          ) : (
+            !isIncoming && req.status !== 'ACCEPTED' && <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>—</span>
           )}
-          {!isIncoming && <span style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>—</span>}
         </div>
       </td>
     </tr>

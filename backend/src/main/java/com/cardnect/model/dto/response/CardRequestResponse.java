@@ -11,10 +11,13 @@ public class CardRequestResponse {
     private UUID id;
     private UUID listingId;
     private String listingBankName;
+    private String listingCardName;
     private String listingCardType;
     private String listingCardNetwork;
     private String requesterName;
     private String requesterPhone; // Only exposed to card holder (incoming requests)
+    private String holderName;
+    private String holderPhone;    // Only exposed to requester (sent requests) when request is ACCEPTED
     private RequestStatus status;
     private String offerDetails;
     private LocalDateTime createdAt;

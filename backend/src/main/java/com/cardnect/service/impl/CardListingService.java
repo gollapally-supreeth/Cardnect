@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -35,7 +34,6 @@ public class CardListingService {
                 .toList();
     }
 
-    @Transactional
     public CardListingResponse createListing(User user, CreateListingRequest req) {
         CardListing listing = CardListing.builder()
                 .user(user)
@@ -50,7 +48,6 @@ public class CardListingService {
         return toResponse(listingRepository.save(listing));
     }
 
-    @Transactional
     public CardListingResponse updateListing(User user, UUID listingId, CreateListingRequest req) {
         CardListing listing = listingRepository.findByIdAndUserId(listingId, user.getId())
                 .orElseThrow(() -> new AccessDeniedException("Listing not found or not owned by you"));
@@ -65,7 +62,6 @@ public class CardListingService {
         return toResponse(listingRepository.save(listing));
     }
 
-    @Transactional
     public void deleteListing(User user, UUID listingId) {
         CardListing listing = listingRepository.findByIdAndUserId(listingId, user.getId())
                 .orElseThrow(() -> new AccessDeniedException("Listing not found or not owned by you"));

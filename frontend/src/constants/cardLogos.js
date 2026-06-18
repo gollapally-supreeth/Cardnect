@@ -28,10 +28,22 @@ export const NETWORK_LOGO_URLS = {
 
 export function getBankLogoUrl(bankName) {
   if (!bankName?.trim()) return undefined
-  const key = bankName.trim()
-  if (BANK_LOGO_URLS[key]) return BANK_LOGO_URLS[key]
-  const canon = BANK_LOGO_ALIASES[key]
-  return canon ? BANK_LOGO_URLS[canon] : undefined
+  const clean = bankName.trim().toLowerCase()
+  
+  const keys = Object.keys(BANK_LOGO_URLS)
+  const exactKey = keys.find(k => k.toLowerCase() === clean)
+  if (exactKey) return BANK_LOGO_URLS[exactKey]
+  
+  const aliasKey = Object.keys(BANK_LOGO_ALIASES).find(k => k.toLowerCase() === clean)
+  if (aliasKey) {
+    const canon = BANK_LOGO_ALIASES[aliasKey]
+    return BANK_LOGO_URLS[canon]
+  }
+
+  const partialKey = keys.find(k => clean.includes(k.toLowerCase()) || k.toLowerCase().includes(clean))
+  if (partialKey) return BANK_LOGO_URLS[partialKey]
+
+  return undefined
 }
 
 export function getNetworkLogoUrl(network) {

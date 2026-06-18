@@ -1,4 +1,5 @@
 /run/media/Munna/Supreeth/Projects/Cardnect/backend/src/main/java/com/cardnect/CardnectApplication.java
+/run/media/Munna/Supreeth/Projects/Cardnect/backend/src/main/java/com/cardnect/config/AppwriteClient.java
 /run/media/Munna/Supreeth/Projects/Cardnect/backend/src/main/java/com/cardnect/config/SecurityConfig.java
 /run/media/Munna/Supreeth/Projects/Cardnect/backend/src/main/java/com/cardnect/config/WebSocketConfig.java
 /run/media/Munna/Supreeth/Projects/Cardnect/backend/src/main/java/com/cardnect/controller/AuthController.java
@@ -48,4 +49,6 @@
 /run/media/Munna/Supreeth/Projects/Cardnect/backend/src/main/java/com/cardnect/service/impl/ResendEmailService.java
 /run/media/Munna/Supreeth/Projects/Cardnect/backend/src/main/java/com/cardnect/service/impl/UserService.java
 /run/media/Munna/Supreeth/Projects/Cardnect/backend/src/main/java/com/cardnect/service/impl/WhatsAppService.java
+/run/media/Munna/Supreeth/Projects/Cardnect/backend/src/main/java/com/cardnect/util/AppwriteMapper.java
+/run/media/Munna/Supreeth/Projects/Cardnect/backend/src/main/java/com/cardnect/util/AppwriteQuery.java
 /run/media/Munna/Supreeth/Projects/Cardnect/backend/src/main/java/com/cardnect/websocket/WebSocketNotificationService.java

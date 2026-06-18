@@ -5,8 +5,6 @@ import com.cardnect.repository.OtpCodeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 
@@ -20,7 +18,6 @@ public class OtpService {
     @Value("${auth.otp.bypass:false}")
     private boolean otpBypass;
 
-    @Transactional
     public String generateAndStoreOtp(String email) {
         if (otpBypass) {
             otpCodeRepository.deleteByEmail(email);
@@ -42,7 +39,6 @@ public class OtpService {
         return otp;
     }
 
-    @Transactional
     public void validateOtp(String email, String code) {
         if (otpBypass) {
             otpCodeRepository.deleteByEmail(email);

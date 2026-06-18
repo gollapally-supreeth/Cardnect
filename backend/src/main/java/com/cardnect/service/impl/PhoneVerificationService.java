@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 
@@ -26,7 +24,6 @@ public class PhoneVerificationService {
     @Value("${auth.otp.bypass:false}")
     private boolean otpBypass;
 
-    @Transactional
     public void generateAndSendOtp(User user, String phone) {
         String cleanPhone = phone.replaceAll("[^0-9]", "");
         
@@ -58,7 +55,6 @@ public class PhoneVerificationService {
         log.info("WhatsApp delivery initiated...");
     }
 
-    @Transactional
     public void verifyOtp(User user, String phone, String code) {
         String cleanPhone = phone.replaceAll("[^0-9]", "");
         

@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -32,7 +31,6 @@ public class CardRequestService {
     private final WhatsAppService whatsAppService;
     private final ResendEmailService resendEmailService;
 
-    @Transactional
     public CardRequestResponse createRequest(User requester, CreateRequestDto dto) {
         if (!requester.isEmailVerified()) {
             throw new AccessDeniedException("You must verify your email before sending card requests.");
@@ -146,7 +144,6 @@ public class CardRequestService {
                 .toList();
     }
 
-    @Transactional
     public CardRequestResponse updateStatus(User holder, UUID requestId, String statusStr) {
         RequestStatus newStatus = RequestStatus.valueOf(statusStr.toUpperCase());
         CardRequest request = requestRepository.findById(requestId)
@@ -188,21 +185,24 @@ public class CardRequestService {
     }
 
     private CardRequestResponse toResponse(CardRequest r, boolean includePhone) {
+        boolean includeHolderPhone = r.getStatus() == com.cardnect.model.enums.RequestStatus.ACCEPTED;
         return CardRequestResponse.builder()
                 .id(r.getId())
                 .listingId(r.getListing().getId())
                 .listingBankName(r.getListing().getBankName())
+                .listingCardName(r.getListing().getCardName())
                 .listingCardType(r.getListing().getCardType())
                 .listingCardNetwork(r.getListing().getCardNetwork())
                 .requesterName(r.getRequester().getName())
                 .requesterPhone(includePhone ? r.getRequester().getPhone() : null)
+                .holderName(r.getListing().getUser().getName())
+                .holderPhone(includeHolderPhone ? r.getListing().getUser().getPhone() : null)
                 .status(r.getStatus())
                 .offerDetails(r.getOfferDetails())
                 .createdAt(r.getCreatedAt())
                 .build();
     }
 
-    @Transactional
     public void handleWebhookResponse(String requestIdStr, String action, String fromPhone) {
         try {
             UUID requestId = UUID.fromString(requestIdStr.trim());

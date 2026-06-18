@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -29,7 +28,6 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
     /* ── OTP send ─────────────────────────────────────────────── */
-    @Transactional
     public void sendOtp(String email) {
         String normalized = normalizeEmail(email);
         String otp = otpService.generateAndStoreOtp(normalized);
@@ -38,7 +36,6 @@ public class AuthService {
     }
 
     /* ── OTP verify (existing flow — sign-in with OTP) ─────────── */
-    @Transactional
     public AuthResponse verifyOtp(VerifyOtpRequest request) {
         String normalized = normalizeEmail(request.getEmail());
         String otpCode = request.getOtpCode() == null ? "" : request.getOtpCode().trim();
@@ -69,7 +66,6 @@ public class AuthService {
     }
 
     /* ── Register (after email OTP verified) ────────────────────── */
-    @Transactional
     public AuthResponse register(RegisterRequest request) {
         String normalized = normalizeEmail(request.getEmail());
 
@@ -102,7 +98,6 @@ public class AuthService {
     }
 
     /* ── Password login ─────────────────────────────────────────── */
-    @Transactional(readOnly = true)
     public AuthResponse login(LoginRequest request) {
         String normalized = normalizeEmail(request.getEmail());
 
@@ -119,7 +114,6 @@ public class AuthService {
     }
 
     /* ── Forgot Password ────────────────────────────────────────── */
-    @Transactional
     public void forgotPassword(ForgotPasswordRequest request) {
         String normalized = normalizeEmail(request.getEmail());
         String otpCode = request.getOtpCode() == null ? "" : request.getOtpCode().trim();

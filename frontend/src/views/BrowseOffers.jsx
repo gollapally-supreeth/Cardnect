@@ -3,7 +3,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Search, SlidersHorizontal, CreditCard, Star, ArrowRight, Loader, X, Wifi, Shield, MessageCircle, CheckCircle } from 'lucide-react'
 import { fetchListings, createRequest } from '../api/services'
 import { useAuthContext } from '../context/AuthContext'
-import VerifyPhoneModal from '../components/VerifyPhoneModal'
 import PremiumCard from '../components/PremiumCard'
 import Silk from '../components/Silk'
 import './BrowseOffers.css'
@@ -228,7 +227,6 @@ export default function BrowseOffers() {
   const [network, setNetwork] = useState('All')
   const [type,    setType]    = useState('All')
   const [selectedListing, setSelectedListing] = useState(null)
-  const [showVerifyModal, setShowVerifyModal] = useState(false)
   const [selectedCardId, setSelectedCardId] = useState(null)
 
   const isVerified = !!user?.emailVerified;
@@ -336,23 +334,8 @@ export default function BrowseOffers() {
           isVerified={isVerified}
           user={user}
           onClose={() => setSelectedListing(null)}
-          onVerifyClick={() => {
-            setSelectedListing(null);
-            setShowVerifyModal(true);
-          }}
         />
       )}
-
-      {/* WhatsApp verification modal */}
-      <VerifyPhoneModal 
-        isOpen={showVerifyModal} 
-        onClose={() => setShowVerifyModal(false)}
-        userPhone={user?.phone || ''}
-        onVerified={() => {
-          // You could optionally refetch the user context here
-          // For now, rely on standard AuthContext re-fetching or optimistic UI
-        }}
-      />
     </div>
   )
 }

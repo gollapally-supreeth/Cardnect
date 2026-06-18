@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useAuthContext } from '../context/AuthContext'
 import { CheckCircle, AlertCircle, Phone, Lock, Zap, ChevronRight } from 'lucide-react'
-import VerifyPhoneModal from '../components/VerifyPhoneModal'
 import ChangePasswordModal from '../components/ChangePasswordModal'
 import Silk from '../components/Silk'
 import './Profile.css'
@@ -15,10 +14,8 @@ const formatCardId = (id) => {
 export default function Profile() {
   const { user } = useAuthContext()
   const emailVerified = !!user?.emailVerified
-  const phoneVerified = !!user?.phoneVerified
-  const isFullyVerified = emailVerified && phoneVerified;
+  const isFullyVerified = emailVerified;
 
-  const [showVerifyModal, setShowVerifyModal] = useState(false)
   const [showPwdModal, setShowPwdModal] = useState(false)
   const [isFlipped, setIsFlipped] = useState(false)
 
@@ -134,14 +131,6 @@ export default function Profile() {
                     <Phone size={14} className="action-icon" />
                     <span className="action-text">{user?.phone || 'No phone linked'}</span>
                   </div>
-                  {phoneVerified ? (
-                    <span className="vmax-status ok">Secured</span>
-                  ) : (
-                    <button className="vmax-action-btn" onClick={(e) => {
-                      e.stopPropagation();
-                      setShowVerifyModal(true);
-                    }}>Verify Now</button>
-                  )}
                 </div>
 
                 <div className="vmax-action-row">
@@ -173,13 +162,6 @@ export default function Profile() {
 
         </div>
       </div>
-
-      <VerifyPhoneModal
-        isOpen={showVerifyModal}
-        onClose={() => setShowVerifyModal(false)}
-        userPhone={user?.phone || ''}
-        onVerified={() => setShowVerifyModal(false)}
-      />
 
       <ChangePasswordModal
         isOpen={showPwdModal}

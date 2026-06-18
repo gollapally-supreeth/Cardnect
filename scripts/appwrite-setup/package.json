@@ -6,6 +6,7 @@
     "setup": "node setup.mjs"
   },
   "dependencies": {
-    "node-appwrite": "^26.2.0"
+    "node-appwrite": "^26.2.0",
+    "pg": "^8.21.0"
   }
 }
